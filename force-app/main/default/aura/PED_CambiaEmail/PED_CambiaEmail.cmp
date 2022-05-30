@@ -1,0 +1,66 @@
+<aura:component controller="PED_CambiaEmailController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+    <aura:attribute name="userProfile" type="String" default="/user-form"/>
+    <aura:attribute name="successMsg" type="String"/>
+    
+    <div>
+        <aura:renderIf isTrue="{!v.successMsg == null}">
+            <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center" >
+                <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12 slds-medium-size_8-of-12">
+                    <div class="slds-col slds-size_3-of-3 ">  
+                        <div class="slds-form slds-form_stacked">
+                            <div class="slds-text-heading_small">
+                                <!--PI CR PEC--><h3><strong>Inserisci il tuo nuovo indirizzo e-mail assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo.</strong></h3>
+                            </div>
+                            
+                            <div class="slds-p-top_small">
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="email">E-mail</label>
+                                    <div class="slds-form-element__control slds-size_1-of-1">
+                                        <ui:inputEmail aura:id="email" class="slds-input" blur="{!c.validateEmail}"/>
+                                    </div>
+                                </div>
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label" for="confirmemail">Conferma E-Mail</label>
+                                    <div class="slds-form-element__control slds-size_1-of-1">
+                                        <ui:inputEmail aura:id="confirmEmail" class="slds-input" blur="{!c.validateConfirmEmail}"/>
+                                    </div>
+                                </div><br/>
+                                <div class="slds-grid slds-wrap slds-grid_align-end">
+                                    <div class="slds-col">
+                                        <span>
+                                            <ui:button class="slds-button slds-button_neutral button-white" label="Annulla " buttonType="Submit" press="{!c.navigateToUserProfile}"/>
+                                        </span>
+                                    </div>
+                                    <div class="slds-col">
+                                        <span>
+                                            <ui:button class="slds-button slds-button_brand button-blue" label="Salva" buttonType="Submit" press="{!c.changeEmail}"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:renderIf>
+        <aura:renderIf isTrue="{!v.successMsg != null}">
+            <div>
+                <div class="slds-grid slds-grid_vertical slds-grid_vertical-align-center slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_8-of-12 slds-medium-size_8-of-12">
+                        <div>
+                            <p>{!v.successMsg}</p><br/>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-grid_align-end">
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_neutral button-white slds-float_right" label="Torna al tuo profilo" buttonType="Submit" press="{!c.navigateToUserProfile}"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:renderIf>        
+    </div>
+</aura:component>

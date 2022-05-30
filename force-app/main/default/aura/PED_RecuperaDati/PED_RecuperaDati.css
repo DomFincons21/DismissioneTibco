@@ -1,0 +1,60 @@
+.THIS.customRadioCls{
+    display : inline-block !important;
+}
+
+.THIS .customRadioCls{
+    display : inline-block !important;
+}
+
+.THIS.main-background{
+    background-color:#0041bd;
+}
+
+.THIS.text_content
+{
+    color: #000 !important;
+    font-size: 1.15rem !important;
+}
+
+.THIS.page-header{
+    background-color: #0441bd;
+    color: #ffffff;
+    text-align:center;    
+    font-size: 1.75rem;
+    width: 100%; 
+    padding: 1rem 0 1rem 0;
+}
+
+.THIS .slds-input {
+    border :1px solid rgb(199, 199, 199)!important;
+}
+.THIS .slds-select {
+    border :1px solid rgb(199, 199, 199)!important;
+    height:36px!important;
+}
+
+.THIS .has-error{
+    float : left;
+}
+
+.THIS .margintop{
+    margin-top:10px;
+    margin-right:5px; 
+}
+
+.THIS .button-white{
+  	background-color: #ffffff;
+    color: #0441bd !important;
+    margin:5px;
+    float:left;
+}
+
+.THIS .slds-form-element{
+    display : inline-block;
+    width : 100%
+}
+
+.THIS h4{
+	font-size: 1rem;
+	font-weight: bolder;
+}

@@ -1,0 +1,453 @@
+<aura:component controller='PED_RecuperaDati_Controller' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="newContact" type="Contact" default="{ 'sobjectType': 'Contact' }"/>
+    <aura:attribute name="account" type="Account" default="{ 'sobjectType': 'Account' }"/>
+    <aura:attribute name="Nazionalityopts" type="List"/> 
+    <aura:attribute name="isPassword" type="Boolean" default="true"/>    
+    <aura:attribute name="isPasswordOTP" type="Boolean" default="false"/>
+    <aura:attribute name="isDisableOTP" type="Boolean" default="true"/>
+    <aura:attribute name="isNewPassword" type="Boolean" default="false"/>
+    <aura:attribute name="disableOTP" type="Boolean" default="true"/>
+    <aura:attribute name="isPG" type="Boolean" default="false"/>
+    <aura:attribute name="isPF" type="Boolean" default="false"/>
+    <aura:attribute name="isOTP" type="Boolean" default="false"/>
+    <aura:attribute name="isOTPNewEmail" type="Boolean" default="false"/>    
+    <aura:attribute name="isPasswordEmail" type="Boolean" default="false"/>
+    <aura:attribute name="showUsername" type="Boolean" default="false"/>
+    <aura:attribute name="isUsername" type="Boolean" default="false"/>
+    <aura:attribute name="CFOnBlurErrorExist" type="Boolean" default="false"/>
+    <aura:attribute name="PIVAOnBlurErrorExist" type="Boolean" default="false"/>
+    <aura:attribute name="ContactCFOnBlurErrorExist" type="Boolean" default="false"/>
+    <aura:attribute name="selectedValue1" type="String"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="Email" type="String"/>
+    <aura:attribute name="Telefono" type="String"/>
+    <aura:attribute name="OTP" type="String"/>
+    <aura:attribute name="ContactId" type="String"/>
+    <aura:attribute name="linkDoc" type="String"/>
+    <aura:attribute name="Username" type="String"/>
+    <aura:attribute name="UsernameOsc" type="String"/>
+    <aura:attribute name="telOscurato" type="String"/>
+    <aura:attribute name="warning" type="Boolean" default="false"/>
+    <aura:attribute name="isSucc" type="Boolean"/>
+    <aura:attribute name="isButtonActive" type="Boolean" default="true"/>
+    <aura:attribute name="isButtonActiveUser" type="Boolean" default="true"/>
+    <aura:attribute name="isButtonActiveUserPG" type="Boolean" default="true"/>
+    <aura:attribute name="messageToShow" type="String"/>
+    <!--PI S-->
+    <aura:attribute name="PIVArequired" type="Boolean" default="true"/>
+    <!--PI E-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="PED_CFCheck" event="c:PED_CFCheck" action="{!c.getAllEvtParam}"/>
+    
+    <c:PED_ModalEsito isSucc="{!v.isSucc}" messageToShow="{!v.messageToShow}" warning="{!v.warning}"/>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container" style='position:fixed'>
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">
+                    Loading
+                </span>
+                <div class="slds-spinner__dot-a"/>
+                <div class="slds-spinner__dot-b"/>
+            </div>
+        </div>
+    </aura:if>
+    
+    <div class="slds-grid slds-wrap page-header">
+        <div class="slds-col slds-size_1-of-1 slds-large-size_12-of-12 slds-medium-size_12-of-12">
+            <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-start ">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12 slds-medium-size_2-of-12 slds-p-left_small">
+                    <a href="https://www.e-distribuzione.it/">
+                        <img id="logo" src="{!$Resource.PED_Logo}"/>
+                    </a>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center">
+                <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12 slds-medium-size_4-of-12">
+                    <h1 title="RecuperaDati">
+                        Recupera Dati
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center" style="background-color:#fafaf9;margin-top:20px;">
+        <div class="slds-col slds-size_5-of-6 slds-large-size_6-of-12 slds-medium-size_6-of-12">
+            <aura:if isTrue='{!v.isPassword || v.isUsername}'>
+                <div class="slds-col slds-size_3-of-3 ">  
+                    <div class="slds-form slds-form_stacked">
+                        <div class="slds-form-element" style='text-align:center'>
+                            <h3>
+                                Cosa desideri recuperare?
+                            </h3>
+                        </div>
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__control" style="width: 307px;margin: auto;">
+                                <span class="slds-radio customRadioCls" style='width:200px'>
+                                    <input type="radio" id="Password" value="Password" name="default1" checked="{!v.isPassword}" onchange='{!c.handleChangeRadio}'/>
+                                    <label class="slds-radio__label" for="Password">
+                                        <span class="slds-radio_faux"/>
+                                        <span class="slds-form-element__label">
+                                            Password
+                                        </span>
+                                    </label>
+                                </span>
+                                <span class="slds-radio customRadioCls">
+                                    <input type="radio" id="Username" value="Username" name="default1" checked="{!v.isUsername}" onchange='{!c.handleChangeRadio}'/>
+                                    <label class="slds-radio__label" for="Username">
+                                        <span class="slds-radio_faux"/>
+                                        <span class="slds-form-element__label">
+                                            Username
+                                        </span>
+                                    </label>
+                                </span>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>                
+                <br/>
+            </aura:if>
+            
+            <aura:if isTrue='{!v.isPassword}'>
+                <aura:if isTrue='{!!v.isPasswordOTP &amp;&amp; v.isNewPassword==false}'>
+                    <div class="slds-form-element" style='display: inline-block;width: 100%;'>
+                        <label class="slds-form-element__label" for="Email">
+                            Per recuperare la password inserisci l’indirizzo email con cui ti sei registrato (username)
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputEmail aura:id="Emailid" class="slds-input" value="{!v.Email}" required="true" blur="{!c.validateEmail}" change = "{!c.activeButton}"/>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Recupera Password" buttonType="Submit" press="{!c.recuperaPassword}" disabled = "{!v.isButtonActive}"/>
+                        <ui:button class="slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.backHome}"/>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.isPasswordOTP}'>
+                    <div class="slds-form-element" style='display: inline-block;width: 100%;'>
+                        <label class="slds-form-element__label" for="OTP">
+                            Inserisci il codice di verifica che ti abbiamo inviato
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="OTPid" class="slds-input" value="{!v.OTP}" updateOn="keyup" keyup="{!c.validateOTP}" required="true"/>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Conferma" buttonType="Submit" disabled='{!v.isDisableOTP}' press='{!c.validateOTPApex}'/>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" buttonType="Submit" press="{!c.reinviaCodice}" />
+                        <ui:button class="slds-button slds-button_neutral button-white" label="Indietro " buttonType="Submit" press="{!c.backEmail}"/>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.isNewPassword}'>
+                    <c:PED_ChangePassword Username="{!v.Email+'.pc'}" isNewPassword='{!v.isNewPassword}'/>
+                </aura:if>
+            </aura:if>
+            
+            <aura:if isTrue='{!v.isUsername}'>
+                <aura:if isTrue='{!!v.showUsername}'>
+                    <lightning:select name="tipologia" aura:id="tipologia" label="Seleziona la tipologia di utente *" onchange='{!c.selectTipologiaUtente}'>
+                        <option value="">...</option>
+                        <option value="PF">Persona Fisica</option>
+                        <option value="PG">Persona Giuridica</option>
+                    </lightning:select>
+                    <br/>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.isPF}'>
+                    <div class="slds-form-element">
+                        <lightning:select name="Nazionalityid" aura:id="Nazionalityid" label="Nazionalità *" value="{!v.newContact.PED_Nazionalit__c}" required="true" onchange = "{!c.activeButtonUser}">
+                            <option value = "Seleziona un valore">Seleziona un valore</option>
+                            <aura:iteration items="{!v.Nazionalityopts}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="Codice fiscale">
+                            Codice fiscale *
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="Codicefiscaleid" class="slds-input" value="{!v.newContact.Codice_Fiscale__c}" required="true" blur="{!c.validatePFCF}" change = "{!c.activeButtonUser}"/>
+                            <c:PED_CFHelperSuper aura:id="child"/>
+                        </div>
+                    </div>
+                    <div >
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Recupera Username" buttonType="Submit" press="{!c.recuperaUsername}" disabled = "{!v.isButtonActiveUser}"/>
+                        <ui:button class="slds-button slds-button_neutral button-white" label="Indietro " buttonType="Submit" press="{!c.backHome}"/>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.isPG}'>
+                    
+                    <b style="font-size:15px">Inserisci i dati del Referente Legale</b>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="Nome">
+                            Nome *
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="firstNameid1" class="slds-input" value="{!v.newContact.FirstName}" required="true" blur="{!c.validateNomeRapLegale}" change = "{!c.activeButtonUserPG}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="Cognome">
+                            Cognome *
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="lastNameid1" class="slds-input" value="{!v.newContact.LastName}" required="true" blur="{!c.validateCognomeRapLegale}" change = "{!c.activeButtonUserPG}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <lightning:select aura:id="Nazionalityid1" label="Nazionalità *" value="{!v.newContact.PED_Nazionalit__c}" required = "true" onchange = "{!c.activeButtonUserPG}" messageWhenValueMissing= "Seleziona una Nazionalità">
+                            <option value = "">Seleziona un valore</option>
+                            <aura:iteration items="{!v.Nazionalityopts}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="CodiceFiscale">
+                            Codice Fiscale *
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="Codicefiscaleid1" class="slds-input" value="{!v.newContact.Codice_Fiscale__c}" required="true" blur="{!c.validatePGCF}" change = "{!c.activeButtonUserPG}"/>
+                            <c:PED_CFHelperSuper aura:id="child1"/>
+                        </div>
+                    </div>
+                    
+                    <b style="font-size:15px">Inserisci i dati della tua Azienda</b>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="Ragione">
+                            Ragione Sociale *
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="RagioneSocialeid1" class="slds-input" value="{!v.account.Name}" required="true" blur="{!c.validateRagioneSociale}" change = "{!c.activeButtonUserPG}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <lightning:select aura:id="Sedelegalediid1" label="Sede legale di rappresentanza *" value="{!v.selectedValue1}" required = "true" onchange = "{!c.activeButtonUserPG}" messageWhenValueMissing= "Seleziona una Sede Legale">
+                            <option value = "">Seleziona un valore</option>
+                            <aura:iteration items="{!v.Nazionalityopts}" var="item">
+                                <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="Codice fiscale">
+                            Codice fiscale *
+                            <span style="position:relative; top:-6px;"><lightning:helptext content="Inserire il Codice Fiscale aziendale numerico di 11 caratteri oppure il Codice Fiscale alfanumerico di 16 caratteri nel caso di Ditta individuale. Nel caso di Ente o Condominio inserire il Codice Fiscale numerico di 11 caratteri che inizia con 8 o 9"></lightning:helptext></span>
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="ContactCodicefiscaleid" class="slds-input" maxlength="16" value="{!v.account.CodiceFiscale__c}" required="true" blur="{!c.validateContactCodicefiscale}" change = "{!c.activeButtonUserPG}"/>
+                            <c:PED_PTIVA_CFNum_Helper aura:id="child_CFNum"/>
+                        </div>
+                    </div>
+                    
+                    <!--   <aura:component>
+                        <label class= "slds-form-element_label" style= "margin-right: 0.5rem;">Partita IVA *</label>
+                        <lightning:helptext content="Inserire la Partita Iva aziendale composta da 11 caratteri numerici che NON inizia con 8 o 9." class="customIcon"/>
+                        <lightning:input aura:id="PartitaIVAId1" value="{!v.account.PartitaIVA__c}" required="{!v.PIVArequired}" onblur="{!c.validatePartitaIva}"/>
+                    </aura:component> -->
+                    
+                    <div class="slds-form-element"> 
+                        <label class="slds-form-element__label" for="PartitaIVA">
+                            <aura:if isTrue='{!v.PIVArequired}'>                        
+                                Partita IVA *
+                                <aura:set attribute="else">
+                                    Partita IVA
+                                </aura:set>
+                            </aura:if>
+                            <span style="position:relative; top:-6px;"><lightning:helptext content="Inserire la Partita Iva aziendale composta da 11 caratteri numerici che NON inizia con 8 o 9."></lightning:helptext></span>
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="PartitaIVAId1" class="slds-input" value="{!v.account.PartitaIVA__c}" required="{!v.PIVArequired}" blur="{!c.validatePartitaIva}" change = "{!c.activeButtonUserPG}"/>
+                            <aura:if isTrue='{!not(and(!v.PIVArequired, v.account.PartitaIVA__c == null))}'>
+                                <c:PED_PTIVA_CFNum_Helper aura:id="child_ptiva"/>
+                            </aura:if>
+                        </div>
+                    </div> 
+                    
+                    <!--PI S-->
+
+                    <!--PI E-->
+                    <!--PI Enti-->
+                    <!--
+                    <div class="slds-form-element slds-p-top_medium">
+                        <fieldset class="slds-form-element">
+                            <div class="slds-form-element__control" style="width: 360px;margin: auto;" >
+                                <span class="slds-radio customRadioCls" style='width:180px'>
+                                    <input type="radio" id="Esente" value="Esente" name="default" checked="{!v.account.PED_IsEnte__c}" onchange='{!c.handleSoggettidiversiClick}'/>
+                                    <label class="slds-radio__label" for="Esente">
+                                        <span class="slds-radio_faux"/>
+                                        <span class="slds-form-element__label">
+                                            Esente ai fini IVA
+                                        </span>
+                                    </label>
+                                </span>
+                                <span class="slds-radio customRadioCls">
+                                    <input type="radio" id="NonEsente" value="NonEsente" name="default" checked="{!!v.account.PED_IsEnte__c}" onchange='{!c.handleSoggettidiversiClick}'/>
+                                    <label class="slds-radio__label" for="NonEsente">
+                                        <span class="slds-radio_faux"/>
+                                        <span class="slds-form-element__label">
+                                            Imponibile ai fini IVA
+                                        </span>
+                                    </label>
+                                </span>
+                            </div>
+                        </fieldset> 
+                    </div>
+
+
+                    <div class="slds-form-element">
+                        <aura:If isTrue="{!!v.account.PED_IsEnte__c}">
+                            <label class="slds-form-element__label" for="PartitaIVA">
+                                PartitaIVA *
+                            </label>
+                            <div class="slds-form-element__control slds-size_1-of-1">
+                                <ui:inputText aura:id="PartitaIVAId1" class="slds-input" value="{!v.account.PartitaIVA__c}" required="true" blur="{!c.validatePartitaIva}"/>
+                                <c:PED_PTIVA_CFNum_Helper aura:id="child_ptiva"/>
+                            </div>
+                            
+                            <aura:set attribute="else">
+                                <label class="slds-form-element__label" for="Codice fiscale">
+                                    Codice fiscale *
+                                </label>
+                                <div class="slds-form-element__control slds-size_1-of-1">
+                                    <ui:inputText aura:id="ContactCodicefiscaleid" class="slds-input" maxlength="16" value="{!v.account.CodiceFiscale__c}" required="true" blur="{!c.validateContactCodicefiscale}"/>
+                                    <c:PED_PTIVA_CFNum_Helper aura:id="child_CFNum"/>
+                                </div>
+                            </aura:set>
+                        </aura:If>
+                    </div>    
+                   -->
+                    <!--PI-->
+                    
+                    <div style='margin-bottom:120px'>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Recupera Username" buttonType="Submit" press="{!c.recuperaUsernamePG}" disabled = "{!v.isButtonActiveUserPG}"/>
+                        <ui:button class="slds-button slds-button_neutral button-white" label="Indietro " buttonType="Submit" press="{!c.backHome}"/>
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.showUsername}'>
+                    <p style='text-align:center'>
+                        Ciao {!v.newContact.FirstName}&nbsp;{!v.newContact.LastName}, ecco la tua username: {!v.UsernameOsc}
+                        <br/>
+                        Se ricordi questo indirizzo ed è ancora attivo, clicca sul tasto accedi: verrai reindirizzato alla pagina di login e utilizzando questa mail con la tua ultima password potrai accedere all’area riservata.
+                        Se invece non hai più accesso a questo indirizzo clicca su “modifica username”, in pochi semplici passaggi potrai impostare le tue nuove credenziali.
+                    </p>
+                    <br/>
+                    <aura:if isTrue='{!v.linkDoc.length>0}'> 
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" style='z-index:10000' >
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">   
+                                    Siamo spiacenti, non è possibile completare il recupero della username in quanto non risulta associato un numero di cellulare verificato alla tua utenza. 
+                                    Ti invitiamo a contattare il numero verde 803.500 per chiedere assistenza.
+                                    <div class="slds-grid slds-wrap slds-grid_align-end">
+                                        <div class="slds-col">
+                                            <span>
+                                                <ui:button class="slds-button slds-button_brand button-blue" label="OK" buttonType="Submit" press="{!c.submitOk}"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"/>
+                    </aura:if>
+                    
+                    <div>
+                        <ui:button class="slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.backRecoveryUsername}"/>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Modifica Username" buttonType="Submit" press="{!c.modificaUsername}" />
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Accedi" buttonType="Submit" press="{!c.backHome}"/>
+                    </div>
+                </aura:if>
+            </aura:if>
+            
+            
+            <aura:if isTrue='{!v.isOTP}'>
+                <aura:if isTrue='{!!v.isOTPNewEmail}'>
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" for="OtpLabel">
+                            Inserisci il codice di verifica che ti abbiamo inviato al numero {!v.telOscurato} per recuperare la tua username.
+                        </label>
+                        <div class="slds-form-element__control slds-size_1-of-1">
+                            <ui:inputText aura:id="OtpVerifica"  class="slds-input" updateOn="keyup" keyup="{!c.validateOTPVerifica}" required="true"/>
+                        </div>
+                    </div>
+                    
+                    <div style='margin-bottom:30px;'>
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" disabled="{!v.disableOTP}" label="Conferma"  press="{!c.checkOTPCell}"/>        
+                        <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" press="{!c.resendCode}"/>  
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue='{!v.isOTPNewEmail}'>
+                    <aura:if isTrue='{!!v.isPasswordEmail}'>
+                        <!--PI CR PEC-->
+                        <div class="slds-m-bottom_x-small" style='display: inline-block;width: 100%;'>
+                            <h4>Inserisci il tuo nuovo indirizzo e-mail assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo.</h4>
+                        </div>
+                        <!--PI CR PEC-->
+                        <div class="slds-form-element" style='display: inline-block;width: 100%;'>
+                            <label class="slds-form-element__label" for="Email">
+                                Email *
+                            </label>
+                            <div class="slds-form-element__control slds-size_1-of-1">
+                                <ui:inputEmail aura:id="Emailid" class="slds-input" value="{!v.Email}" required="true" blur="{!c.validateEmail}"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element" style='display: inline-block;width: 100%;'>
+                            <label class="slds-form-element__label" for="Email">
+                                Conferma Email *
+                            </label>
+                            <div class="slds-form-element__control slds-size_1-of-1">
+                                <ui:inputEmail aura:id="EmaildaConfermare" class="slds-input" required="true" blur="{!c.validateEmail}"/>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Conferma Email" buttonType="Submit" press="{!c.recuperaPasswordUsername}" />
+                        </div>
+                    </aura:if>
+                    
+                    <aura:if isTrue='{!v.isPasswordEmail}'>
+                        <aura:if isTrue='{!v.isPasswordOTP}'>
+                            <div class="slds-form-element" style='display: inline-block;width: 100%;'>
+                                <label class="slds-form-element__label" for="OTP">
+                                    Inserisci il codice di verifica che ti abbiamo inviato
+                                </label>
+                                <div class="slds-form-element__control slds-size_1-of-1">
+                                    <ui:inputText aura:id="OtpVerifica1" class="slds-input" value="{!v.OTP}" updateOn="keyup" keyup="{!c.validateOTPVerifica1}" required="true"/>
+                                </div>
+                            </div>
+                            <div>
+                                <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Conferma" buttonType="Submit" disabled='{!v.disableOTP}' press='{!c.validateOTPUsername}'/>
+                                <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" buttonType="Submit" press="{!c.reinviaCodice1}"/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue='{!!v.isPasswordOTP}'>
+                            <c:PED_ChangePassword goBack='{!false}' Username="{!v.Email+'.pc'}" isNewPassword='{!v.isNewPassword}'/>
+                        </aura:if>
+                    </aura:if>
+                </aura:if>
+            </aura:if>
+        </div>
+    </div>
+    <c:PED_CFHelperSuper aura:id="childbtn"/>
+    <c:PED_CFHelperSuper aura:id="childbtn2"/>
+</aura:component>

@@ -1,0 +1,6 @@
+.sfdx/tools/apex.db
+*.db
+.sfdx/sfdx-config.json
+/.sfdx
+/.sfdx/tools/*.db
+**/config.json

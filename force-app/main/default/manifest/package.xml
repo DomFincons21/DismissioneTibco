@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>PED_AttivazionePESSEWS</members>
+        <members>PED_AttivazionePESSEWSTest</members>
+        <members>PED_FileEncryptUtil_test</members>
+        <members>PED_FileEncryptUtil</members>
+        <members>PED_MOMEAssociatoDetPageControllertest</members>
+        <members>PED_MOMEAssociatoDetailPageController</members>
+        <members>PED_MOMEFileDetailPageControllerTest</members>
+        <members>PED_MOMEFileDetailPageController</members>
+        <members>PED_AsyncEmergencyPlanSafetyCTRL_Test</members>
+        <members>PED_AsyncEmergencyPlanSafetyCTRL</members>
+        <members>PED_EmergencyPlanForSafetyCTRL</members>
+        <members>PED_EmergencyPlanForSafetyCTRLTest</members>
+        <members>PED_createPESSEJSONRequestBody</members>
+        <members>PED_RESTRetrieveInfoPOD</members>
+        <members>PED_RESTRetrieveInfoPODTest</members>
+        <members>PED_AttivazionePESSEQuickAction</members>
+        <members>PED_AttivazionePESSEWSTest</members>
+        <members>PED_PesseEmergencyPlanRequest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+    
+        <members>PED_InviaAggiornamentoPESSE</members>
+        <members>PED_EmergencyPalnForSafetyOfES</members>
+        <members>PED_MOME_Detailpage</members>
+        <members>PED_MOMEAssociatoPage</members>
+
+        <name>AuraDefinitionBundle</name>
+    </types>
+
+    <version>52.0</version>
+</Package>

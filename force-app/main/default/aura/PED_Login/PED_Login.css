@@ -1,0 +1,206 @@
+.THIS {
+    overflow-x: hidden;
+}
+
+.THIS .pointer{
+    cursor: pointer;
+}
+
+/* BOX */
+.slds-box.slds-size_large.slds-theme_default.cPED_Login{
+    background-color:white;
+    color:black;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-sizing: border-box;
+}
+
+.THIS .slds-box{
+    padding: 10px 65px;
+}
+
+/* -----TAB START----- */
+/* TAB ATTIVO E NON ATTIVO */
+.THIS .slds-is-active .slds-tabs_scoped__link{
+    color:#0541bd;
+    border-color:#cdcdcd;
+    border-top-style: solid;
+    border-top-width: thin;
+    border-left-style: solid;
+    border-left-width: thin;
+    
+}
+
+.THIS .slds-tabs_scoped__nav{
+    background-color: #eff6ff;
+}
+
+/* TAB DESKTOP */
+.THIS a#one__item{
+    color:#0541bd;
+    width:183px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.THIS a#two__item{
+    color:#0541bd;
+    width:184px;
+	text-align: center;
+    box-sizing: border-box;
+}
+
+.THIS a#two__item:hover{
+    border-left-style: solid;
+    border-left-width: thin;
+    border-left-color:#cdcdcd;
+}
+
+/* TAB MOBILE */
+.THIS a#twomob__item{
+    color:#0541bd;
+    width: 145px;  /*width:163px;*/
+	text-align: center;
+    box-sizing: border-box;
+}
+
+.THIS a#onemob__item{
+    color:#0541bd;
+    width: 145px;    /*width:163px;*/
+	text-align: center;
+    box-sizing: border-box;
+}
+
+/* CONTENUTO TAB */
+.THIS .slds-tabs_scoped__content{
+    border-color: white;
+    padding: 0px 9px 0px 9px;
+    height: auto;
+}
+/* -----TAB END----- */
+
+/* -----INPUT START----- */
+/* INPUT USERNAME */
+.THIS input#input-5{
+    width: 77%;
+    font-size: 16px;
+    padding: 0px 0px 10px 0px;
+    margin-left: 43px;
+    border:none;
+    transition:none;
+    box-shadow: none;
+}
+
+/* INPUT PASSWORD */
+.THIS input#input-7{
+    width: 77%;
+    font-size: 17px;
+    padding: 0px 0px 10px 0px;
+    margin-left: 43px;
+    border:none;
+    transition:none;
+    box-shadow: none;
+}
+/* -----INPUT END----- */
+
+/* BORDO IN BASSO INPUT */
+.THIS .slds-border_bottom{
+    padding-top:33px;
+    border-width:2px;
+    border-color:#0541bd;
+}
+
+/* -----ICONE INPUT START----- */
+/* OPACITà ICONE */
+.THIS .slds-iconop{
+    opacity:0.3;
+}
+
+/* ICONA USERNAME */
+.THIS .slds-input-has-icon_left .slds-input__icon{
+    left:0;
+}
+
+.THIS lightning-icon.slds-iconop.slds-icon.slds-input__icon.slds-input__icon_left.slds-icon-text-default.slds-icon-utility-lock.slds-icon_container{
+    top:auto;
+}
+
+/* ICONA PASSWORD LUCCHETTO */
+.THIS .slds-input-has-icon_left-right .slds-input__icon_left{
+    left:0;
+}
+
+/* ICONA PASSWORD OCCHIO */
+.THIS .slds-input-has-icon_left-right .slds-input__icon_right{
+    box-shadow:none;
+}
+
+.THIS .svgsize svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+/* -----ICONE INPUT END----- */
+
+/* BOTTONE 'ENTRA': ABILITATO, DISABILITATO, TESTO */
+.THIS .ytp-buttonOK {
+    border-color: #bfbdbc;
+    border-width: 0.1px;
+    color: #5d5b51;
+    margin: 0.1px;
+    border-radius: 40px;
+    background-color: #0541bd;
+    padding: 2px 30px;
+}
+
+.THIS .ytp-buttonKO {
+    border-color: #bfbdbc;
+    border-width: 0.1px;
+    color: #5d5b51;
+    margin: 0.1px;
+    border-radius: 40px;
+    background-color: #c9c7c5;
+    padding: 2px 30px;
+}
+
+.THIS .ytp-button-title {
+    margin: 2px;
+    color: white;
+}
+
+/* LINK REGISTRAZIONE, RECUPERO DATI E FAQ */
+.THIS .slds-link{
+    color:#0541bd;
+}
+
+.THIS .slds-link:hover{
+    color:#0541bd;
+}
+
+.THIS .slds-fontlink-size{
+    font-size:90%;
+}
+
+/* SCROLLBAR */
+.THIS ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.THIS ::-webkit-scrollbar-thumb { /* SCROLLBAR */
+  background: #0541bd;
+  border-radius: 10px;
+}
+
+.THIS ::-webkit-scrollbar-track { /* SFONDO SCROLLBAR */
+  background: #eff6ff;
+  border-radius: 10px;
+}
+.THIS.box1 {
+    background-image: linear-gradient(to top, rgba(255,255,255,0), rgba(255,255,255,1));
+	border-radius: 25px;
+}
+.THIS .box2 {
+    position: absolute;    
+    width: 88%;
+    top: 300px;
+}

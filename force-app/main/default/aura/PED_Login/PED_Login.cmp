@@ -1,0 +1,203 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global" controller="PED_LoginController">
+    <aura:attribute name="username" type="String"/>
+    <aura:attribute name="password" type="String"/>
+    <aura:attribute name="startUrl" type="String" default="" />
+    <aura:attribute name="showpassword" type="Boolean" default="false"/>
+    <aura:attribute name="loginInformation" type="PED_LoginInformation__mdt" />
+    <aura:attribute name="isApp" type="Boolean"/>
+    <aura:attribute name="showSpinner" type="Boolean" default="true" />    
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="maintenanceOn" type="Boolean" default="false"/>
+    <aura:attribute name="isSPID" type="Boolean" default="false"/>
+    <aura:registerEvent name="RecaptchaEvent1" type="c:RecaptchaEvent1"/> <!-- DF -->
+    <aura:handler event="c:RecaptchaEvent2" action="{!c.doLogIn1}" /> <!-- DF -->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- DF RECAPTCHA INIZIO >
+    
+    <niantec:recaptcha aura:id="nicaptcha" 
+                       captchaType="v2-invisible" 
+                       badge="inline" 
+                       theme="light" 
+                       oncallback="{!c.handleCallback}"
+                       onverifycallback="{!c.handleVerifyCallback}"
+                       onexpiredcallback="{!c.handleExpiredCallback}" 
+                       onerrorcallback="{!c.handleErrorCallback}">
+    </niantec:recaptcha> 
+    
+    < DF RECAPTCHA FINE -->
+    
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner aura:id="spinner" variant="brand" class="slds-is-fixed" size="large"/>
+    </aura:if>
+    
+    <aura:if isTrue="{!!v.isApp}">
+        <div style="position: fixed; left: 0px; top: 0px; background-color: white; width: 100%; height:54px; float:left;">
+            <div style="position: fixed; left: 12px; top: 12px;">
+                <a href="https://www.e-distribuzione.it/">
+                    <img alt="Logo e-distribuzione - Torna alla home" src="{!$Resource.PED_LogoNew}" width="230" height="23"/>
+                </a>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{! !v.isSPID}">
+        <aura:if isTrue="{!!empty(v.loginInformation)}">
+            <div style="{!$Browser.isPhone ? 'width: 325px; height:525px' : 'width:400px; height:500px'}" class="slds-box slds-size_large slds-theme_default">
+                <a href="https://www.e-distribuzione.it/">
+                    <div class="slds-p-bottom_small">
+                        <div class="slds-p-vertical_x-small" align="center">
+                            <img alt="Logo e-distribuzione - Torna alla home" src="{!$Resource.PED_LogoNew}" width="250" height="25"/>
+                        </div>
+                    </div>
+                </a>
+                <aura:if isTrue="{!or(v.maintenanceOn,v.loginInformation.PED_MaIntenanceOn__c)}">
+                    <div class="slds-p-top_xx-large slds-text-heading_medium" align="center" style="color: #0541bd;">
+                        <aura:unescapedHtml value="{!v.loginInformation.PED_MaintenanceText__c}" />
+                    </div>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!$Browser.isPhone}"> <!-- ML VERSIONE MOBILE -->
+                            <lightning:tabset variant="scoped" selectedTabId="onemob">
+                                <lightning:tab label="Accedi" id="onemob">
+                                    <div class="slds-p-top_medium">
+                                        <div class="slds-border_bottom slds-show slds-input-has-icon slds-input-has-icon_left">
+                                            <lightning:icon iconName="utility:user" size="medium" class="slds-iconop slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"/>
+                                            <lightning:input class="input sfdc_usernameinput" type="text" variant="label-hidden" value="{!v.username}" aura:id="field" placeholder="Username" label="Username" onchange="{!c.noError}"/>
+                                        </div>
+                                    </div>
+                                    <div class="slds-border_bottom">
+                                        <div class="slds-input-has-icon slds-input-has-icon_left-right">
+                                            <lightning:icon iconName="utility:lock" size="medium" class="slds-iconop slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"/>
+                                            <lightning:input type="{!v.showpassword ? 'text':'password'}" variant="label-hidden" value="{!v.password}" aura:id="field" placeholder="Password" label="Password" onchange="{!c.noError}"/>
+                                            <lightning:buttonIcon size="medium" class="svgsize slds-iconop pointer slds-button slds-input__icon slds-input__icon_right slds-text-color--default" iconName="{!v.showpassword ? 'utility:hide':'utility:preview'}" alternativeText="" onclick="{!c.togglePassword}"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <aura:if isTrue="{!!empty(v.errorMessage)}">
+                                        <div class="slds-p-vertical_x-small" style="color:rgb(189, 87, 87)" align="center">
+                                            {!v.errorMessage}
+                                        </div>
+                                    </aura:if> 
+                                    
+                                    <div class="slds-p-top_x-small" align="right">
+                                        <a class="slds-link slds-fontlink-size" onclick="{!c.recuperaPassword}">Recupera le credenziali di accesso</a>
+                                    </div>
+                                    
+                                    <div class="slds-p-top_large" align="center">
+                                        <aura:if isTrue="{!or(empty(v.username),empty(v.password))}">
+                                            <button class="slds-button ytp-buttonKO" title="Download">
+                                                <p class="ytp-button-title left">ENTRA</p>
+                                            </button>
+                                            <aura:set attribute="else">
+                                                <button class="slds-button ytp-buttonOK" title="Download" onclick="{!c.doLogIn}">
+                                                    <p class="ytp-button-title left">ENTRA</p>
+                                                </button>
+                                            </aura:set>
+                                        </aura:if> 
+                                    </div>
+                                    <div class="slds-p-top_x-large" align="center">
+                                        <div class="slds-fontlink-size">Non sei registrato? <a class="slds-link" onclick="{!c.registrazione}">Registrati ora</a></div>
+                                    </div>
+                                </lightning:tab>
+                                <lightning:tab label="Informazioni" id="twomob">
+                                    <div class="slds-p-top_medium">
+                                        <div style="height:315px; overflow: auto;">
+                                            <aura:unescapedHtml value="{!v.loginInformation.PED_InfoTab__c}" />
+                                            <aura:if isTrue="{!!v.isApp}">
+                                                <br/><br/>
+                                                <p>Non riesci ad accedere? <a class="slds-link" onclick="{!c.goToFaq}">FAQ</a></p>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </lightning:tab>
+                            </lightning:tabset>
+                            <aura:set attribute="else"> <!-- ML VERSIONE DESKTOP -->
+                                <lightning:tabset variant="scoped" selectedTabId="one">
+                                    <lightning:tab label="Accedi" id="one">
+                                        <div class="slds-p-top_medium">
+                                            <div class="slds-border_bottom slds-show slds-input-has-icon slds-input-has-icon_left">
+                                                <lightning:icon iconName="utility:user" size="medium" class="slds-iconop slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"/>
+                                                <lightning:input class="input sfdc_usernameinput" type="text" variant="label-hidden" value="{!v.username}" aura:id="field" placeholder="Username" label="Username" onchange="{!c.noError}"/>
+                                            </div>
+                                        </div>
+                                        <div class="slds-border_bottom">
+                                            <div class="slds-input-has-icon slds-input-has-icon_left-right">
+                                                <lightning:icon iconName="utility:lock" size="medium" class="slds-iconop slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"/>
+                                                <lightning:input type="{!v.showpassword ? 'text':'password'}" variant="label-hidden" value="{!v.password}" aura:id="field" placeholder="Password" label="Password" onchange="{!c.noError}"/>
+                                                <lightning:buttonIcon size="medium" class="svgsize slds-iconop pointer slds-button slds-input__icon slds-input__icon_right slds-text-color--default" iconName="{!v.showpassword ? 'utility:hide':'utility:preview'}" alternativeText="" onclick="{!c.togglePassword}"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <aura:if isTrue="{!!empty(v.errorMessage)}">
+                                            <div class="slds-p-vertical_x-small" style="color:rgb(189, 87, 87)" align="center">
+                                                {!v.errorMessage}
+                                            </div>
+                                        </aura:if> 
+                                        
+                                        <div class="slds-p-top_x-small" align="right">
+                                            <a class="slds-link slds-fontlink-size" onclick="{!c.recuperaPassword}">Recupera le credenziali di accesso</a>
+                                        </div>
+                                        
+                                        <div class="slds-p-top_large" align="center">
+                                            <aura:if isTrue="{!or(empty(v.username),empty(v.password))}">
+                                                <button class="slds-button ytp-buttonKO" title="Download">
+                                                    <p class="ytp-button-title left">ENTRA</p>
+                                                </button>
+                                                <aura:set attribute="else">
+                                                    <button class="slds-button ytp-buttonOK" title="Download" onclick="{!c.doLogIn}">
+                                                        <p class="ytp-button-title left">ENTRA</p>
+                                                    </button>
+                                                </aura:set>
+                                            </aura:if> 
+                                        </div>
+                                        <div class="slds-p-top_x-large" align="center">
+                                            <div class="slds-fontlink-size">Non sei registrato? <a class="slds-link" onclick="{!c.registrazione}">Registrati ora</a></div>
+                                        </div>
+                                    </lightning:tab>
+                                    <lightning:tab label="Informazioni" id="two">
+                                        <div class="slds-p-top_medium">
+                                            <div style="height:315px; overflow: auto;">
+                                                <aura:unescapedHtml value="{!v.loginInformation.PED_InfoTab__c}" />
+                                                <br/><br/>
+                                                <p>Non riesci ad accedere? <a class="slds-link" onclick="{!c.goToFaq}">FAQ</a></p>
+                                            </div>
+                                        </div>
+                                    </lightning:tab>
+                                </lightning:tabset>
+                            </aura:set>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <aura:if isTrue="{!and(!or(v.maintenanceOn,v.loginInformation.PED_MaIntenanceOn__c), !v.isApp)}">
+                <div class="slds-p-top_medium" align="center">
+                    <div class="slds-fontlink-size">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Non riesci ad accedere? <a class="slds-link" onclick="{!c.goToFaq}">FAQ</a></div>
+                </div>
+            </aura:if>
+        </aura:if>
+        <aura:set attribute="else">
+            <div class="box1">
+                <a href="https://www.e-distribuzione.it/">
+                    <div class="slds-p-bottom_small">
+                        <div class="slds-p-vertical_x-small" align="center">
+                            <img alt="Logo e-distribuzione - Torna alla home" src="{!$Resource.PED_LogoNew}" width="250" height="25"/>
+                        </div>
+                    </div>
+                </a>
+                <div class="slds-p-top_xx-large slds-text-heading_medium slds-p-bottom_xx-large" align="center" style="color: #0541bd;">
+                    Per Utilizzare il servizio richiesto clicca sul pulsante che segue:
+                </div>
+                <div class="box2">
+                    <aura:if isTrue="{!!v.isApp}">
+                        <div class="slds-p-top_medium" align="center">
+                            <div >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Non riesci ad accedere? <a class="slds-link" onclick="{!c.goToFaq}">FAQ</a></div>
+                        </div>
+                    </aura:if>
+                    <div class="slds-p-top_medium slds-p-bottom_small" align="center">
+                        <a class="slds-link" onclick="{!c.goToLogin}">Vai alla login classica</a>
+                    </div>
+                </div>                
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

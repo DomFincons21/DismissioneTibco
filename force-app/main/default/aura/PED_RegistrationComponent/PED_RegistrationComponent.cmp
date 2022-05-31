@@ -1,0 +1,315 @@
+<aura:component controller="PED_RegistrationCompController" implements="forceCommunity:availableForAllPageTypes,force:appHostable,flexipage:availableForAllPageTypes" access="GLOBAL">
+    <aura:attribute name="account" type="Account" default="{'sobjectType' : 'Account'}" />
+    <aura:attribute name="newContact" type="Contact" default="{'sobjectType' : 'Contact'}"/>
+    <aura:attribute name="condGen" type="String" default=""/>    
+    <aura:attribute name="infPrivacy" type="String" default=""/>
+    <aura:attribute name="nationalityOpts" type="List" default="[]"/>
+    <aura:attribute name="formFisico" type="Boolean" default="true"/>
+    <aura:attribute name="telefono" type="String" default="+39"/>
+    <aura:attribute name="ipUtenteF" type="String" default=""/>
+    <aura:attribute name="ipUtenteG" type="String" default=""/>
+    <aura:attribute name="disableOTP" type="Boolean" default="true"/>
+    <aura:attribute name="showOTPEmail" type="Boolean" default="true"/>
+    <aura:attribute name="formMessageGiuridica" type="String" default=""/>
+    <aura:attribute name="formMessageFisica" type="String" default=""/>
+    <aura:attribute name="captchaValid" type="Boolean" default="false"/>
+    <aura:attribute name="typeRegistration" type="String" default=""/>
+    <aura:attribute name="hideformaftrsuc" type="Boolean" default="true"/>
+    <aura:attribute name="showErrorEnotify" type="Boolean" default="false"/>
+    <aura:attribute name="showOTP" type="Boolean" default="true"/>
+    <aura:attribute name="Spinner" type="Boolean" default="false"/>
+    <aura:attribute name="disableEmail" type="Boolean" default="false"/>
+    <aura:attribute name="confirmedEmail" type="String"/>
+    <aura:attribute name="isSucc" type="Boolean" default="false"/>
+    <aura:attribute name="messageToShow" type="String" default=""/>
+    <aura:attribute name="requiredPartitaIVA" type="boolean" default="true"/>
+    <aura:attribute name="ActiveRegFisica" type="boolean" default="true"/>
+    <aura:attribute name="ActiveRegGiuridica" type="boolean" default="true"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />  
+    <aura:handler name="PED_CFCheck" event="c:PED_CFCheck" action="{!c.getAllEvtParam}"/>
+    <aura:handler name="change" value="{!v.telefono}" action="{!c.checkPrefisso}"/>
+    <aura:handler name="change" value="{!v.formMessageFisica}" action="{!c.handleValueChangeFisicaCaptcha}"/>
+    <aura:handler name="change" value="{!v.formMessageGiuridica}" action="{!c.handleValueChangeGiuridicaCaptcha}"/>
+
+    <c:PED_ModalEsito isSucc="{!v.isSucc}" messageToShow="{!v.messageToShow}"/>
+    <c:PED_CFHelperSuper aura:id="checkCF"/>
+    <c:PED_PTIVA_CFNum_Helper aura:id="checkPIVACF"/>
+    
+    <aura:method name="changefield" action="{!c.simplechange}"></aura:method> <!-- tb -->
+    
+    <div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container" style="position:fixed">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">
+                        Loading
+                    </span>
+                    <div class="slds-spinner__dot-a"/>
+                    <div class="slds-spinner__dot-b"/>
+                </div>
+            </div>
+        </aura:if>   
+        
+        <div class="slds-grid slds-wrap page-header">
+            <div class="slds-col slds-size_1-of-1 slds-large-size_12-of-12 slds-medium-size_12-of-12">
+                <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-start">
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_2-of-12 slds-medium-size_2-of-12 slds-p-around_medium">
+                        <img aura:id="logo" src="{!$Resource.PED_Logo}"/>
+                    </div>
+                </div>
+
+                <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center">
+                    <div class="slds-col slds-size_1-of-1 slds-large-size_4-of-12 slds-medium-size_4-of-12">
+                        <h1 title="Registrati">
+                            Registrati
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center" style="background-color:#fafaf9">
+            <div class="slds-col slds-size_5-of-6 slds-large-size_6-of-12 slds-medium-size_6-of-12">
+                <div class="slds-col slds-size_3-of-3">  
+                    <div class="slds-form slds-form_stacked">
+                        <aura:if isTrue="{!v.hideformaftrsuc}">
+                            <div class="slds-form-element">
+                                <h3>
+                                    Compila i campi e accedi al portale.
+                                </h3>
+                            </div>
+                            
+                            <fieldset>
+                                <div class="slds-grid slds-wrap slds-grid_align-start slds-p-top_xxx-small">
+                                    <div class="slds-col slds-size_3-of-6 slds-large-size_3-of-12 slds-medium-size_3-of-12">
+                                        <lightning:input aura:id="field" type="radio" name="formType" checked="{!v.formFisico}" label="Persona Fisica" onchange="{!c.changeForm}"/>
+                                    </div>
+
+                                    <div class="slds-col slds-size_3-of-6 slds-large-size_3-of-12 slds-medium-size_3-of-12">
+                                        <lightning:input aura:id="field" type="radio" name="formType" checked="{!not(v.formFisico)}" label="Persona Giuridica" onchange="{!c.changeForm}"/>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            
+                            <aura:if isTrue="{!v.formFisico}">
+                                <lightning:input aura:id="field" name="nome" label="Nome" value="{!v.newContact.FirstName}" required="true" messageWhenValueMissing="{!$Label.c.PED_PFFNameError}" pattern="^[a-zA-ZÀ-ÿ .,`~!''@#$%^*_-]*$" messageWhenPatternMismatch="{!$Label.c.PED_InvalidNome}" onblur="{!c.checkCF}" onchange="{!c.changefield}"/>
+                                
+                                <lightning:input aura:id="field" name="cognome" label="Cognome" value="{!v.newContact.LastName}" required="true" messageWhenValueMissing="{!$Label.c.PED_PFLNameError}" pattern="^[a-zA-ZÀ-ÿ .,`~!''@#$%^*_-]*$" messageWhenPatternMismatch="{!$Label.c.PED_InvalidCognome}" onblur="{!c.checkCF}" onchange="{!c.changefield}"/>
+                                
+                                <lightning:select aura:id="field" name="nazionalità" label="Nazionalità" value="{!v.newContact.PED_Nazionalit__c}" required="true" onchange="{!c.checkCF}" messageWhenValueMissing= "La Nazionalità è un campo obbligatorio" >
+                                    <option value = "">Seleziona un valore</option>
+                                    <aura:iteration items="{!v.nationalityOpts}" var="item">
+                                        <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                                
+                                <lightning:input aura:id="field" name="codiceFiscale" label="Codice Fiscale" value="{!v.newContact.Codice_Fiscale__c}" required="true" messageWhenValueMissing="{!$Label.c.PED_PFCFErr}" onblur="{!c.toUpperCase}"  onchange="{!c.SimpletoUpperCase}"/> <!--   onchange="{!c.toUpperCase}" onblur="{!c.validateCF}" /> -->
+                                <!--PI CR PEC-->
+                                <lightning:input fieldLevelHelp="Inserisci una mail valida assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo." 
+                                                 aura:id="field" name="email" label="E-Mail (nome utente)" value="{!v.newContact.Email}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGEmailErr1}" pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" messageWhenPatternMismatch="{!$Label.c.PED_PGEmailErr2}" onblur="{!c.validateConfirmEmail}" onchange="{!c.changefield}"  maxlength="70"/>
+                                <!--PI CR PEC-->
+                                <lightning:input aura:id="field"  name="confermaEmail"  value="{!v.confermaEmail}" label="Conferma E-Mail (nome utente)" value="{!v.confirmedEmail}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGConfirmEmailErr2}" pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" messageWhenPatternMismatch="{!$Label.c.PED_PGEmailErr2}" onblur="{!c.validateConfirmEmail}"   maxlength="70" disabled="{!v.disableEmail}"/>
+
+                                <lightning:input aura:id="field" name="cellulare" label="Cellulare" value="{!v.telefono}" required="true" pattern="^(\+39)?\d{3}\d{7}|^(\+39)?\d{3}\d{6}$" messageWhenPatternMismatch="Inserire un numero di cellulare valido" maxlength="13" onblur="{!c.checkAllZero}" onchange="{!c.changefield}"/>
+                                <!-- ^(\+39)?\d{3}\d{7}$ -->
+                                <div class="slds-form-element">
+                                    <div class="slds-box slds-theme_shade">
+                                        <p>
+                                            Prima di procedere alla registrazione ti invitiamo a leggere e accettare le condizioni generali dei servizi offerti.
+                                        </p>
+                                        <br/>
+                                        <a target="_blank" href="{!v.condGen}">
+                                            Condizioni Generali dei servizi offerti
+                                        </a>
+                                        <br/>
+                                        <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleA" label="Accetto" checked="{!v.newContact.PED_ClausolaLegaleA__c}" required="true"  onchange="{!c.changefield}" messageWhenValueMissing="{!$Label.c.PED_ClausolaLegaleErr}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-form-element">
+                                    <div class="slds-box slds-theme_shade">
+                                        <p>
+                                            Ti invitiamo anche a prendere visione dell’Informativa sul trattamento dei dati personali.
+                                            <br/>                      
+                                        </p> 
+                                        <br/>
+                                        <a target="_blank" href="{!v.infPrivacy}">
+                                            Informativa Privacy
+                                        </a>
+                                        <br/>
+                                        <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleB" label="Ho preso visione" checked="{!v.newContact.PED_ClausolaLegaleB__c}" required="true" onchange="{!c.changefield}" messageWhenValueMissing="{!$Label.c.PED_ClausolaLegaleErr}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-form-element ">
+                                    <div class="slds-box slds-theme_shade">
+                                        <p>
+                                            Puoi liberamente prestare il tuo consenso al trattamento dei dati anche per finalità diverse dai servizi offerti, come la partecipazione ad indagine sulla customer satisfaction o invio di materiale informativo.
+                                            <br/> 
+                                            Per tali scopi e-distribuzione utilizzerà direttamente o tramite soggetto terzo i dati di contatto che avrai comunicato (recapito telefonico fisso o cellulare, indirizzo di posta elettronica o ordinaria…).
+                                        </p>
+                                        <br/>
+                                        <br/>
+                                        <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleFacoltativa" label="Accetto" checked="{!v.newContact.PED_ClausolaLegaleFacoltativa__c}"/>
+                                    </div>
+                                </div>
+                                
+                                <div class="slds-grid slds-wrap slds-grid_align-end slds-p-top_xxx-small">
+                                    <div class="slds-col">
+                                        <span>
+                                            <c:PED_reCaptchaV2 ipUtente="{!v.ipUtenteF}" formMessage="{!v.formMessageFisica}" aura:id="captchaIdFisica"/>
+                                            <lightning:button variant="brand" label="Registrati" title="Registrati" onclick="{!c.clickRegistraFisica}" class="slds-float_right button-blue" disabled = "{!v.ActiveRegFisica}"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <aura:set attribute="else">
+                                    
+                                    <b style="font-size:15px">  
+                                        Inserisci i dati del Referente Legale
+                                    </b>
+                                    
+                                    <lightning:input aura:id="field" name="nome" label="Nome" value="{!v.newContact.FirstName}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGFNameError}" pattern="^[a-zA-ZÀ-ÿ .,`~!''@#$%^*_-]*$" messageWhenPatternMismatch="{!$Label.c.PED_InvalidNome}" onblur="{!c.checkCF}" onchange="{!c.changefield}"/>
+                                    
+                                    <lightning:input aura:id="field" name="cognome" label="Cognome" value="{!v.newContact.LastName}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGLNameError}" pattern="^[a-zA-ZÀ-ÿ .,`~!''@#$%^*_-]*$" messageWhenPatternMismatch="{!$Label.c.PED_InvalidCognome}" onblur="{!c.checkCF}" onchange="{!c.changefield}"/>
+                                    
+                                    <lightning:select aura:id="field" name="nazionalità" label="Nazionalità" value="{!v.newContact.PED_Nazionalit__c}" required="true" onchange="{!c.checkCF}" messageWhenValueMissing= "La Nazionalità è un campo obbligatorio">
+                                        <option value = "">Seleziona un valore</option>
+                                        <aura:iteration items="{!v.nationalityOpts}" var="item">
+                                            <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                    
+                                    <lightning:input aura:id="field" name="codiceFiscale" label="Codice Fiscale" value="{!v.newContact.Codice_Fiscale__c}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGCFRepLegaleErr}" onblur="{!c.toUpperCase}" onchange="{!c.SimpletoUpperCase}" /> <!--  onchange="{!c.toUpperCase}" onblur="{!c.validateCF}"-->
+                                    <!--PI CR PEC-->
+                                    <lightning:input aura:id="field" name="email" label="E-Mail (nome utente)" fieldLevelHelp="Inserisci una mail valida assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo." 
+                                                     value="{!v.newContact.Email}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGEmailErr1}" pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" messageWhenPatternMismatch="{!$Label.c.PED_PGEmailErr2}" onblur="{!c.validateConfirmEmail}" maxlength="70" onchange="{!c.changefield}"/>
+                                    <!--PI CR PEC-->
+                                    <lightning:input aura:id="field" name="confermaEmail" value="{!v.confermaEmail}" label="Conferma E-Mail (nome utente)" required="true" messageWhenValueMissing="{!$Label.c.PED_PGConfirmEmailErr2}" pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$" messageWhenPatternMismatch="{!$Label.c.PED_PGEmailErr2}" onblur="{!c.validateConfirmEmail}" maxlength="70" onchange="{!c.changefield}" disabled="{v.disableEmail}"/>
+                                    
+                                    <lightning:input aura:id="field" name="cellulare" label="Cellulare" value="{!v.telefono}" required="true" pattern="^(\+39)?\d{3}\d{7}|^(\+39)?\d{3}\d{6}$" messageWhenPatternMismatch="Inserire un numero di cellulare valido" maxlength="13" onblur="{!c.checkAllZero}" onchange="{!c.changefield}"/>
+                                    <!-- ^(\+39)?\d{3}\d{7}$ -->
+                                    
+                                    <b style="font-size:15px">  
+                                        Inserisci i dati della tua azienda
+                                    </b>
+                                    
+                                    <lightning:input aura:id="field" name="ragioneSociale" label="Ragione Sociale" value="{!v.account.Name}" required="true" messageWhenValueMissing="{!$Label.c.PED_PGRegioneSocialeErr}" maxlength="80" onchange="{!c.changefield}"/>
+                                    
+                                    <lightning:select aura:id="field" name="nazionalità" label="Sede legale di rappresentanza" value= "{!v.account.Nazionalita__c}" required="true" onchange="{!c.validateCFPartitaIVA}" messageWhenValueMissing= "La Sede Legale è un campo obbligatorio">
+                                        <option value = "">Seleziona un valore</option>
+                                        <aura:iteration items="{!v.nationalityOpts}" var="item">
+                                            <option text="{!item.label}" value="{!item.value}" selected="{!item.selected}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                    
+                                    <lightning:input aura:id="field" name="codiceFiscaleAccount" label="Codice Fiscale" fieldLevelHelp= "Inserire il Codice Fiscale aziendale numerico di 11 caratteri oppure il Codice Fiscale alfanumerico di 16 caratteri nel caso di Ditta individuale. Nel caso di Ente o Condominio inserire il Codice Fiscale numerico di 11 caratteri che inizia con 8 o 9." value="{!v.account.CodiceFiscale__c}" required="true" messageWhenValueMissing="{!$Label.c.PED_PFCFErr}" onchange="{!c.toUpperCase}" onblur="{!c.validateCodiceFiscaleAccount}"/>
+                                    
+                                    <lightning:input aura:id="field" name="partitaIVA" label="Partita IVA" fieldLevelHelp= "Inserire la Partita Iva aziendale composta da 11 caratteri numerici che NON inizia con 8 o 9." value="{!v.account.PartitaIVA__c}" required="{!v.requiredPartitaIVA}" messageWhenValueMissing="{!$Label.c.PED_PGPartitaIvaErr}" onchange="{!c.toUpperCase}" onblur="{!c.validatePartitaIva}"/>
+                                    
+                                    <div class="slds-form-element">
+                                        <div class="slds-box slds-theme_shade">
+                                            <p>
+                                                Prima di procedere alla registrazione ti invitiamo a leggere e accettare le condizioni generali dei servizi offerti.
+                                            </p>
+                                            <br/>
+                                            <a target="_blank" href="{!v.condGen}">
+                                                Condizioni Generali dei servizi offerti
+                                            </a>
+                                            <br/>
+                                            <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleA" label="Accetto" checked="{!v.newContact.PED_ClausolaLegaleA__c}" onchange="{!c.changefield}" required="true" messageWhenValueMissing="{!$Label.c.PED_ClausolaLegaleErr}"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slds-form-element">
+                                        <div class="slds-box slds-theme_shade">
+                                            <p>
+                                                Ti invitiamo anche a prendere visione dell’Informativa sul trattamento dei dati personali.
+                                                <br/>                      
+                                            </p> 
+                                            <br/>
+                                            <a target="_blank" href="{!v.infPrivacy}">
+                                                Informativa Privacy
+                                            </a>
+                                            <br/>
+                                            <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleB" label="Ho preso visione" checked="{!v.newContact.PED_ClausolaLegaleB__c}" onchange="{!c.changefield}" required="true" messageWhenValueMissing="{!$Label.c.PED_ClausolaLegaleErr}"/>
+                                        </div>
+                                    </div>
+    
+                                    <div class="slds-form-element ">
+                                        <div class="slds-box slds-theme_shade">
+                                            <p>
+                                                Puoi liberamente prestare il tuo consenso al trattamento dei dati anche per finalità diverse dai servizi offerti, come la partecipazione ad indagine sulla customer satisfaction o invio di materiale informativo.
+                                                <br/> 
+                                                Per tali scopi e-distribuzione utilizzerà direttamente o tramite soggetto terzo i dati di contatto che avrai comunicato (recapito telefonico fisso o cellulare, indirizzo di posta elettronica o ordinaria…).
+                                            </p>
+                                            <br/>
+                                            <br/>
+                                            <lightning:input aura:id="field" type="checkbox" name="clausolaLegaleFacoltativa" label="Accetto" checked="{!v.newContact.PED_ClausolaLegaleFacoltativa__c}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="slds-grid slds-wrap slds-grid_align-end slds-p-top_xxx-small">
+                                        <div class="slds-col">
+                                            <span>
+                                                <c:PED_reCaptchaV2 ipUtente="{!v.ipUtenteG}" formMessage="{!v.formMessageGiuridica}" aura:id="captchaIdGiuridica"/>
+                                                <lightning:button variant="brand" label="Registrati" title="Registrati" onclick="{!c.clickRegistraGiuridica}" class="slds-float_right button-blue" disabled = "{!v.ActiveRegGiuridica}"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                            <aura:set attribute="else">                                     
+                                <aura:if isTrue="{!v.showErrorEnotify}">  
+                                    <br/>
+                                    <br/>
+                                    <span class="slds-text-heading_medium" style="text-align:center">
+                                        Attenzione: il servizio è momentaneamente non disponibile. Riprova più tardi. Ci scusiamo per il disagio
+                                    </span>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!v.showOTP}"> 
+                                   			<br/> 
+                                            <div class="slds-form-element">
+                                                <p>
+                                                    Inserisci il codice di verifica che ti abbiamo inviato al numero {!v.newContact.MobilePhone} per completare la registrazione
+                                                </p>
+                                                <lightning:input aura:id="field" name="otp" label="otp" maxlength="5" variant="label-hidden" onchange="{!c.validateOTP}" pattern="^([a-zA-Z0-9_-]){5}$" messageWhenPatternMismatch="Inserire un OTP di 5 caratteri."/>
+                                            </div>
+
+                                            <lightning:button variant="brand" label="Conferma" title="Conferma" onclick="{!c.checkOTP}" class="slds-float_right button-blue" disabled="{!v.disableOTP}"/>
+                                            <lightning:button variant="brand" label="Reinvia Codice" title="Reinvia Codice" onclick="{!c.resendCode}" class="slds-float_right button-blue"/>
+                                            <lightning:button variant="brand" label="Indietro" title="Indietro" onclick="{!c.backToRegistration}" class="slds-float_right button-blue"/>
+
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!v.showOTPEmail}"> 
+                                                    <br/>
+                                                    <div class="slds-form-element">
+                                                        <p>
+                                                            Inserisci il codice di verifica che ti abbiamo inviato all'email {!v.newContact.Email} per completare la registrazione
+                                                        </p>
+                                                        <lightning:input aura:id="field" name="otp" label="otp" maxlength="5" variant="label-hidden" onchange="{!c.validateOTP}" pattern="^([a-zA-Z0-9_-]){5}$" messageWhenPatternMismatch="Inserire un OTP di 5 caratteri."/>
+                                                    </div>
+
+                                                    <lightning:button variant="brand" label="Conferma" title="Conferma" onclick="{!c.checkOTPEmail}" class="slds-float_right button-blue" disabled="{!v.disableOTP}"/>
+                                                    <lightning:button variant="brand" label="Reinvia Codice" title="Reinvia Codice" onclick="{!c.resendCodeEmail}" class="slds-float_right button-blue"/>
+                                                    <lightning:button variant="brand" label="Indietro" title="Indietro" onclick="{!c.backToRegistration}" class="slds-float_right button-blue"/>
+
+                                                    <aura:set attribute="else">
+                                                        <br/>
+                                                        <c:PED_ChangePassword goBack="{!false}" Username="{!v.newContact.Email + '.pc'}" isNewPassword="{!v.isNewPassword}"/>
+                                                    </aura:set>  
+                                                </aura:if>
+                                            </aura:set>  
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

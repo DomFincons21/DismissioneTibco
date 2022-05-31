@@ -182,9 +182,9 @@ public without sharing class PED_RecuperaDati_Controller {
     @AuraEnabled
     public static string recoveryPasswordFromUsername(String email, /*String oldEmail,*/ String idContact){
         try{
-            if(PED_CheckBlacklistedEmail.checkBlacklistedEmail(email))
+            if(PED_CheckBlacklistedEmail.isDomainInBlacklist(email))
                 return 'blacklistedEmail';
-            if(PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail(email))
+            if(PED_CheckBlacklistedEmail.isMailInBlacklist(email) || PED_CheckBlacklistedEmail.isMailWildCardInBlacklist(email) )
                 return 'blacklistedAddressEmail';
             //oldEmail += '.pc';
             email += '.pc';

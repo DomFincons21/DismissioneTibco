@@ -14,7 +14,7 @@ public with sharing class PED_LoginController {
         try{
             String userSuffix = username + Label.PED_EmailSuffixPC;
             system.debug('@@userSuffix -> ' + userSuffix);
-            if(PED_CheckBlacklistedEmail.checkBlacklistedEmail(username)){
+            if(PED_CheckBlacklistedEmail.isDomainInBlacklist(username)){ //MS Check only domain
                 List<User> uList = PED_SiteLoginControllerHelper.checkDisposable(userSuffix); //MM spostata la query nel metodo without sharing per visibilità
                 if(!uList.isEmpty()){
                     if(!uList[0].contact.PED_Email_Disposable__c){

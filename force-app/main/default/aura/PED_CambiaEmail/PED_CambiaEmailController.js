@@ -65,7 +65,7 @@
                     if(state == "SUCCESS"){
                         var myuser= a.getReturnValue();
                         if(myuser == 'blacklistedEmail'){
-                        	var sMsg = $A.get("$Label.c.PED_EmailBlacklistedNew");
+                        	var sMsg = $A.get("$Label.c.PED_EmailBlacklistedOld");
             				confirmEmailField.set("v.errors", [{message:sMsg}]);
                         }
                         else if(myuser == 'SendEmail'){

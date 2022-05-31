@@ -30,12 +30,12 @@ public without sharing class PED_CheckBlacklistedEmail {
 	 * 			Tipologia -> Manuale
 	 * 			RecordType -> Domini
 	 * 			Active -> True
-	 * @return
+	 * @return True if the email address is all blacklist
 	 */
 	@AuraEnabled
 	public static Boolean checkBlacklist(String email){
 		try {
-			if(isDomainInBlacklist(email) ||  isMailInBlacklist(email)){
+			if(isDomainInBlacklist(email) ||  isMailInBlacklist(email) || isMailWildCardInBlacklist(email)){
 				return true;
 			}else{
 				return false;
@@ -48,7 +48,7 @@ public without sharing class PED_CheckBlacklistedEmail {
 	}
 
 	/**
-	 * @return True if is in blacklist - false if not.
+	 * @return True if domain in blacklist - false if not.
 	 */
 	@AuraEnabled
 	public static boolean isDomainInBlacklist(String email){
@@ -63,10 +63,28 @@ public without sharing class PED_CheckBlacklistedEmail {
 				 return true;
 		
 	}
+	/**
+	 * @return True if mail in blacklist - false if not.
+	 */
 	@AuraEnabled
 	public static boolean isMailInBlacklist(String email){
 		System.debug(email);
 		List<PED_Blacklist_Domini_Email__c> checkEmails = [select id, Attivo__c, Tipologia__c, RecordType.Name, PED_Blacklist__c from PED_Blacklist_Domini_Email__c WHERE Attivo__c=true and RecordType.Name= 'Mail']; 
+
+		for(PED_Blacklist_Domini_Email__c emails: checkEmails){
+			if(emails.PED_Blacklist__c.equals(email))
+				return true;
+			System.debug(emails);
+		}
+		return false;
+	}
+	/**
+	 * @return True if mail in blacklist - false if not.
+	 */
+	@AuraEnabled
+	public static boolean isMailWildCardInBlacklist(String email){
+		System.debug(email);
+		List<PED_Blacklist_Domini_Email__c> checkEmails = [select id, Attivo__c, Tipologia__c, RecordType.Name, PED_Blacklist__c from PED_Blacklist_Domini_Email__c WHERE Attivo__c=true and RecordType.Name= 'MailWildCard']; 
 
 		for(PED_Blacklist_Domini_Email__c emails: checkEmails){
 			if(emails.PED_Blacklist__c.equals(email))

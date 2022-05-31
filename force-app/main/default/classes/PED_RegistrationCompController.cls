@@ -20,14 +20,14 @@ public without sharing class PED_RegistrationCompController {
     }
     
     @AuraEnabled
-    public static Boolean checkBlacklistedEmail(String email){ 
-        return PED_CheckBlacklistedEmail.checkBlacklistedEmail(email);
+    public static Boolean checkBlacklist(String email){ 
+        return PED_CheckBlacklistedEmail.checkBlacklist(email);
     }
     
-    @AuraEnabled
+    /* @AuraEnabled
     public static Boolean checkBlacklistedSpecifiedEmail(String email){
         return PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail(email);
-    }
+    } */
     
     @AuraEnabled
     public static string checkCellEmailIVACFUser(Contact cont, Account acc, Boolean isFisica, String cell, String ipUtente){

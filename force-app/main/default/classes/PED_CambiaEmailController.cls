@@ -5,7 +5,7 @@ public without sharing class PED_CambiaEmailController {
     // KJS
     @AuraEnabled 
     public static String updateEmail_NEW_AS(string newEmail){ 
-    	if(PED_CheckBlacklistedEmail.checkBlacklistedEmail(newEmail)){
+    	if(PED_CheckBlacklistedEmail.isDomainInBlacklist(newEmail)){
         	return 'blacklistedEmail';
             system.debug('blacklistedEmail');
         }

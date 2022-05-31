@@ -24,6 +24,7 @@
         <members>PED_CambiaEmail</members>
     <members>PED_RecuperaDati</members>
     <members>PED_RegistrazionePortaleTrader</members>
+    <members>PED_RegistrationComponent</members>
         <name>AuraDefinitionBundle</name>
     </types>
 

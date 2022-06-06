@@ -20,14 +20,14 @@ public without sharing class PED_RegistrationCompController {
     }
     
     @AuraEnabled
-    public static Boolean checkBlacklist(String email){ 
-        return PED_CheckBlacklistedEmail.checkBlacklist(email);
+    public static Boolean checkBlacklistedEmail(String email){ 
+        return PED_CheckBlacklistedEmail.checkBlacklistedEmail(email);
     }
     
-    /* @AuraEnabled
+    @AuraEnabled
     public static Boolean checkBlacklistedSpecifiedEmail(String email){
         return PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail(email);
-    } */
+    }
     
     @AuraEnabled
     public static string checkCellEmailIVACFUser(Contact cont, Account acc, Boolean isFisica, String cell, String ipUtente){
@@ -38,7 +38,7 @@ public without sharing class PED_RegistrationCompController {
             return 'blacklistedEmail';
         }
 
-        if(PED_CheckBlacklistedEmail.checkBlacklist(cont.Email)){
+        if(PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail(cont.Email)){
             insert logRegistrazioneRespinta(cont, acc, cell, '', 'Blacklist email', ipUtente);
             return 'blacklistedAddressEmail';
         }
@@ -223,7 +223,8 @@ public without sharing class PED_RegistrationCompController {
                         if(!Test.isRunningTest()){
                             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                             //MB - da cambiare in FULL2 in noreply@e-distribuzione.com
-                            List<OrgWideEmailAddress> owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'noreply@e-distribuzione.com'];
+                            String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+                            List<OrgWideEmailAddress> owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address =:senderowea];
                             if(!owea.isEmpty())
                                 mail.setOrgWideEmailAddressId(owea.get(0).Id);
                             
@@ -712,7 +713,8 @@ public without sharing class PED_RegistrationCompController {
                     if(!Test.isRunningTest()){
                         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                         //MB - da cambiare in FULL2 in noreply@e-distribuzione.com
-                        List<OrgWideEmailAddress> owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'noreply@e-distribuzione.com'];
+                        String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+                        List<OrgWideEmailAddress> owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address =:senderowea];
                         if(!owea.isEmpty())
                             mail.setOrgWideEmailAddressId(owea.get(0).Id);
                         
@@ -1097,9 +1099,10 @@ public without sharing class PED_RegistrationCompController {
             
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             //MB - da cambiare in FULL2 in noreply@e-distribuzione.com
-            OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'noreply@e-distribuzione.com'];
+            String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+            OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = :senderowea];
             if(owea.size() > 0)
-                mail.setOrgWideEmailAddressId(owea.get(0).Id);
+                mail.setOrgWideEmailAddressId(owea[0].Id);
             
             EmailTemplate et;
             if(u.PED_IsApp__c)
@@ -1324,9 +1327,10 @@ public without sharing class PED_RegistrationCompController {
                
 			EmailTemplate et = [SELECT Id, Subject, HtmlValue, Body FROM EmailTemplate WHERE DeveloperName = 'PED_WL_Web' LIMIT 1]; 
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'noreply@e-distribuzione.com'];
+            String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+            OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address =:senderowea];
         	if(owea.size() > 0)
-            	mail.setOrgWideEmailAddressId(owea.get(0).Id);
+            	mail.setOrgWideEmailAddressId(owea[0].Id);
 
             mail.setTemplateId(et.id);
             mail.setTargetObjectId(u.id);

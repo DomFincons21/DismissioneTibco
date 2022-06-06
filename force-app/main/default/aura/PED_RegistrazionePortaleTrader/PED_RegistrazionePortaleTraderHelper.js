@@ -36,7 +36,7 @@
     },
     
     clientCheckBlacklistedAddrEmail : function(component, emailFieldValue, emailField) {
-        var action = component.get("c.checkBlacklist");
+        var action = component.get("c.checkBlacklistedEmail");
 
         action.setParams({
             "email" : emailFieldValue

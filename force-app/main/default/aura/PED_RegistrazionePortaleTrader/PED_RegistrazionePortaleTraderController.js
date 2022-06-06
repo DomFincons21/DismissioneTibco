@@ -46,7 +46,7 @@
         
         if(event.getSource().get("v.name") == "email" && email.get("v.validity").valid){
             helper.clientCheckBlacklistedEmail(component, email.get("v.value"), email);
-            helper.clientCheckBlacklistedAddrEmail(component, email.get("v.value"), email);
+           // helper.clientCheckBlacklistedAddrEmail(component, email.get("v.value"), email);
         }
     },
     

@@ -104,7 +104,7 @@ public without sharing class PED_CheckBlacklistedEmail {
 	}
 	
 	/**
-	 * 	TODO - DISMISSIONE
+	 * 	! TO DISMISS
 	 */
 	@AuraEnabled
 	public static Boolean checkBlacklistedSpecifiedEmail(String email){

@@ -21,7 +21,7 @@ public without sharing class PED_RegistrationCompController {
     
     @AuraEnabled
     public static Boolean checkBlacklistedEmail(String email){ 
-        return PED_CheckBlacklistedEmail.checkBlacklistedEmail(email);
+        return PED_CheckBlacklistedEmail.checkBlacklist(email);
     }
     
     @AuraEnabled

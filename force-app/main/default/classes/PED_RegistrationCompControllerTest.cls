@@ -727,7 +727,7 @@ public class PED_RegistrationCompControllerTest {
          
         PED_RegistrationCompController.sendCodeOTPEmail('Test');
         PED_RegistrationCompController.checkOTPApexEmail('Test','Test');
-        PED_RegistrationCompController.checkBlacklistedSpecifiedEmail('Test');
+        PED_RegistrationCompController.checkBlacklist('Test');
         //PED_RegistrationCompController.futureSendMailResetPassword('Test');
         Test.stopTest();
     }

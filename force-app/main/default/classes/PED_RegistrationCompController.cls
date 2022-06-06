@@ -38,7 +38,7 @@ public without sharing class PED_RegistrationCompController {
             return 'blacklistedEmail';
         }
 
-        if(PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail(cont.Email)){
+        if(PED_CheckBlacklistedEmail.checkBlacklist(cont.Email)){
             insert logRegistrazioneRespinta(cont, acc, cell, '', 'Blacklist email', ipUtente);
             return 'blacklistedAddressEmail';
         }

@@ -79,10 +79,11 @@ public without sharing class PED_CambiaEmailController {
             htmlBody = htmlBody.replace('{!Contact.PED_Email_da_confermare__c}', NewEmail);
             
             //build the email message
-            OrgWideEmailAddress[] owea = [select Id from OrgWideEmailAddress where Address = 'no-reply@e-distribuzione.com'];
+            string senderowea = PED_Environment__c.getInstance('no-replyMailSender').Value__c;
+            OrgWideEmailAddress[] owea = [select Id from OrgWideEmailAddress where Address = :senderowea];
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             if ( owea.size() > 0 ) {
-                mail.setOrgWideEmailAddressId(owea.get(0).Id);
+            mail.setOrgWideEmailAddressId(owea[0].Id);
             }
             mail.setTemplateId(et.id);
             mail.setSaveAsActivity(false);

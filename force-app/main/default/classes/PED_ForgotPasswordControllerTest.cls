@@ -55,6 +55,14 @@ public with sharing class PED_ForgotPasswordControllerTest
             emailTemp.HtmlValue = u.LastName;
             emailTemp.HtmlValue = u.FirstName;
             Insert emailTemp;  
+
+             //MS - Custom Settings
+             
+             PED_Environment__c settings = new PED_Environment__c();
+             settings.Name= 'noreplyMailSender';
+             settings.value__c = 'noreply@crm.e-distribuzione.com';
+             insert settings;   
+         }
         }
 
     }

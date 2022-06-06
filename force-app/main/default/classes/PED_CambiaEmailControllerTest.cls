@@ -1,5 +1,14 @@
 @isTest
 public class PED_CambiaEmailControllerTest {
+
+    @testSetup   
+    public static void initialize() {    
+        PED_Environment__c settings = new PED_Environment__c();
+        settings.Name= 'no-replyMailSender';
+        settings.value__c = 'no-reply@crm.e-distribuzione.com';
+        insert settings;   
+    }
+
     
     public static testmethod void testUpdateEmail_NEW_AS(){  
         Profile p = [SELECT Id FROM Profile WHERE Name='System Administrator' limit 1]; 
@@ -15,7 +24,7 @@ public class PED_CambiaEmailControllerTest {
             List<Account> acclist = new List<Account>();   
             Account accobj = new Account();
             accobj.Name= 'test';
-            accobj.PartitaIVA__c = '00884060526';
+            accobj.PartitaIVA__c = '';
             accobj.CodiceFiscale__c = '04731870657';
             accobj.Nazionalita__c='Afgana';
             accobj.Website = 'webb';
@@ -132,7 +141,7 @@ public class PED_CambiaEmailControllerTest {
             List<Account> acclist = new List<Account>();   
             Account accobj = new Account();
             accobj.Name= 'test';
-            accobj.PartitaIVA__c = '00884060526';
+            accobj.PartitaIVA__c = '';
             accobj.CodiceFiscale__c = '04731870657';
             accobj.Nazionalita__c='Afgana';
             accobj.Website = 'webb';
@@ -231,7 +240,7 @@ public class PED_CambiaEmailControllerTest {
             Account accobj = new Account();
             accobj.Name= 'test';
             
-            accobj.PartitaIVA__c = '00884060526';
+            accobj.PartitaIVA__c = '';
             accobj.CodiceFiscale__c = '04731870657';
             accobj.Nazionalita__c='Afgana';
             accobj.Email__c  = 'marco@gmail.com';

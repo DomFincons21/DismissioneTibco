@@ -1,5 +1,17 @@
 @isTest
 public class PED_RegistrationCompControllerTest {
+
+    @testSetup   
+    public static void setup() {    
+        PED_Environment__c settings = new PED_Environment__c();
+        settings.Name= 'noreplyMailSender';
+        settings.value__c = 'noreply@crm.e-distribuzione.com';
+        insert settings;   
+
+        //MS - Create TEST DATA
+
+    }
+  
   
     public static testMethod void TestCallingWebservice12(){   
         User user = [SELECT Id, PED_AccOwnerCounter__c FROM User WHERE Id =: UserInfo.getUserId()];
@@ -727,7 +739,7 @@ public class PED_RegistrationCompControllerTest {
          
         PED_RegistrationCompController.sendCodeOTPEmail('Test');
         PED_RegistrationCompController.checkOTPApexEmail('Test','Test');
-        PED_RegistrationCompController.checkBlacklist('Test');
+        PED_RegistrationCompController.checkBlacklistedSpecifiedEmail('Test');
         //PED_RegistrationCompController.futureSendMailResetPassword('Test');
         Test.stopTest();
     }

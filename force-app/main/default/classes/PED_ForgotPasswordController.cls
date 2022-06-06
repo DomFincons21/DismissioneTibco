@@ -73,20 +73,21 @@ public without sharing class PED_ForgotPasswordController{
         String htmlBody = et.HtmlValue;
         htmlBody = htmlBody.replace('{!User.FirstName}', uObj.FirstName);
         htmlBody = htmlBody.replace('{!User.LastName}', uObj.LastName);
-        
-        //build the email message
-        OrgWideEmailAddress[] owea = [select Id from OrgWideEmailAddress where Address = 'noreply@e-distribuzione.com'];
-        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-        if ( owea.size() > 0 ) {
-            mail.setOrgWideEmailAddressId(owea.get(0).Id);
-        }
-        mail.setTemplateId(et.id);
-        mail.setSaveAsActivity(false);
-        mail.setSubject(subject);
-        mail.setHtmlBody(htmlBody);
-        mail.setTargetObjectId(uObj.ContactId);
-        
-        Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+       //build the email message
+       String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+       OrgWideEmailAddress[] owea = [select Id from OrgWideEmailAddress where Address =:senderowea];
+       Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+       if ( owea.size() > 0 ) {
+           mail.setOrgWideEmailAddressId(owea[0].Id);
+       }
+       mail.setTemplateId(et.id);
+       mail.setSaveAsActivity(false);
+       mail.setSubject(subject);
+       mail.setHtmlBody(htmlBody);
+       mail.setTargetObjectId(uObj.ContactId);
+       if(!Test.isRunningTest()){
+           Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+       }
     }//MMAGNA END
     
 }

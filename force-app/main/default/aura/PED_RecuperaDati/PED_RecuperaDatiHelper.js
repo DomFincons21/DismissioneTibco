@@ -179,12 +179,6 @@
             if(state === 'SUCCESS'){
                 var result = response.getReturnValue().split('||');
                 if(result[0]=='OK'){                               
-                    /*var username = this.decrypt(result[1]);
-                    component.set('v.Username', username);
-                    var usernameOscurato = username.substring(0,5);
-                    usernameOscurato = usernameOscurato + '*******';
-                    usernameOscurato = usernameOscurato + username.substring(username.indexOf('@'));
-                    component.set('v.UsernameOsc', usernameOscurato);*/
                                                 component.set('v.UsernameOsc', result[1]);
                                                 component.set('v.isPG', false);
                                                 component.set('v.isPF', false);
@@ -210,10 +204,6 @@
     
     modificaUsername : function (component, event, helper) { 
         var action= component.get("c.modifyUsernamePersonaFisica");
-        
-        /*action.setParams({
-            'username' : component.get('v.Username')
-        });*/
             action.setParams({
                 'usrcontact' : component.get('v.newContact')
             });
@@ -236,10 +226,6 @@
                             component.set('v.isSucc', true)
                         }
                             else{
-                                /*var telOscurato = this.decrypt(result[1]);
-                    telOscurato = telOscurato.replace(/\d{5}$/, '****');
-                    component.set('v.telOscurato', telOscurato);
-                    component.set('v.Telefono', result[1]);*/
                             component.set('v.telOscurato', result[1]);
                             component.set('v.ContactId', result[0]);
                             component.set('v.isOTP', true); 
@@ -340,17 +326,6 @@
                 
             }
                 else {
-            
-            
-				 /*
-                else {
-                    var sMsg = ' Codice Fiscale non è valido';
-                    Codicefiscaleid.set("v.errors", [{message : sMsg}]);
-                    isValid = false;
-                    component.set('v.CFOnBlurErrorExist', true);
-                } */
-                
-                // var sMsg = $A.get("$Label.c.PED_CodicefiscaleErr");
                 Codicefiscaleid.set("v.errors", null);
                 component.set('v.CFOnBlurErrorExist', false);
                 isValid = true;
@@ -374,9 +349,6 @@
         var NazionalityValue1 = Nazionalityid1.get("v.value");
         var sNome = component.find("firstNameid1").get("v.value");
         var sCognome = component.find("lastNameid1").get("v.value");
-        
-        //  if($A.util.isEmpty(NazionalityValue1))
-        //     NazionalityValue1 = 'Italiana';
         
         var regExpformat = /^(?:[B-DF-HJ-NP-TV-Z](?:[AEIOU]{2}|[AEIOU]X)|[AEIOU]{2}X|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[1256LMRS][\dLMNP-V])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[\dLMNP-V][1-9MNP-V]|[1-9MNP-V][0L]))[A-Z]$/i;
         
@@ -419,7 +391,6 @@
     
     
     validateContactCodicefiscale : function(component, event, helper){
-        debugger;
         var isValid = true;
         var ContactCodicefiscaleid = component.find("ContactCodicefiscaleid");
         var ContactCodicefiscaleValue = ContactCodicefiscaleid.get("v.value");
@@ -478,11 +449,10 @@
                 
             }
         return isValid;
-        debugger;
+
     },
     
     validatePartitaIva : function(component, event, helper){
-        debugger;
         var Sedelegalediid = component.find("Sedelegalediid1");
         var Sedelegaledvalue = Sedelegalediid.get("v.value");
         var ContactCodicefiscaleid = component.find("ContactCodicefiscaleid"); //tb
@@ -542,12 +512,6 @@
             component.set('v.PIVAOnBlurErrorExist', false);
         }
         //PI Enti E
-        /*       else{
-                Msg = $A.get("$Label.c.PED_PGPartitaIvaErr");
-                PartitaIVAId.set("v.errors", [{message : Msg}]);
-                isValid = false;
-                component.set('v.PIVAOnBlurErrorExist', true);
-            }    */
         return isValid;
     },
     
@@ -557,7 +521,6 @@
         var action = component.get("c.sendOtp");
         
         action.setParams({  
-            //"mobilePne" : component.get('v.Telefono')
             "contactId" : component.get("v.ContactId")
         });
         
@@ -598,7 +561,6 @@
         var action = component.get("c.checkToken");
         
         action.setParams({
-            //"mobile" : component.get("v.Telefono"),
             "contactId" : component.get("v.ContactId"),
             "otp" : tokenvlaue2     
         });
@@ -624,7 +586,6 @@
         
         action.setParams({
             'email' : component.get('v.Email'),
-            //'oldEmail' : component.get('v.Username'),
             'idContact' : component.get('v.ContactId')
         });
         
@@ -686,7 +647,6 @@
                     action.setParams({
                         'email' : component.get('v.Email'),
                         'contactId' : component.get('v.ContactId')
-                        //'oldEmail' : component.get('v.Username')
                     });
                     
                     action.setCallback(this,function(response){
@@ -725,12 +685,7 @@
             var state = response.getState();
             if(state === 'SUCCESS'){
                 var result = response.getReturnValue().split('||');
-                if(result[0] == 'OK'){                                    
-                    /*var username = this.decrypt(result[1]);
-                    component.set('v.Username', username);
-                    var usernameOscurato = username.substring(0,5);
-                    usernameOscurato = usernameOscurato + '*******';
-                    usernameOscurato = usernameOscurato + username.substring(username.indexOf('@'));*/
+                if(result[0] == 'OK'){
                                         component.set('v.UsernameOsc', result[1]);
                                         component.set('v.isPG', false);
                                         component.set('v.isPF', false);
@@ -796,18 +751,6 @@
         var NazionalityValue = Nazionalityid.get("v.value");
         if($A.util.isEmpty(NazionalityValue))
             NazionalityValue = 'Italiana';
-        
-   /*     var SedeLegale = component.find("Sedelegalediid1");
-        var SedeLegalevalue = SedeLegale.get("v.value");
-        var sMsg = "La Nazionalità è un campo obbligatorio.";
-        
-        if(SedeLegalevalue != "Seleziona un valore"){
-        SedeLegale.set("v.errors",[{message : sMsg}]);
-        }
-       else {
-           SedeLegale.set("v.errors",null);
-            
-        } */
         
         var regExpformat = /^(?:[B-DF-HJ-NP-TV-Z](?:[AEIOU]{2}|[AEIOU]X)|[AEIOU]{2}X|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[1256LMRS][\dLMNP-V])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[\dLMNP-V][1-9MNP-V]|[1-9MNP-V][0L]))[A-Z]$/i; 
         if ($A.util.isEmpty(Codicefiscalevalue)){

@@ -10,7 +10,7 @@
     <members>PED_LoginController</members>
     <members>PED_SiteLoginControllerTest</members>
     <members>PED_SiteLoginController</members>
-     <members>PED_RegistrationCompController</members>
+    <members>PED_RegistrationCompController</members>
     <members>PED_RegistrationCompControllerTest</members>
     <members>PED_RecuperaDati_Controller</members>
     <members>PED_RecuperaDati_Controller_Test</members>

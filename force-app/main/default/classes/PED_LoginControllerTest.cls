@@ -60,7 +60,9 @@ public class PED_LoginControllerTest {
         insert u1;
         
         PED_Blacklist_Domini_Email__c dominiEmail = new PED_Blacklist_Domini_Email__c();
-        dominiEmail.Name = 'salesforce.com';
+        dominiEmail.PED_Blacklist__c = 'salesforce.com';
+        dominiEmail.Attivo__c=true;
+        dominiEmail.RecordTypeId = [SELECT id from RecordType where RecordType.Name= 'Domini' ].Id; 
         insert dominiEmail;
     }
     

@@ -37,6 +37,9 @@
 		<members>PED_Blacklisted_Email__c-PED_Blacklisted_Email Layout</members>
 		<name>Layout</name>
 	</types>
-
+    <types>
+		<members>Blacklist_Domini_Email</members>
+		<name>PermissionSet</name>
+	</types>
     <version>52.0</version>
 </Package>

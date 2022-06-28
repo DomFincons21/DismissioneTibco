@@ -13,6 +13,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>PED_Blacklist_Domini_Email__c.PED_Domain__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>PED_Blacklist_Domini_Email__c.Tipologia__c</field>
         <readable>true</readable>
     </fieldPermissions>

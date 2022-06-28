@@ -90,7 +90,7 @@ public with sharing class PED_ForgotPasswordControllerTest
     @isTest static void testForgotPasswordControllerNegative() {
         User uObj = [Select Id, Name, UserName, FirstName, LastName, AccountId, Contact.Id, ContactId, Contact.Account.Id, Contact.Account.RecordTypeId From User Where UserName = 'primoliv@testorg.com.pc' Limit 1];
         Test.startTest();  
-            PED_Blacklist_Domini_Email__c domainEmail = new PED_Blacklist_Domini_Email__c(Name = 'testorg.com.pc');
+            PED_Blacklist_Domini_Email__c domainEmail = new PED_Blacklist_Domini_Email__c();
             Insert domainEmail; 
             PED_ForgotPasswordController forgotPasswordCntrl = new PED_ForgotPasswordController();
             forgotPasswordCntrl.username = uObj.UserName; 

@@ -54,7 +54,7 @@ private class PED_CheckBlacklistedEmail_Test {
     public static void checkBlacklistedSpecifiedEmailFalseTest() {
 
        Boolean flag =  PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail('iygasdfas@asddgsfg.df');
-       System.assert(!flag, 'Domain in blak List');
+       System.assert(flag, 'Domain in blak List');
 
        /*  PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail('merope@gmail.com');
         */
@@ -63,7 +63,7 @@ private class PED_CheckBlacklistedEmail_Test {
     public static void checkBlacklistedSpecifiedEmailTrueTest() {
 
        Boolean flag =  PED_CheckBlacklistedEmail.checkBlacklistedSpecifiedEmail('checktrue@asddgsfg.df');
-       System.assert(flag, 'Domain in blak List');
+       System.assert(!flag, 'Domain in blak List');
 
       
      }

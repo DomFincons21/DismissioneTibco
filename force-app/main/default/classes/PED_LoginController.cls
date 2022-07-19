@@ -4,7 +4,7 @@ public with sharing class PED_LoginController {
     public static ReturnInfo init(){
         ReturnInfo info = new ReturnInfo();
         info.loginInfo = [SELECT PED_InfoTab__c, PED_ForgotPassword__c, PED_Faq__c, PED_MaIntenanceOn__c, PED_MaintenanceText__c, PED_RegistrationPage__c,PED_Giorno_Apertura_Portale__c,PED_Giorno_Chiusura_Portale__c
-        FROM PED_LoginInformation__mdt WHERE DeveloperName='PED_DefaultPage' LIMIT 1];
+                          FROM PED_LoginInformation__mdt WHERE DeveloperName='PED_DefaultPage' LIMIT 1];
         info.MaintenanceOn = isMaIntenanceOn(info.loginInfo);
         return info;
     }
@@ -31,11 +31,6 @@ public with sharing class PED_LoginController {
             System.debug('@@@baseUrl: '+Site.getBaseRequestUrl() + ' base Custom url ' + Site.getBaseCustomUrl());
             System.debug('@@@startUrl: '+startUrl);
             User u = PED_SiteLoginControllerHelper.selectUser(userSuffix);
-            //CB aggiunta campi gestione SPID
-            u.PED_SpidCode__c = '';
-            u.PED_RedirectUrlSPID__c = null;
-            
-            //CB SPID END 
             //CB gestione utente confindustria START
             //if(PED_SiteLoginControllerHelper.checkConfindustria(userSuffix))
             if(u.Account.RecordType.DeveloperName == 'PED_Confindustria'){
@@ -51,20 +46,11 @@ public with sharing class PED_LoginController {
             PageReference loginUrl = Site.login(userSuffix, password, startUrl);
             PED_SiteLoginControllerHelper.updateUser(u);
             System.debug('@@@url: '+loginUrl);
-            System.debug('@@@loginUrl: '+loginUrl.getUrl());
             return 'OK:' + String.valueOf(loginUrl.getUrl());
         }
         catch(Exception e){
-            String stackTrace;
-            stackTrace = 'Cause: ' + e.getCause() + '\n'
-                            + 'Line number: ' + e.getLineNumber() + '\n'
-                            + 'Message: ' + e.getMessage() + '\n'
-                            + 'Exception type: ' + e.getTypeName() + '\n'
-                            + '----- Stack Trace -----\n' +
-                            e.getStackTraceString();
-            System.debug('stackTrace ' + stackTrace);
             system.debug('@@errore' + e);
-            return String.valueOf(stackTrace);
+            return String.valueOf(e);
         }
     }
     

@@ -5,20 +5,17 @@ public without sharing class PED_CambiaEmailController {
     // KJS
     @AuraEnabled 
     public static String updateEmail_NEW_AS(string newEmail){ 
-    	if(PED_CheckBlacklistedEmail.isDomainInBlacklist(newEmail)){
+    	if(PED_CheckBlacklistedEmail.checkBlacklistedEmail(newEmail)){
         	return 'blacklistedEmail';
-            system.debug('blacklistedEmail');
         }
         string uName =newEmail+'.pc';
         string status='';
         List<User> userListWithNewEmailUsername =[SELECT Id, Email, Username FROM User WHERE Username =: uName OR Email =:newEmail ];
         if(userListWithNewEmailUsername.size() > 0){
             status= 'UserExistWithEmail';
-            system.debug('UserExistWithEmail');
         }else{
             status= 'SendEmail';
             // upadte contact PED_email_da_confermare__c to the new email
-            system.debug('SendEmail');
             user currentUser = [SELECT Id, Email, FirstName, LastName, Username, AccountId, ContactId, Contact.Email FROM User WHERE Id = :UserInfo.getUserId() Limit 1];
             contact con = [select id,email,PED_email_da_confermare__c,PPW_PraticaInVolo__c,PPW_FlagAnagraficaCompleta__c,PPW_RichiestaModifica__c from contact where id=:currentUser.ContactId];
             con.PED_email_da_confermare__c = newEmail;  
@@ -57,16 +54,16 @@ public without sharing class PED_CambiaEmailController {
         else
         {
             for(Contact c:listOfContact)
-            if(Ped_Utility.checkContact(c.id)){
+           // if(Ped_Utility.checkContact(c.id)){
                 SendEmail(c.FirstName, c.LastName, c.Id, c.PED_email_da_confermare__c);
-            }
+           // }
             return 'OK';
         }
     }
     
     //MMAGNA 03022018 Change Email CM
     public static void SendEmail(string FirstName, string LastName, string ContactID, string NewEmail ){
-        if(Ped_Utility.checkContact(ContactId)){
+        //if(Ped_Utility.checkContact(ContactId)){
             EmailTemplate et = [SELECT id,Subject, HtmlValue, Body FROM EmailTemplate WHERE developerName = 'PED_Cambia_Email'];
             
             // process the merge fields
@@ -94,7 +91,7 @@ public without sharing class PED_CambiaEmailController {
             system.debug('sendTo-----------------'+sendTo);
             mail.setToAddresses(sendTo);
             Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail}); 
-        }  
+       // }  
         
   
     }         

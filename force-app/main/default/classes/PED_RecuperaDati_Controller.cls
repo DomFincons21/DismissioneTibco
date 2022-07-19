@@ -19,7 +19,6 @@ public without sharing class PED_RecuperaDati_Controller {
    
     @AuraEnabled
     public static string modifyUsernamePersonaFisica(Contact usrcontact){
-        //username += '.pc';
         Datetime yestDate = Datetime.now().addHours(-24);
         if(Test.isRunningTest()) {
             yestDate = yestDate.addDays(2);
@@ -31,13 +30,12 @@ public without sharing class PED_RecuperaDati_Controller {
             if(contact.PED_MobilePhoneVerificato__c){
                 String token = PED_RegistrationCompController.getUniqueIdNumeric(5);
                 String status = PED_EnotifyController.callValidateSMS(contact.MobilePhone, token);
-                if(status == Label.PED_OK){                
+                if(status == Label.PED_OK) {                
                     PED_OTP__c Otp = new PED_OTP__c();
                     Otp.PED_CodiceOTP__c = token;
                     Otp.PED_Telefono__c = contact.MobilePhone;
                     Otp.PED_DateValidate__c = null;
                     upsert Otp PED_Telefono__c; 
-                    //return contact.Id + '||' + encrypt(contact.MobilePhone);
                     return contact.Id + '||' + contact.MobilePhone.substring(0,contact.MobilePhone.length()-5) + '*****';
                 }
                 else
@@ -75,7 +73,6 @@ public without sharing class PED_RecuperaDati_Controller {
             if(u.size() > 0){
                 email = u[0].Username.removeEnd('.pc');
                 usernameOsc = email.substring(0,5) + '*******' + email.substring(email.indexOf('@'));
-                //return 'OK||' + encrypt(u[0].Username.removeEnd('.pc'));
                 return 'OK||' + usernameOsc;
             }
             else
@@ -95,8 +92,7 @@ public without sharing class PED_RecuperaDati_Controller {
             idContacts.add(c.id);
         //CB aggiunta nome per persona fisica che chiede la username
         List<User> u = [SELECT Id, Username, Contact.FirstName, Contact.LastName FROM User WHERE ContactId IN: idContacts AND isActive = true AND contactId != null];
-        if(u.size()>0){
-            //return 'OK||' + encrypt(u[0].Username.removeEnd('.pc')) + '||' + u[0].Contact.FirstName + '||' + u[0].Contact.LastName;
+        if(u.size()>0) {
             email = u[0].Username.removeEnd('.pc');
             usernameOsc = email.substring(0,5) + '*******' + email.substring(email.indexOf('@'));
             return 'OK||' + usernameOsc + '||' + u[0].Contact.FirstName + '||' + u[0].Contact.LastName;
@@ -182,16 +178,15 @@ public without sharing class PED_RecuperaDati_Controller {
     }
         
     @AuraEnabled
-    public static string recoveryPasswordFromUsername(String email, /*String oldEmail,*/ String idContact){
+    public static string recoveryPasswordFromUsername(String email, String idContact){
         try{
             if(PED_CheckBlacklistedEmail.isDomainInBlacklist(email))
-                return 'blacklistedEmail';
+            return 'blacklistedEmail';
             if(PED_CheckBlacklistedEmail.isMailInBlacklist(email) || PED_CheckBlacklistedEmail.isMailWildCardInBlacklist(email) )
-                return 'blacklistedAddressEmail';
-            //oldEmail += '.pc';
+            return 'blacklistedAddressEmail';
             email += '.pc';
             User usr;
-            List<User> u = [SELECT Id, FirstName, ContactId, Email, LastName, LastPasswordChangeDate, Username FROM User WHERE /*Username =: oldEmail AND */isActive = true AND ContactId =: idContact];
+            List<User> u = [SELECT Id, FirstName, ContactId, Email, LastName, LastPasswordChangeDate, Username FROM User WHERE isActive = true AND ContactId =: idContact];
             List<User> u2 = [SELECT Id, FirstName, ContactId, Email, LastName, LastPasswordChangeDate, Username FROM User WHERE Username =: email AND isActive = true];
             if(u2.size() > 0)
                 return 'ERROR_EMAIL';
@@ -208,13 +203,12 @@ public without sharing class PED_RecuperaDati_Controller {
     }
     
     @AuraEnabled
-    public static string updateUser(String email, /*String oldEmail*/String contactId){
+    public static string updateUser(String email, String contactId){
         try{
             Id devRecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Persona Giuridica').getRecordTypeId();
             Id personaFisicaRecTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Persona Fisica').getRecordTypeId();
 
-            //String username = oldEmail+'.pc';
-            User usr= [SELECT Id, Email, Username, AccountId, ContactId FROM User WHERE /*Username =: username*/isActive = true AND ContactId =: contactId LIMIT 1];  
+            User usr= [SELECT Id, Email, Username, AccountId, ContactId FROM User WHERE isActive = true AND ContactId =: contactId LIMIT 1];  
             usr.Email = email;
             usr.Username = email + '.pc';
             update usr;

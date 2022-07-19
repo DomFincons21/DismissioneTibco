@@ -74,12 +74,11 @@ public class PED_RecuperaDati_Controller_Test {
             delegaobj.PED_Delegato__c = user.id;
             insert delegaobj;    
         }
-        
+
         PED_Environment__c settings = new PED_Environment__c();
         settings.Name= 'noreplyMailSender';
         settings.value__c = 'noreply@crm.e-distribuzione.com';
         insert settings;   
-
     }
 
     @isTest 
@@ -91,42 +90,6 @@ public class PED_RecuperaDati_Controller_Test {
         PED_RecuperaDati_Controller.sendOtp(cont.Id);
         Test.stopTest();
     }
-    
-    /*@isTest
-    static void updateUser1(){
-        String RecTypeId = [SELECT Id FROM RecordType WHERE Name = 'Persona Giuridica' AND SobjectType = 'Account'].Id;
-        Account accobj = new Account(
-            Name = 'test',
-            PED_IsEnte__c = true,
-            CodiceFiscale__c = '80000000000',
-            Nazionalita__c = 'Afgana',
-            Email__c  = 'marco@gmail.com',
-            RecordTypeId = RecTypeId
-        );
-        insert accobj;
-        
-        contact conobj = new Contact(
-            MobilePhone = '3933076123',
-            Codice_Fiscale__c = 'TSTTST80A01H501G',
-            LastName = 'test',
-            FirstName = 'test',
-            AccountId = accobj.Id,
-            PED_MobilePhoneVerificato__c = true
-        );
-        insert conobj;
-
-        PED_OTP__c p = new PED_OTP__c(PED_Email__c = 'primoliv@testorg.com.pc');
-        insert p;
-
-        Contact cont = [SELECT Id FROM Contact WHERE Codice_Fiscale__c = 'GPTDTY80A01H501V' LIMIT 1];
-        
-        Test.startTest();
-        PED_RecuperaDati_Controller.checkOTP('test', 'primoliv@testorg.com');
-        PED_RecuperaDati_Controller.updateUser('test', 'test@gmail.com');
-        PED_RecuperaDati_Controller.recoveryPasswordFromUsername('test@testorg.com', cont.Id);
-        PED_RecuperaDati_Controller.recoveryUsernamePersonaGiuridica(conobj, accobj, 'test');
-        Test.stopTest();
-    }*/
 
     @isTest
     static void checkToken(){

@@ -36,12 +36,12 @@
     <!--PI S-->
     <aura:attribute name="PIVArequired" type="Boolean" default="true"/>
     <!--PI E-->
-    
+
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:handler name="PED_CFCheck" event="c:PED_CFCheck" action="{!c.getAllEvtParam}"/>
-    
+
     <c:PED_ModalEsito isSucc="{!v.isSucc}" messageToShow="{!v.messageToShow}" warning="{!v.warning}"/>
-    
+
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container" style='position:fixed'>
             <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -53,7 +53,7 @@
             </div>
         </div>
     </aura:if>
-    
+
     <div class="slds-grid slds-wrap page-header">
         <div class="slds-col slds-size_1-of-1 slds-large-size_12-of-12 slds-medium-size_12-of-12">
             <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-start ">
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="slds-grid slds-wrap slds-grid_vertical slds-grid_vertical-align-center" style="background-color:#fafaf9;margin-top:20px;">
         <div class="slds-col slds-size_5-of-6 slds-large-size_6-of-12 slds-medium-size_6-of-12">
             <aura:if isTrue='{!v.isPassword || v.isUsername}'>
@@ -120,13 +120,13 @@
                             <ui:inputEmail aura:id="Emailid" class="slds-input" value="{!v.Email}" required="true" blur="{!c.validateEmail}" change = "{!c.activeButton}"/>
                         </div>
                     </div>
-                    
+
                     <div>
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Recupera Password" buttonType="Submit" press="{!c.recuperaPassword}" disabled = "{!v.isButtonActive}"/>
                         <ui:button class="slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.backHome}"/>
                     </div>
                 </aura:if>
-                
+
                 <aura:if isTrue='{!v.isPasswordOTP}'>
                     <div class="slds-form-element" style='display: inline-block;width: 100%;'>
                         <label class="slds-form-element__label" for="OTP">
@@ -136,14 +136,14 @@
                             <ui:inputText aura:id="OTPid" class="slds-input" value="{!v.OTP}" updateOn="keyup" keyup="{!c.validateOTP}" required="true"/>
                         </div>
                     </div>
-                    
+
                     <div>
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Conferma" buttonType="Submit" disabled='{!v.isDisableOTP}' press='{!c.validateOTPApex}'/>
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" buttonType="Submit" press="{!c.reinviaCodice}" />
                         <ui:button class="slds-button slds-button_neutral button-white" label="Indietro " buttonType="Submit" press="{!c.backEmail}"/>
                     </div>
                 </aura:if>
-                
+
                 <aura:if isTrue='{!v.isNewPassword}'>
                     <c:PED_ChangePassword Username="{!v.Email+'.pc'}" isNewPassword='{!v.isNewPassword}'/>
                 </aura:if>
@@ -158,7 +158,7 @@
                     </lightning:select>
                     <br/>
                 </aura:if>
-                
+
                 <aura:if isTrue='{!v.isPF}'>
                     <div class="slds-form-element">
                         <lightning:select name="Nazionalityid" aura:id="Nazionalityid" label="Nazionalità *" value="{!v.newContact.PED_Nazionalit__c}" required="true" onchange = "{!c.activeButtonUser}">
@@ -168,7 +168,7 @@
                             </aura:iteration>
                         </lightning:select>
                     </div>
-                    
+
                     <div class="slds-form-element">
                         <label class="slds-form-element__label" for="Codice fiscale">
                             Codice fiscale *
@@ -196,7 +196,7 @@
                             <ui:inputText aura:id="firstNameid1" class="slds-input" value="{!v.newContact.FirstName}" required="true" blur="{!c.validateNomeRapLegale}" change = "{!c.activeButtonUserPG}"/>
                         </div>
                     </div>
-                    
+
                     <div class="slds-form-element">
                         <label class="slds-form-element__label" for="Cognome">
                             Cognome *
@@ -205,7 +205,7 @@
                             <ui:inputText aura:id="lastNameid1" class="slds-input" value="{!v.newContact.LastName}" required="true" blur="{!c.validateCognomeRapLegale}" change = "{!c.activeButtonUserPG}"/>
                         </div>
                     </div>
-                    
+
                     <div class="slds-form-element">
                         <lightning:select aura:id="Nazionalityid1" label="Nazionalità *" value="{!v.newContact.PED_Nazionalit__c}" required = "true" onchange = "{!c.activeButtonUserPG}" messageWhenValueMissing= "Seleziona una Nazionalità">
                             <option value = "">Seleziona un valore</option>
@@ -214,7 +214,7 @@
                             </aura:iteration>
                         </lightning:select>
                     </div>
-                    
+
                     <div class="slds-form-element">
                         <label class="slds-form-element__label" for="CodiceFiscale">
                             Codice Fiscale *
@@ -235,7 +235,7 @@
                             <ui:inputText aura:id="RagioneSocialeid1" class="slds-input" value="{!v.account.Name}" required="true" blur="{!c.validateRagioneSociale}" change = "{!c.activeButtonUserPG}"/>
                         </div>
                     </div>
-                    
+
                     <div class="slds-form-element">
                         <lightning:select aura:id="Sedelegalediid1" label="Sede legale di rappresentanza *" value="{!v.selectedValue1}" required = "true" onchange = "{!c.activeButtonUserPG}" messageWhenValueMissing= "Seleziona una Sede Legale">
                             <option value = "">Seleziona un valore</option>
@@ -244,7 +244,6 @@
                             </aura:iteration>
                         </lightning:select>
                     </div>
-                    
                     <div class="slds-form-element">
                         <label class="slds-form-element__label" for="Codice fiscale">
                             Codice fiscale *
@@ -256,13 +255,7 @@
                         </div>
                     </div>
                     
-                    <!--   <aura:component>
-                        <label class= "slds-form-element_label" style= "margin-right: 0.5rem;">Partita IVA *</label>
-                        <lightning:helptext content="Inserire la Partita Iva aziendale composta da 11 caratteri numerici che NON inizia con 8 o 9." class="customIcon"/>
-                        <lightning:input aura:id="PartitaIVAId1" value="{!v.account.PartitaIVA__c}" required="{!v.PIVArequired}" onblur="{!c.validatePartitaIva}"/>
-                    </aura:component> -->
-                    
-                    <div class="slds-form-element"> 
+                    <div class="slds-form-element">
                         <label class="slds-form-element__label" for="PartitaIVA">
                             <aura:if isTrue='{!v.PIVArequired}'>                        
                                 Partita IVA *
@@ -279,10 +272,7 @@
                             </aura:if>
                         </div>
                     </div> 
-                    
-                    <!--PI S-->
 
-                    <!--PI E-->
                     <!--PI Enti-->
                     <!--
                     <div class="slds-form-element slds-p-top_medium">
@@ -340,7 +330,7 @@
                         <ui:button class="slds-button slds-button_neutral button-white" label="Indietro " buttonType="Submit" press="{!c.backHome}"/>
                     </div>
                 </aura:if>
-                
+
                 <aura:if isTrue='{!v.showUsername}'>
                     <p style='text-align:center'>
                         Ciao {!v.newContact.FirstName}&nbsp;{!v.newContact.LastName}, ecco la tua username: {!v.UsernameOsc}
@@ -367,7 +357,7 @@
                         </section>
                         <div class="slds-backdrop slds-backdrop_open"/>
                     </aura:if>
-                    
+
                     <div>
                         <ui:button class="slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.backRecoveryUsername}"/>
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Modifica Username" buttonType="Submit" press="{!c.modificaUsername}" />
@@ -387,7 +377,7 @@
                             <ui:inputText aura:id="OtpVerifica"  class="slds-input" updateOn="keyup" keyup="{!c.validateOTPVerifica}" required="true"/>
                         </div>
                     </div>
-                    
+
                     <div style='margin-bottom:30px;'>
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" disabled="{!v.disableOTP}" label="Conferma"  press="{!c.checkOTPCell}"/>        
                         <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" press="{!c.resendCode}"/>  
@@ -409,7 +399,7 @@
                                 <ui:inputEmail aura:id="Emailid" class="slds-input" value="{!v.Email}" required="true" blur="{!c.validateEmail}"/>
                             </div>
                         </div>
-                        
+
                         <div class="slds-form-element" style='display: inline-block;width: 100%;'>
                             <label class="slds-form-element__label" for="Email">
                                 Conferma Email *
@@ -418,12 +408,12 @@
                                 <ui:inputEmail aura:id="EmaildaConfermare" class="slds-input" required="true" blur="{!c.validateEmail}"/>
                             </div>
                         </div>
-                        
+
                         <div>
                             <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Conferma Email" buttonType="Submit" press="{!c.recuperaPasswordUsername}" />
                         </div>
                     </aura:if>
-                    
+
                     <aura:if isTrue='{!v.isPasswordEmail}'>
                         <aura:if isTrue='{!v.isPasswordOTP}'>
                             <div class="slds-form-element" style='display: inline-block;width: 100%;'>
@@ -439,7 +429,7 @@
                                 <ui:button class="slds-button slds-button_brand button-blue slds-float_right margintop" label="Reinvia Codice" buttonType="Submit" press="{!c.reinviaCodice1}"/>
                             </div>
                         </aura:if>
-                        
+
                         <aura:if isTrue='{!!v.isPasswordOTP}'>
                             <c:PED_ChangePassword goBack='{!false}' Username="{!v.Email+'.pc'}" isNewPassword='{!v.isNewPassword}'/>
                         </aura:if>

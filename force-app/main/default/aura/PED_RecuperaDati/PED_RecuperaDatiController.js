@@ -12,7 +12,7 @@
     },
     
     activeButtonUser : function(component,event,helper){
-        debugger;
+
         var inputText = component.find("Codicefiscaleid").get("v.value");
         var inputText2 = component.find("Nazionalityid").get("v.value");
         if(inputText != null && inputText != ''){
@@ -29,7 +29,7 @@
     
     activeButtonUserPG : function(component,event,helper){
         
-        debugger;
+
         
         var inputText1 = component.find("RagioneSocialeid1").get("v.value");
         var inputText2 = component.find("ContactCodicefiscaleid").get("v.value");
@@ -105,7 +105,7 @@
         if(!$A.util.isEmpty(inputText2)) // tb
             helper.validateContactCodicefiscale(component, event, helper);
         
-        debugger;
+
         
     },
     
@@ -157,12 +157,12 @@
     backHome : function(component, event, helper){
         var address ='/';
         var urlEvent = $A.get("e.force:navigateToURL");
-        
+
         urlEvent.setParams({
             "url" : address,
             "isredirect" : false
         });
-        
+
         urlEvent.fire();
     },
     
@@ -184,7 +184,7 @@
             //CB sbianco i campi interessati quando si passa da persona giuridica a quella fisica e viceversa
             component.set("v.newContact",{});
             component.set("v.account",{});
-            // component.set("v.selectedValue1",'Italiana');
+         //TB   component.set("v.selectedValue1",'Italiana');
         }
         if(valueType == 'PF'){
             component.set('v.isPF', true);
@@ -192,7 +192,7 @@
             //CB sbianco i campi interessati quando si passa da persona giuridica a quella fisica e viceversa
             component.set("v.newContact",{});
             component.set("v.account",{});
-            // component.set("v.selectedValue1",'Italiana');
+         //TB   component.set("v.selectedValue1",'Italiana');
         }
     },
     
@@ -211,7 +211,7 @@
         else
             firstName.set("v.errors", [{message : sMsg}]);
     },
-    
+
     validateCognome : function(component,event,helper){
         var lastName = component.find("lastNameid");
         var lastNamevalue = lastName.get("v.value");
@@ -229,7 +229,6 @@
     },
     
     validatePFCF : function(component,event,helper){
-        debugger;
         var isValid = true; 
         var Codicefiscaleid = component.find("Codicefiscaleid");
         var CodicefiscaleidValue = Codicefiscaleid.get("v.value"); 
@@ -269,17 +268,6 @@
                 
             }
                 else {
-                    
-                    
-                    /*
-                else {
-                    var sMsg = ' Codice Fiscale non è valido';
-                    Codicefiscaleid.set("v.errors", [{message : sMsg}]);
-                    isValid = false;
-                    component.set('v.CFOnBlurErrorExist', true);
-                } */
-                    
-                    // var sMsg = $A.get("$Label.c.PED_CodicefiscaleErr");
                     Codicefiscaleid.set("v.errors", null);
                     component.set('v.CFOnBlurErrorExist', false);
                     isValid = true;
@@ -364,26 +352,6 @@
         helper.validateOTPUsername(component, event, helper);
     },
     
-    /*  validateNation : function(component, event, helper){
-        
-        var validRecord = true;
-        var SedeLegale = component.find("Sedelegalediid1");
-        var SedeLegalevalue = SedeLegale.get("v.value");
-        var sMsg = "La Nazionalità è un campo obbligatorio.";
-        
-        if (SedeLegalevalue = 'Seleziona un valore'){
-            
-            SedeLegale.set("v.errors", [{message : sMsg}]);
-            validRecord = false;
-        }
-        else {
-            SedeLegale.set("v.errors", null);
-            validRecord = true;
-            
-        }
-        return validRecord;
-    }, */
-    
     validateNomeRapLegale : function(component, event, helper){
         var validRecord = true;
         var firstName = component.find("firstNameid1");
@@ -430,7 +398,6 @@
     },
     
     validatePartitaIva : function(component, event, helper){
-        debugger;
         var Sedelegalediid = component.find("Sedelegalediid1");
         var Sedelegaledvalue = Sedelegalediid.get("v.value");
         var ContactCodicefiscaleid = component.find("ContactCodicefiscaleid"); //tb
@@ -471,8 +438,7 @@
                 var childcomp = component.find("child_ptiva");
                 var cmpId = "PartitaIVAId1";
                 childcomp.ChkValidPTIVA_CFNum(PartitaIVAIdValue, bPTIVAFlg, cmpId, Sedelegaledvalue);
-            }   
-            
+            }       
         }
         if(Sedelegaledvalue == '' || Sedelegaledvalue == 'Seleziona un valore'){
             var sMsg = "Seleziona una Sede Legale";
@@ -497,17 +463,10 @@
             component.set('v.PIVAOnBlurErrorExist', false);
         }
         //PI Enti E
-        /*       else{
-                Msg = $A.get("$Label.c.PED_PGPartitaIvaErr");
-                PartitaIVAId.set("v.errors", [{message : Msg}]);
-                isValid = false;
-                component.set('v.PIVAOnBlurErrorExist', true);
-            }    */
         return isValid;
     },
     
     validateContactCodicefiscale : function(component, event, helper){
-        debugger;
         var isValid = true;
         var ContactCodicefiscaleid = component.find("ContactCodicefiscaleid");
         var ContactCodicefiscaleValue = ContactCodicefiscaleid.get("v.value");
@@ -566,19 +525,14 @@
                 
             }
         return isValid;
-        debugger;
     },
     
     validatePGCF : function(component, event, helper){
-        debugger;
         var isValid = true; 
         var Codicefiscaleid1 = component.find("Codicefiscaleid1");
         var Codicefiscalevalue1 = Codicefiscaleid1.get("v.value");
         var Nazionalityid1 = component.find("Nazionalityid1");
         var NazionalityValue1 = Nazionalityid1.get("v.value");
-        
-        //  if($A.util.isEmpty(NazionalityValue1))
-        //     NazionalityValue1 = 'Italiana';
         
         var regExpformat = /^(?:[B-DF-HJ-NP-TV-Z](?:[AEIOU]{2}|[AEIOU]X)|[AEIOU]{2}X|[B-DF-HJ-NP-TV-Z]{2}[A-Z]){2}[\dLMNP-V]{2}(?:[A-EHLMPR-T](?:[04LQ][1-9MNP-V]|[1256LMRS][\dLMNP-V])|[DHPS][37PT][0L]|[ACELMRT][37PT][01LM])(?:[A-MZ][1-9MNP-V][\dLMNP-V]{2}|[A-M][0L](?:[\dLMNP-V][1-9MNP-V]|[1-9MNP-V][0L]))[A-Z]$/i;
         
@@ -591,9 +545,6 @@
                     var cmpId = "Codicefiscaleid1";
                     childcomp.CallCheckCF(Codicefiscalevalue1, sNome, sCognome, cmpId);
                 }
-                
-                
-                
                 else{
                     var sMsg = $A.get("$Label.c.PED_CodicefiscaleErr") + " Ricordati di inseire Nome e Cognome"; 
                     Codicefiscaleid1.set("v.errors", [{message : sMsg}]);
@@ -617,6 +568,7 @@
             
             return isValid;
         }
+
     },
     
     recuperaUsernamePG : function (component, event, helper) {

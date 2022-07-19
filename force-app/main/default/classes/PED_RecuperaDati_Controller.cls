@@ -135,6 +135,7 @@ public without sharing class PED_RecuperaDati_Controller {
     @AuraEnabled
     public static string checkOTP(String otpToken, String email){
         email += '.pc';
+        email = email.toLowerCase();
         DateTime scadenzaOtp = DateTime.now();
         Integer OTPMinuti = Integer.valueOf(Label.PED_ScadenzaOTP);
         scadenzaOtp = scadenzaOtp.addMinutes((-1) * OTPMinuti);
@@ -157,7 +158,8 @@ public without sharing class PED_RecuperaDati_Controller {
         String htmlBody = et.HtmlValue;
         htmlBody = htmlBody.replace('{!OTPCODE}', otpCode);
         htmlBody = htmlBody.replace('{!SCADENZA_OTP}', Label.PED_ScadenzaOTP);
-        OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'no-reply@e-distribuzione.com'];
+        String senderowea = PED_Environment__c.getInstance('noreplyMailSender').Value__c;
+        OrgWideEmailAddress[] owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address =:senderowea];
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         if(owea.size() > 0 )
             mail.setOrgWideEmailAddressId(owea[0].Id);

@@ -10,7 +10,7 @@
                     <div class="slds-col slds-size_3-of-3 ">  
                         <div class="slds-form slds-form_stacked">
                             <div class="slds-text-heading_small">
-                                <!--PI CR PEC--><h3><strong>Inserisci il tuo nuovo indirizzo e-mail assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo.</strong></h3>
+                                <h3>Inserisci il tuo nuovo indirizzo e-mail assicurandoti che non si tratti di una PEC (posta elettronica certificata) che potrebbe impedire la ricezione dei messaggi che ti inviamo.</h3>
                             </div>
                             
                             <div class="slds-p-top_small">

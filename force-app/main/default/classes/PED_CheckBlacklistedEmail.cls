@@ -83,11 +83,12 @@ public without sharing class PED_CheckBlacklistedEmail {
 	 */
 	@AuraEnabled
 	public static boolean isMailWildCardInBlacklist(String email){
+		String blackEmail = email.substringBefore('@') + '%';
 		System.debug(email);
 		List<PED_Blacklist_Domini_Email__c> checkEmails = [select id, Attivo__c, Tipologia__c, RecordType.Name, PED_Blacklist__c from PED_Blacklist_Domini_Email__c WHERE Attivo__c=true and RecordType.Name= 'MailWildCard']; 
 
 		for(PED_Blacklist_Domini_Email__c emails: checkEmails){
-			if(emails.PED_Blacklist__c.equals(email))
+			if(email.contains(emails.PED_Blacklist__c))
 				return true;
 			System.debug(emails);
 		}

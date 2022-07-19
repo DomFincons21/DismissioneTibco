@@ -3,8 +3,8 @@ public with sharing class PED_LoginController {
     @AuraEnabled
     public static ReturnInfo init(){
         ReturnInfo info = new ReturnInfo();
-        info.loginInfo = [SELECT PED_InfoTab__c, PED_ForgotPassword__c, PED_Faq__c, PED_MaIntenanceOn__c, PED_MaintenanceText__c,PED_LoginClassica__c,PED_RegistrationPage__c,PED_ConfermaModalErrorSPID__c,PED_AnnullaModalErrorSPID__c,PED_Giorno_Apertura_Portale__c,PED_Giorno_Chiusura_Portale__c,
-                          PED_LoginSPID__c FROM PED_LoginInformation__mdt WHERE DeveloperName='PED_DefaultPage' LIMIT 1];
+        info.loginInfo = [SELECT PED_InfoTab__c, PED_ForgotPassword__c, PED_Faq__c, PED_MaIntenanceOn__c, PED_MaintenanceText__c, PED_RegistrationPage__c,PED_Giorno_Apertura_Portale__c,PED_Giorno_Chiusura_Portale__c
+        FROM PED_LoginInformation__mdt WHERE DeveloperName='PED_DefaultPage' LIMIT 1];
         info.MaintenanceOn = isMaIntenanceOn(info.loginInfo);
         return info;
     }
@@ -33,9 +33,9 @@ public with sharing class PED_LoginController {
             User u = PED_SiteLoginControllerHelper.selectUser(userSuffix);
             //CB aggiunta campi gestione SPID
             u.PED_SpidCode__c = '';
-			u.PED_RedirectUrlSPID__c = null;
+            u.PED_RedirectUrlSPID__c = null;
             
-			//CB SPID END 
+            //CB SPID END 
             //CB gestione utente confindustria START
             //if(PED_SiteLoginControllerHelper.checkConfindustria(userSuffix))
             if(u.Account.RecordType.DeveloperName == 'PED_Confindustria'){

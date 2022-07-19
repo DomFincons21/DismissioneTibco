@@ -11,7 +11,7 @@ public without sharing class PED_ForgotPasswordController{
    			displayName = displayName.replace('+', '%2B');
 		}
         // PGALE END
-        if(PED_CheckBlacklistedEmail.checkBlacklistedEmail(username)){
+        if(PED_CheckBlacklistedEmail.checkBlacklist(username)){
             ApexPages.addMessage(new ApexPages.message(ApexPages.severity.ERROR, Label.PED_EmailBlacklistedOld));
             return null;
         } 

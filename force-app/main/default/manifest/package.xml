@@ -3,14 +3,14 @@
     <types>
     <members>PED_CheckBlacklistedEmail_Test</members>
     <members>PED_CheckBlacklistedEmail</members>
-    <members>PED_LoginControllerTest</members>
-    <members>PED_LoginController</members>
     <members>PED_RecuperaDati_Controller</members>
     <members>PED_RecuperaDati_Controller_Test</members>
     <members>PED_CambiaEmailController</members>
     <members>PED_CambiaEmailControllerTest</members>
     <members>PED_RegistrationCompController</members>  
-	  <members>PED_RegistrationCompControllerTest</members>
+	<members>PED_RegistrationCompControllerTest</members>
+	<members>PED_LoginController</members>
+	<members>PED_LoginControllerTest</members>
         <name>ApexClass</name>
     </types>
      <types>
@@ -18,7 +18,6 @@
         <members>PED_RecuperaDati</members>
         <members>PED_RegistrazionePortaleTrader</members>
         <members>PED_RegistrationComponent</members>
-        <members>PED_Login</members>
         <name>AuraDefinitionBundle</name>
     </types>
  <types>

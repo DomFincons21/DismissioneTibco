@@ -549,12 +549,6 @@ public class PED_ServiziTecnici_Controller {
         }
         return null;
     }
-
-    /*  DOM: @DEPRECATED  DISMISSIONE PED_POD__c
-    @AuraEnabled 
-    public static PED_POD__c PODDetails(string pod){
-        return InfoData_Controller.PODDetails(pod);
-    }*/
     
     @AuraEnabled 
     public static PED_PODInfoWrapper.Response PODDetails(){

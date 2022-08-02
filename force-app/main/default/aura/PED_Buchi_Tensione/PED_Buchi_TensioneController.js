@@ -208,48 +208,7 @@
         
         var id = helper.getUniqueId();
         component.set('v.UniqueID' , id);
-      /*DF  var sPageURL = decodeURIComponent(window.location.search.substring(1)); //You get the whole decoded URL of the page.
-        var sURLVariables = sPageURL.split('&'); //Split by & so that you get the key value pairs separately in a list
-        var sParameterName;
-        var i;
-        var sFlg = false; //[SS]
-        for (i = 0; i < sURLVariables.length; i++) {
-            sParameterName = sURLVariables[i].split('='); //to split the key from the value.
-            if (sParameterName[0] === 'POD') { //lets say you are looking for param name - firstName
-                //[Start][SS]
-                if(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null){
-                    sFlg = true;
-                }else{
-                    component.set("v.selectedPod",sParameterName[1]);
-                }//[End][SS] DF*/
-                /*[SS] 
-              if(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null){ 
-                    var urlEvent = $A.get("e.force:navigateToURL");
-                    urlEvent.setParams({
-                        "url": "/le-mie-forniture"
-                    });
-                    urlEvent.fire(); 
-                }else{ 
-                    component.set("v.selectedPod",sParameterName[1]);
-                }
-            }else{
-                var urlEvent = $A.get("e.force:navigateToURL");
-                urlEvent.setParams({
-                    "url": "/le-mie-forniture"
-                });
-                urlEvent.fire();    
-            }*/
-        /*DF    }
-            
-        }
-        if(sFlg == true){//[Start][SS]
-            var urlEvent = $A.get("e.force:navigateToURL");
-            urlEvent.setParams({
-                "url": "/le-mie-forniture"
-            });
-            urlEvent.fire(); 
-        }//[End][SS] DF*/
-        //var pageSize = component.get("v.pageSize");
+      
         var numberOfDays = $A.get("$Label.c.PED_NumberOfDaysPOD");
         var today = new Date();
         var mm=1;
@@ -278,10 +237,6 @@
             helper.doinit(component); 
         },1000);     
     }, 
-    
-  /*DF  FiltraClick : function(component, event, helper) {
-        
-    }, */
     
     ValidateSdate : function(component, event, helper) {
         helper.ValidateSdate(component,event);
@@ -360,40 +315,7 @@
         helper.getDatiUtenteCaratteristiche(component,event);
         
     },
-    /* sendMail: function(component, event, helper) {
-        var stockData = component.get("v.PODList");
-        var csv = helper.convertArrayOfObjectsToCSV(component,stockData); 
-        var action = component.get("c.sendMailMethod");  
-        action.setParams({"doc": csv});
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var storeResponse = response.getReturnValue();
-                component.set("v.mailStatus", true);
-                //component.set("v.mailStatus", true);
-            }
-        });
-        $A.enqueueAction(action);
-    },
-    closeMessage: function(component, event, helper) {
-        component.set("v.mailStatus", false);
-        
-    },
-    
-    DownloadCSV : function(component, event, helper) {
-        var stockData = component.get("v.PODList");
-        // call the helper function which "return" the CSV data as a String   
-        var csv = helper.convertArrayOfObjectsToCSV(component,stockData);   
-        if (csv == null){return;} 
-        // ####--code for create a temp. <a> html tag [link tag] for download the CSV file--####     
-        var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.target = '_self'; // 
-        hiddenElement.download = 'RimozioneDispositivi.csv';  // CSV file Name* you can change it.[only name not .csv] 
-        document.body.appendChild(hiddenElement); // Required for FireFox browser
-        hiddenElement.click(); // using click() js function to download csv file
-        //alert("is this file is CSV "+file); //is this file is CSV SecureElement: { key: {"namespace":"c"} }
-    },*/
+  
     
     DownloadCSVBuchi : function(component, event, helper) {
         var spinner = component.find("mySpinner");

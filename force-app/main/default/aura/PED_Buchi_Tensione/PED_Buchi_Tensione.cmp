@@ -12,9 +12,10 @@
     <aura:attribute name="SintesiSomma2" type='string' /> 
     <aura:attribute name="SintesiSommaAT" type='string' />    
     <aura:attribute name="ActualSemisbarra" type='string' />
-    
+    <!--  Handler event to DISMISS -->
     <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
     <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
+
     <aura:attribute name="UniqueID" type="string"/>
     <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
     <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>

@@ -12,7 +12,7 @@
     </types>
      <types>
          <members>PED_Buchi_Tensione</members>
-         <members>PED_ProxyWSAsyncServiziTecnici</members>
+         <members>PED_CallWsAsync_ServiziTecnici</members>
         <name>AuraDefinitionBundle</name>
     </types>
     <version>52.0</version>

@@ -1,0 +1,1088 @@
+<aura:component controller='PED_ServiziTecnici_Controller' implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+    <ltng:require scripts='/resource/JQuery, /resource/jspdf_deb' />
+    <!--aura:attribute name="selectedPod" type="PED_PODInfoWrapper.Response" /-->  <!-- DF -->
+    <aura:attribute name="selectedPod"  type="String"/>
+    <aura:attribute name="semibarreList" type='string[]' />    
+    <aura:attribute name="listaVuota" type="Boolean" default='false'/>
+    <aura:attribute name="listaNonVuota" type="Boolean" default='false'/>    
+    <aura:attribute name="ObjSemibarreList" type='Object[]' />
+    <aura:attribute name="ActualSemibarreList" type='Object[]' />   
+    <aura:attribute name="SintesiSomma1" type='string' />     
+    <aura:attribute name="SintesiSomma2" type='string' /> 
+    <aura:attribute name="SintesiSommaAT" type='string' />    
+    <aura:attribute name="ActualSemisbarra" type='string' />
+    
+    <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
+    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
+    <aura:attribute name="UniqueID" type="string"/>
+    <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
+    <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>
+    
+    <aura:attribute name="accName" type="String"/><!--SS-->
+    <aura:attribute name="accId" type="String"/><!--SS-->
+    
+    <aura:attribute name="Sintesi" type='Object[]' />  
+    <aura:attribute name="SintesiAT" type='Object[]' />       
+    <aura:attribute name="allSemibarraList" type='Object[]' />
+    <aura:attribute name="callPDF" type="string"/>
+    <aura:attribute name="DatiUtente" type="Object"/>    
+    <aura:attribute name="NomeUtente" type="string"/>
+    
+    <!--SS_Pagination-->
+    <!-- ATTRIBUTI RELATIVI ALLA LISTA DI OGGETTI TROVATI DALLA RICERCA E I DATI VISUALIZZATI-->
+    <aura:attribute name="objectList" type="sObject[]" /> <!--TUTTE le pratiche trovate-->
+    <aura:attribute name="paginationList" type="sObject[]"/> <!--pratiche della pagina CORRENTE-->
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="start" type="Integer" default="0" />
+    <aura:attribute name="end" type="Integer" default="0"/>
+    
+    <!-- ATTRIBUTI RELATIVI ALLA PAGINAZIONE -->    
+    <aura:attribute name="totalPage" type="Integer" default="1"/><!--pagine totali-->
+    <aura:attribute name="currentPage" type="Integer" default="1"/><!--pagina coorente-->
+    <aura:attribute name="totalRecord" type="integer" default="0"/>
+    <aura:attribute name="pages" type="integer[]"/> <!-- vettore con le pagine serve per la picklist di selezione delle pagine -->
+    <!--SS_Pagination-->
+    
+    <aura:attribute name="arrowDirection" type="string" default="arrowup" description="Use for change arrow sign direction on header based on click"/>
+    <aura:attribute name="isAsc" type="boolean" default="true" description="boolean flag for pass sorting condition to apex class"/>
+    <!--DF aura:attribute name="selectedTabsoft" type="string" default="PED_POD__c" description="Use for show/hide arraow sign on header based on conditions"/-->
+    <aura:attribute name="sortField" type="String"/>
+    <aura:attribute name="sortAsc" type="Boolean"/>
+    
+    <aura:attribute name="startDate" type="Date" />
+    <aura:attribute name="endDate" type="Date" />
+    <aura:attribute name="compareDate" type="Date" />
+    <aura:attribute name="mySearch" type="string" default=""/>
+    
+    <aura:attribute name="sDateErrorNotExist" type="Boolean" default="true"/>
+    <aura:attribute name="eDateErrorNotExist" type="Boolean" default="true"/>
+    
+    <aura:attribute name="PODList" type="PED_A486DettaglioSostituzionePOD__c[]" />
+    
+    <!--Sending mail through Button Click-->
+    <aura:attribute name="mailId" type="String"/>
+    <aura:attribute name="mailStatus" type="boolean" default="false"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <!--<aura:handler name="change2" value="{!v.startDate}" action="{!c.ValidateSdate}"/>-->
+    <aura:handler name="change" value="{!v.pageNumber}" action="{!c.renderPage}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--<aura:handler event="c:PED_SearchKeyC" action="{!c.searchKeyC}"/>-->
+        
+    <aura:attribute name='isSucc' type='boolean'/>
+    <aura:attribute name='messageToShow' type='string'/>
+    <c:PED_ModalEsito isSucc='{!v.isSucc}' messageToShow='{!v.messageToShow}'></c:PED_ModalEsito>
+    <div>
+    <div>Il servizio permette di consultare le informazioni relative ai buchi di tensione
+        che hanno potenzialmente interessato una fornitura connessa alla rete di Media Tensione. 
+        Il servizio, come previsto da ARERA, fornisce la tabella di sintesi e quella di dettaglio 
+        dei buchi di tensione registrati sulla semisbarra MT di Impianto Primario che alimenta i POD di propria competenza.<br/><br/>
+        
+        Nel caso in cui la semisbarra MT che alimenta i POD di competenza NON sia di proprietà di e-distribuzione,
+        la registrazione dei buchi di tensione è operata da apparecchiature di altro Distributore e non è riportata su questo Portale.
+        Per ottenere le informazioni registrate da altro Distributore è possibile farne richiesta
+        utilizzando la PEC : e-distribuzione@pec.e-distribuzione.it o Casella Postale 5555-85100 Potenza (PZ). 
+        Se il Distributore, cui è sottesa la rete di e-distribuzione che alimenta i POD di competenza,
+        ha correttamente trasmesso i dati registrati dalle proprie apparecchiature, secondo le modalità previste dall’ARERA,
+        e-distribuzione provvederà ad inviare tali informazioni ai Clienti che ne faranno richiesta.<br/><br/></div>
+        <!--<aura:if isTrue="{!and(v.startDate, v.endDate)}" >-->
+        <!--Date Picker Started-->
+        <div class="slds-grid slds-grid_align-spread slds-wrap slds-gutters_xx-small">
+            
+            <div class="slds-col slds-size_12-of-12 slds-medium-size_12-of12 slds-large-size_3-of-12 slds-p-around_xx-small">
+                <ui:inputText label="POD" disabled='true' aura:id="SearchPODiD" placeholder="{!v.selectedPod}" class="slds-input"/>
+            </div>
+            <div style="margin-top: -4px;" class="slds-col slds-size_12-of-12 slds-medium-size_12-of12 slds-large-size_2-of-12 slds-p-around_xx-small">
+                <lightning:select name="selectItem" aura:id='semibarraSelect' label="Semisbarre" onchange='{!c.selectSemibarra}'>
+                        <aura:if isTrue='{!!v.semibarreList.length==1}'>
+                            <option value="void"></option>
+                        </aura:if>
+                    <aura:iteration items="{!v.semibarreList}" var="obj" >
+                        <aura:if isTrue="{!obj!='' &amp;&amp; obj!=' '}">
+                        <option value="{!obj}">{!obj}</option>
+                            </aura:if>
+                    </aura:iteration>                    
+                </lightning:select>
+                
+            </div>
+            <div class="slds-col slds-size_12-of-12 slds-medium-size_12-of12 slds-large-size_2-of-12 slds-p-around_xx-small">
+                <!--<ui:inputDate label="Dal"   class="slds-input" displayDatePicker="true" value="{!v.startDate}" aura:id="startdateField" blur="{!c.ValidateSdate}" />-->
+                <!--<ui:inputDate class="slds-input" aura:id="datadinascita" select="{!c.nullifyDate}" keyup="{!c.nullifyDate}" keypress="{!c.nullifyDate}" updateOn="{select,keyup,keypress}" displayDatePicker="true" value="{!v.result.Contact.Birthdate}" blur="{!c.ppwvalidcheck}"/>-->
+                <ui:inputDate label="Dal" class="slds-input" select="{!c.nullifySDate}" keyup="{!c.nullifySDate}" keypress="{!c.nullifySDate}" updateOn="{select,keyup,keypress}" displayDatePicker="true" value="{!v.startDate}" aura:id="startdateField" blur="{!c.ValidateSdate}" />
+                
+            </div>
+            
+            <div class="slds-col slds-size_12-of-12 slds-medium-size_12-of12 slds-large-size_2-of-12 slds-p-around_xx-small">
+                <ui:inputDate label="Al" class="slds-input" select="{!c.nullifyEDate}" keyup="{!c.nullifyEDate}" keypress="{!c.nullifyEDate}" updateOn="{select,keyup,keypress}" aura:id="enddateField" value="{!v.endDate}" displayDatePicker="true" blur="{!c.ValidateEdate}" />
+            </div>
+            <div class="slds-col slds-size_12-of-12 slds-medium-size_12-of12 slds-large-size_2-of-12 slds-p-around_small">
+                <div class="slds-p-around_xx-small slds-show_medium"></div>
+                <span class="slds-float_right"><lightning:button label="Filtra" class="slds-button slds-button_brand button-blue"   onclick="{!c.FilterButtonClick}" /></span>
+            </div>            
+        </div>
+        <lightning:spinner aura:id="mySpinner" variant="brand"  style='position: fixed;'/>
+        <aura:if isTrue="{!v.listaVuota}">
+            <p style='text-align:center;color:#0441bd;font-size:25px;margin: 50px;'>Non ci sono buchi di tensione per questo determinato periodo</p>
+        </aura:if>
+        <aura:if isTrue="{!v.listaNonVuota}"> 
+            <div class="slds-p-horizontal_small">
+                <lightning:tabset >
+                    <!-- Dettagli -->
+                    <lightning:tab >
+                        <aura:set attribute="label">
+                            Dettagli <!--<lightning:buttonicon iconName="utility:info" variant="bare" size="normal" alternativeText="Indicates approval" onclick="{!c.click}"/>-->
+                        </aura:set>
+                        <div class="slds-grid slds-wrap slds-grid_align-end">
+                            <!--SS_Pagination-->
+                            <div class="slds-col">
+                        <span>
+                            <ui:button class="slds-button slds-button_brand button-blue"  label="Esporta CSV" buttonType="Submit" press="{!c.DownloadCSVBuchi}"/>
+                        </span>
+                    </div>
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_neutral button-blue" label="Invia email" buttonType="Submit" press="{!c.DownloadCSVBuchi}" aura:id='email'/>
+                                </span>
+                            </div>
+                        </div> 
+                        <p>
+							Di seguito il dettaglio dei buchi di tensione rilevati sulla semisbarra MT
+                            di Impianto Primario che alimenta la fornitura di Media Tensione, in assetto 
+                            di rete standard alla data del 31 Dicembre dell'anno cui sono riferite le registrazioni 
+                            dei buchi di tensione. Tali eventi sono stati comunicati all'Autorità di regolazione per energia, 
+                            reti e ambiente (ARERA). 
+                            <br/>
+                            <br/>
+                            Nella tabella sottoesposta sono pertanto elencati gli eventi riconducibili ai buchi di tensione, come definiti dall'allegato A della Delibera ARERA 646/2015/R/eel, corredati di Numero Progressivo Evento, Identificativo della Semisbarra MT, Tensioni Interessate Dall'Evento, Istante di Inizio e Durata del Buco di Tensione.
+                            <br/>
+                            Tensione Residua (espressa in % della tensione nominale) e Origine del Buco di Tensione.
+                            <br/>
+                            <br/>
+                        </p>
+                        <br/>
+                        <br/>                       
+                         <div class='slds-scrollable_x'>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col">
+                                        <div onclick="{!c.sortSemibarra}" class="slds-truncate" title="SEMIBARRA">
+                                            SEMIBARRA
+                                            <aura:if isTrue="{!v.sortField=='semisbarra'}">
+                                                <span>
+                                                    <aura:if isTrue="{!v.sortAsc}">
+                                                        &#9650; 
+                                                        <aura:set attribute="else">
+                                                            &#9660; 
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </span>
+                                            </aura:if>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="N EVENTO">
+                                            <div onclick="{!c.sortevento}" class="slds-truncate" title="N EVENTO">
+                                                N. EVENTO
+                                                <aura:if isTrue="{!v.sortField=='evento'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660;   
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="RS">
+                                            <div onclick="{!c.sortrs}" class="slds-truncate" title="RS">
+                                                RS
+                                                <aura:if isTrue="{!v.sortField=='rs'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="ST">
+                                            <div onclick="{!c.sortst}" class="slds-truncate" title="ST">
+                                                ST
+                                                <aura:if isTrue="{!v.sortField=='st'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="TR">
+                                            <div onclick="{!c.sorttr}" class="slds-truncate" title="TR">
+                                                TR
+                                                <aura:if isTrue="{!v.sortField=='tr'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="ISTANTE [DD/MM/YYYY HH:MM:SS:CC]">
+                                            <div onclick="{!c.sortistante}" class="slds-truncate" title="ISTANTE [DD/MM/YYYY HH:MM:SS:CC]">
+                                                ISTANTE <br/>[DD/MM/YYYY HH:MM:SS:CC]
+                                                <aura:if isTrue="{!v.sortField=='dataSort'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="DURATA [HH:MM:SS:CC]">
+                                            <div onclick="{!c.sortdurata}" class="slds-truncate" title="DURATA [HH:MM:SS:CC]">
+                                                DURATA <br/>[HH:MM:SS:CC]
+                                                <aura:if isTrue="{!v.sortField=='durata'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="TENSIONE RESIDUA [%]">
+                                            <div onclick="{!c.sorttensioneResidua}" class="slds-truncate" title="TENSIONE RESIDUA [%]">
+                                                TENSIONE RESIDUA [%]
+                                                <aura:if isTrue="{!v.sortField=='tensioneResidua'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="ORIGINE">
+                                            <div onclick="{!c.sortorigin}" class="slds-truncate" title="ORIGINE">
+                                                ORIGINE
+                                                <aura:if isTrue="{!v.sortField=='origine'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660; 
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--<ui:outputText aura:id="resultSearchPod" value=""/>-->
+                                <aura:iteration items="{!v.paginationList}" var="item"> <!--SS_Pagination-->
+                                    <!-- <aura:iteration items="{!v.PODList}" var="item">--><!--SS_Pagination-->
+                                    <tr>
+                                        <td data-label="Semibarra">
+                                            <div class="slds-truncate" title="Semibarra">
+                                                <ui:outputText aura:id="resultSearchPod" value="{!item.semisbarra}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="N. EVENTO">
+                                            <div class="slds-truncate" title="N. EVENTO">
+                                                <ui:outputText value="{!item.evento}"/>                                                
+                                            </div>
+                                        </td>
+                                        <td data-label="RS">
+                                            <div class="slds-truncate" title="RS">
+                                                <ui:outputDate value="{!item.rs}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="ST">
+                                            <div class="slds-truncate" title="ST">
+                                                <ui:outputText value="{!item.st}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="TR">
+                                            <div class="slds-truncate" title="TR">
+                                                <ui:outputText value="{!item.tr}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="ISTANTE [DD/MM/YYYY HH:MM:SS:CC">
+                                            <div class="slds-truncate" title="ISTANTE [DD/MM/YYYY HH:MM:SS:CC]">
+                                                <ui:outputText value="{!item.istante}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="DURATA [HH:MM:SS:CC]">
+                                            <div class="slds-truncate" title="DURATA [HH:MM:SS:CC]">
+                                                <ui:outputText value="{!item.durata}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="TENSIONE RESIDUA [%]">
+                                            <div class="slds-truncate" title="TENSIONE RESIDUA [%]">
+                                                <ui:outputText value="{!item.tensioneResidua}"/>
+                                            </div>
+                                        </td>
+                                        <td data-label="ORIGINE">
+                                            <div class="slds-truncate" title="ORIGINE">
+                                                <ui:outputText value="{!item.origine}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                                <aura:if isTrue="{!v.mailStatus}">
+                                    <div class="slds-size_2-of-12" style="height: 640px;">
+                                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                            <div class="slds-modal__container">
+                                                <header class="slds-modal__header">
+                                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Invia file via Mail</h2>
+                                                </header>
+                                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                                    <p>EMail inviata correttamente all'indirizzo dell'utente.</p>
+                                                    <div class="slds-grid slds-wrap slds-grid_align-end">
+                                                        <div class="slds-col">
+                                                            <button class="slds-button slds-button--brand" onclick="{!c.closeMessage}">OK</button>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </section>
+                                        <div class="slds-backdrop slds-backdrop_open"></div>
+                                    </div>
+                                </aura:if> 
+                            </tbody>
+                        </table>
+                        </div>
+                             <br/>
+                        <div>            
+                            <c:PED_RimozionePagination objectList="{!v.objectList}" paginationList="{!v.paginationList}" pageSize="{!v.pageSize}" 
+                                                       start="{!v.start}" end="{!v.end}" totalPage="{!v.totalPage}"
+                                                       currentPage="{!v.currentPage}" totalRecord="{!v.totalRecord}" pages="{!v.pages}" />
+                        </div>
+                        <br/>
+                        <br/>
+                        <p>
+                            Legenda :
+                            <br/>
+                            <br/>
+                            N° Evento: è il codice progressivo che identifica l'evento registrato dall'apparecchiatura di misura della qualità della tensione sulla semisbarra MT di Impianto Primario.
+                            <br/>
+                            <br/>
+                            Id_Semisbarra : è il codice identificativo della semisbarra MT di Impianto Primario su cui è installata l'apparecchiatura di misura della qualità della tensione e che alimenta in assetto standard la fornitura MT alla data del 31 Dicembre dell'anno cui sono riferite le registrazioni dei buchi di tensione.
+                            <br/>
+                            <br/>
+                            RS - ST - TR : indicazione delle tensioni concatenate interessate dall'evento
+                            <br/>
+                            <br/>
+                            Istante : indica l'instante di inizio ovvero data, ora, minuto, secondo e centesimi di secondo in cui ha avuto inizio l'evento
+                            <br/>
+                            <br/>
+                            Durata : indica la durata dell'evento, espressa in ore, minuti, secondi e centesimi di secondo
+                            <br/>
+                            <br/>
+                            Tensione Residua (%) : indica il valore minimo della tensione registrato durante il buco di tensione espresso come percentuale della tensione nominale
+                            <br/>
+                            <br/>
+                            Origine : indica la rete che ha originato il buco di tensione (AT o MT). [Per i buchi di tensione registrati nell'anno 2015 non è prevista la pubblicazione dell'origine, in conformità con quanto previsto dalla Delibera ARERA; per i buchi di tensione registrati dal 2016 in poi, l'informazione relativa all'origine è pubblicata solo per gli eventi ricadenti al di fuori delle celle A1, A2, A3, A4, B1, B2 e C1 della tabella 5 della Norma CEI EN50160]
+                            <br/>
+                            <br/>
+                            <b>Per ulteriori informazioni scrivere a : Casella Postale 5555 - 85100 Potenza</b>
+                        </p>
+                    </lightning:tab>   
+                    <!-- FINE Dettagli -->
+                    <!-- Sintesi -->
+                    <lightning:tab >
+                        <aura:set attribute="label">
+                            Sintesi <!--<lightning:buttonicon iconName="utility:info" variant="bare" size="normal" alternativeText="Indicates approval" onclick="{!c.click}"/>-->
+                        </aura:set> 
+                        <div id="PDFWrapper">
+                        <div class="slds-grid slds-wrap slds-grid_align-end">
+                            <!--SS_Pagination-->
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_brand button-blue" label="Esporta PDF" buttonType="Submit" press="{!c.ExportPDFSintesi}"/>
+                                </span>
+                            </div>
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_neutral button-blue" label="Invia email" buttonType="Submit" press="{!c.sendMailSintesi}"/>
+                                </span>
+                            </div>
+                        </div> 
+                        <p>
+                            Di seguito è riportata la sintesi dei buchi di tensione registrati sulla semisbarra MT di Impianto Primario selezionata, nel formato descritto dalla norma CEI EN50160 con evidenza cromatica delle soglie di immunità classe 2 (in giallo) e classe 3 (in celeste), di cui alle norme CEI EN 61000-4-11 e CEI EN 61000-4-34.
+                            <br/>
+                            <br/>
+                        </p>
+                        <br/>
+                        <p style='color:rgb(4, 65, 189);font-weight:bold;font-size:15px;'>Semisbarra : {!v.ActualSemisbarra}</p>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" rowspan='2'>
+                                        <div onclick="{!c.sortTensResidua}" class="slds-truncate" title="TensResidua">
+                                            TENSIONE<br/>RESIDUA <span style='text-transform: lowercase!important;'>u</span> [%] 
+                                            <aura:if isTrue="{!v.sortField=='TensResidua'}">
+                                                <span>
+                                                    <aura:if isTrue="{!v.sortAsc}">
+                                                        &#9650; 
+                                                        <aura:set attribute="else">
+                                                            &#9660; 
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </span>
+                                            </aura:if>
+                                        </div>
+                                    </th>
+                                    <th scope="col" colspan='5' style='text-align:center;'>
+                                        <div class="slds-truncate" title="DURATA">
+                                            <div onclick="{!c.sortbyDURATAt}" class="slds-truncate" title="DURATA">
+                                                DURATA <span style='text-transform: lowercase!important;'>T [ms]</span> 
+                                                <aura:if isTrue="{!v.sortField=='DURATAt'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660;   
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>                                    
+                                </tr>
+                                <tr class="slds-text-title_caps" style='text-transform: lowercase!important;'>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                10	&le; t 	&le; 200
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="SecondRange">
+                                            <div onclick="{!c.sortBySecondRange}" class="slds-truncate" title="SecondRange">
+                                                200 &lt; t &le; 500
+                                                <aura:if isTrue="{!v.sortField=='SecondRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                500 &lt; t &le; 1000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                1000 &lt; t &le; 5000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                5000 &lt; t &le; 60000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Range1">
+                                        <div class="slds-truncate" title="Range1">
+                                            <ui:outputText aura:id="Range1" value="90 > u &ge; 80"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="A1"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="A1">
+                                            <ui:outputText aura:id="A1" value="{!v.Sintesi[0].A1 == undefined? 0 : v.Sintesi[0].A1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A2"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="A2">
+                                            <ui:outputText aura:id="A2" value="{!v.Sintesi[0].A2 == undefined? 0 : v.Sintesi[0].A2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A3" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="A3">
+                                            <ui:outputText aura:id="A3" value="{!v.Sintesi[0].A3 == undefined? 0 : v.Sintesi[0].A3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A4" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="A4">
+                                            <ui:outputText aura:id="A4" value="{!v.Sintesi[0].A4 == undefined? 0 : v.Sintesi[0].A4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A5">
+                                        <div class="slds-truncate" title="A5">
+                                            <ui:outputText aura:id="A5" value="{!v.Sintesi[0].A5 == undefined? 0 : v.Sintesi[0].A5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>     
+                                <tr>
+                                    <td data-label="Range2">
+                                        <div class="slds-truncate" title="Range2">
+                                            <ui:outputText aura:id="Range2" value="80 > u &ge; 70"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="B1"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="B1" >
+                                            <ui:outputText aura:id="B1" value="{!v.Sintesi[0].B1 == undefined? 0 : v.Sintesi[0].B1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B2"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="B2" >
+                                            <ui:outputText aura:id="B2" value="{!v.Sintesi[0].B2 == undefined? 0 : v.Sintesi[0].B2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B3">
+                                        <div class="slds-truncate" title="B3">
+                                            <ui:outputText aura:id="B3" value="{!v.Sintesi[0].B3 == undefined? 0 : v.Sintesi[0].B3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B4">
+                                        <div class="slds-truncate" title="B4">
+                                            <ui:outputText aura:id="B4" value="{!v.Sintesi[0].B4 == undefined? 0 : v.Sintesi[0].B4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B5">
+                                        <div class="slds-truncate" title="B5">
+                                            <ui:outputText aura:id="B5" value="{!v.Sintesi[0].B5 == undefined? 0 : v.Sintesi[0].B5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td data-label="Range3">
+                                        <div class="slds-truncate" title="Range3">
+                                            <ui:outputText aura:id="Range3" value="70 > u &ge; 40"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="C1" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="C1">
+                                            <ui:outputText aura:id="C1" value="{!v.Sintesi[0].C1 == undefined? 0 : v.Sintesi[0].C1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C2">
+                                        <div class="slds-truncate" title="C2">
+                                            <ui:outputText aura:id="C2" value="{!v.Sintesi[0].C2 == undefined? 0 : v.Sintesi[0].C2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C3">
+                                        <div class="slds-truncate" title="C3">
+                                            <ui:outputText aura:id="C3" value="{!v.Sintesi[0].C3 == undefined? 0 : v.Sintesi[0].C3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C4">
+                                        <div class="slds-truncate" title="C4">
+                                            <ui:outputText aura:id="C4" value="{!v.Sintesi[0].C4 == undefined? 0 : v.Sintesi[0].C4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C5">
+                                        <div class="slds-truncate" title="C5">
+                                            <ui:outputText aura:id="C5" value="{!v.Sintesi[0].C5 == undefined? 0 : v.Sintesi[0].C5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td data-label="Range4">
+                                        <div class="slds-truncate" title="Range4">
+                                            <ui:outputText aura:id="Range4" value="40 > u &ge; 5"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="D1">
+                                        <div class="slds-truncate" title="D1">
+                                            <ui:outputText aura:id="D1" value="{!v.Sintesi[0].D1 == undefined? 0 : v.Sintesi[0].D1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D2">
+                                        <div class="slds-truncate" title="D2">
+                                            <ui:outputText aura:id="D2" value="{!v.Sintesi[0].D2 == undefined? 0 : v.Sintesi[0].D2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D3">
+                                        <div class="slds-truncate" title="D3">
+                                            <ui:outputText aura:id="D3" value="{!v.Sintesi[0].D3 == undefined? 0 : v.Sintesi[0].D3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D4">
+                                        <div class="slds-truncate" title="D4">
+                                            <ui:outputText aura:id="D4" value="{!v.Sintesi[0].D4 == undefined? 0 : v.Sintesi[0].D4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D5">
+                                        <div class="slds-truncate" title="D5">
+                                            <ui:outputText aura:id="D5" value="{!v.Sintesi[0].D5 == undefined? 0 : v.Sintesi[0].D5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td data-label="Range5">
+                                        <div class="slds-truncate" title="Range5">
+                                            <ui:outputText aura:id="Range5" value="5 &gt; u "/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="E1">
+                                        <div class="slds-truncate" title="E1">
+                                            <ui:outputText aura:id="E1" value="{!v.Sintesi[0].E1 == undefined? 0 : v.Sintesi[0].E1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E2">
+                                        <div class="slds-truncate" title="E2">
+                                            <ui:outputText aura:id="E2" value="{!v.Sintesi[0].E2 == undefined? 0 : v.Sintesi[0].E2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E3">
+                                        <div class="slds-truncate" title="E3">
+                                            <ui:outputText aura:id="E3" value="{!v.Sintesi[0].E3 == undefined? 0 : v.Sintesi[0].E3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E4">
+                                        <div class="slds-truncate" title="E4">
+                                            <ui:outputText aura:id="E4" value="{!v.Sintesi[0].E4 == undefined? 0 : v.Sintesi[0].E4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E5">
+                                        <div class="slds-truncate" title="E5">
+                                            <ui:outputText aura:id="E5" value="{!v.Sintesi[0].E5 == undefined? 0 : v.Sintesi[0].E5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <p>
+                            Inoltre, si riporta di seguito :
+                            <br/>
+                            <br/>
+                            - il numero totale di buchi di tensione più severi rispetto alla soglia di immunità classe 2, pari a {!v.SintesiSomma1}                       
+							<br/>
+                            <br/>
+                            - il numero totale di buchi di tensione più severi rispetto alla soglia di immunità classe 3, pari a {!v.SintesiSomma2}                             
+                        </p>
+                            </div>
+                    </lightning:tab>  
+                    <!-- FINE Sintesi -->
+                    <!-- Sintesi AT -->
+                    <lightning:tab >
+                        <aura:set attribute="label">
+                            Sintesi AT <!--<lightning:buttonicon iconName="utility:info" variant="bare" size="normal" alternativeText="Indicates approval" onclick="{!c.click}"/>-->
+                        </aura:set>   
+                        <div class="slds-grid slds-wrap slds-grid_align-end">
+                            <!--SS_Pagination-->
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_brand button-blue" label="Esporta PDF" buttonType="Submit" press="{!c.ExportPDFSintesiAT}"/>
+                                </span>
+                            </div>
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_neutral button-blue" label="Invia email" buttonType="Submit" press="{!c.sendMailsintesiAt}"/>
+                                </span>
+                            </div>
+                        </div>
+                        <p>
+                            Di seguito è riportata la sintesi dei buchi di tensione, registrati sulla semisbarra MT di Impianto Primario, aventi origine sulla rete di alta tensione. Come stabilito dalla Delibera ARERA 646/2015/R/eel, si precisa che l'informazione relativa all'origine dei buchi di tensione ricadenti nelle celle A1, A2, A3, A4, B1, B2 e C1 della tabella 5 della norma CEI EN50160, per il periodo 2016-2023, non deve essere comunicata agli utenti MT.
+                            <br/>
+                        </p>
+                        <br/>
+                        <p style='color:rgb(4, 65, 189);font-weight:bold;font-size:15px;'>Semisbarra : {!v.ActualSemisbarra}</p>
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" rowspan='2'>
+                                        <div onclick="{!c.sortTensResidua}" class="slds-truncate" title="TensResidua">
+                                            TENSIONE<br/>RESIDUA <span style='text-transform: lowercase!important;'>u</span> [%] 
+                                            <aura:if isTrue="{!v.sortField=='TensResidua'}">
+                                                <span>
+                                                    <aura:if isTrue="{!v.sortAsc}">
+                                                        &#9650; 
+                                                        <aura:set attribute="else">
+                                                            &#9660; 
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </span>
+                                            </aura:if>
+                                        </div>
+                                    </th>
+                                    <th scope="col" colspan='5' style='text-align:center;'>
+                                        <div class="slds-truncate" title="DURATA">
+                                            <div onclick="{!c.sortbyDURATAt}" class="slds-truncate" title="DURATA">
+                                                DURATA <span style='text-transform: lowercase!important;'>T [ms]</span> 
+                                                <aura:if isTrue="{!v.sortField=='DURATAt'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650; 
+                                                            <aura:set attribute="else">
+                                                                &#9660;   
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>                                    
+                                </tr>
+                                <tr class="slds-text-title_caps" style='text-transform: lowercase!important;'>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                10	&le; t 	&le; 200
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="SecondRange">
+                                            <div onclick="{!c.sortBySecondRange}" class="slds-truncate" title="SecondRange">
+                                                200 &lt; t &le; 500
+                                                <aura:if isTrue="{!v.sortField=='SecondRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                500 &lt; t &le; 1000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                1000 &lt; t &le; 5000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="FirstRange">
+                                            <div onclick="{!c.sortByFirstRange}" class="slds-truncate" title="FirstRange">
+                                                5000 &lt; t &le; 60000
+                                                <aura:if isTrue="{!v.sortField=='FirstRange'}">
+                                                    <span>
+                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                            &#9650;
+                                                            <aura:set attribute="else">
+                                                                &#9660;
+                                                            </aura:set>
+                                                        </aura:if>
+                                                    </span>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td data-label="Range1AT">
+                                        <div class="slds-truncate" title="Range1AT">
+                                            <ui:outputText aura:id="Range1AT" value="90 > u &ge; 80"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="A1AT"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="A1AT">
+                                            <ui:outputText aura:id="A1AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A2AT"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="A2AT">
+                                            <ui:outputText aura:id="A2AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A3AT" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="A3AT">
+                                            <ui:outputText aura:id="A3AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A4AT" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="A4AT">
+                                            <ui:outputText aura:id="A4AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="A5AT">
+                                        <div class="slds-truncate" title="A5AT">
+                                            <ui:outputText aura:id="A5AT" value="{!v.SintesiAT[0].A5 == undefined? 0 : v.SintesiAT[0].A5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>     
+                                <tr>
+                                    <td data-label="Range2AT">
+                                        <div class="slds-truncate" title="Range2AT">
+                                            <ui:outputText aura:id="Range2AT" value="80 > u &ge; 70"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="B1AT"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="B1AT" >
+                                            <ui:outputText aura:id="B1AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B2AT"  style='background-color:orange!important'>
+                                        <div class="slds-truncate" title="B2AT" >
+                                            <ui:outputText aura:id="B2AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B3AT">
+                                        <div class="slds-truncate" title="B3AT">
+                                            <ui:outputText aura:id="B3AT" value="{!v.SintesiAT[0].B3 == undefined? 0 : v.SintesiAT[0].B3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B4AT">
+                                        <div class="slds-truncate" title="B4AT">
+                                            <ui:outputText aura:id="B4AT" value="{!v.SintesiAT[0].B4 == undefined? 0 : v.SintesiAT[0].B4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="B5AT">
+                                        <div class="slds-truncate" title="B5AT">
+                                            <ui:outputText aura:id="B5AT" value="{!v.SintesiAT[0].B5 == undefined? 0 : v.SintesiAT[0].B5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td data-label="Range3AT">
+                                        <div class="slds-truncate" title="Range3AT">
+                                            <ui:outputText aura:id="Range3AT" value="70 > u &ge; 40"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="C1AT" style='background-color: #1589ee!important'>
+                                        <div class="slds-truncate" title="C1AT">
+                                            <ui:outputText aura:id="C1AT" value="-"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C2AT">
+                                        <div class="slds-truncate" title="C2AT">
+                                            <ui:outputText aura:id="C2AT" value="{!v.SintesiAT[0].C2 == undefined? 0 : v.SintesiAT[0].C2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C3AT">
+                                        <div class="slds-truncate" title="C3AT">
+                                            <ui:outputText aura:id="C3AT" value="{!v.SintesiAT[0].C3 == undefined? 0 : v.SintesiAT[0].C3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C4AT">
+                                        <div class="slds-truncate" title="C4AT">
+                                            <ui:outputText aura:id="C4AT" value="{!v.SintesiAT[0].C4 == undefined? 0 : v.SintesiAT[0].C4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="C5AT">
+                                        <div class="slds-truncate" title="C5AT">
+                                            <ui:outputText aura:id="C5AT" value="{!v.SintesiAT[0].C5 == undefined? 0 : v.SintesiAT[0].C5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td data-label="Range4AT">
+                                        <div class="slds-truncate" title="Range4AT">
+                                            <ui:outputText aura:id="Range4AT" value="40 > u &ge; 5"/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="D1AT">
+                                        <div class="slds-truncate" title="D1AT">
+                                            <ui:outputText aura:id="D1AT" value="{!v.SintesiAT[0].D1 == undefined? 0 : v.SintesiAT[0].D1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D2AT">
+                                        <div class="slds-truncate" title="D2AT">
+                                            <ui:outputText aura:id="D2AT" value="{!v.SintesiAT[0].D2 == undefined? 0 : v.SintesiAT[0].D2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D3AT">
+                                        <div class="slds-truncate" title="D3AT">
+                                            <ui:outputText aura:id="D3AT" value="{!v.SintesiAT[0].D3 == undefined? 0 : v.SintesiAT[0].D3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D4AT">
+                                        <div class="slds-truncate" title="D4AT">
+                                            <ui:outputText aura:id="D4AT" value="{!v.SintesiAT[0].D4 == undefined? 0 : v.SintesiAT[0].D4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="D5AT">
+                                        <div class="slds-truncate" title="D5">
+                                            <ui:outputText aura:id="D5AT" value="{!v.SintesiAT[0].D5 == undefined? 0 : v.SintesiAT[0].D5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                                 <tr>
+                                    <td data-label="Range5AT">
+                                        <div class="slds-truncate" title="Range5AT">
+                                            <ui:outputText aura:id="Range5AT" value="5 &gt; u "/>
+                                        </div>
+                                    </td>   
+                                    <td data-label="E1AT">
+                                        <div class="slds-truncate" title="E1AT">
+                                            <ui:outputText aura:id="E1AT" value="{!v.SintesiAT[0].E1 == undefined? 0 : v.SintesiAT[0].E1}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E2AT">
+                                        <div class="slds-truncate" title="E2">
+                                            <ui:outputText aura:id="E2A" value="{!v.SintesiAT[0].E2 == undefined? 0 : v.SintesiAT[0].E2}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E3AT">
+                                        <div class="slds-truncate" title="E3AT">
+                                            <ui:outputText aura:id="E3AT" value="{!v.SintesiAT[0].E3 == undefined? 0 : v.SintesiAT[0].E3}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E4AT">
+                                        <div class="slds-truncate" title="E4AT">
+                                            <ui:outputText aura:id="E4AT" value="{!v.SintesiAT[0].E4 == undefined? 0 : v.SintesiAT[0].E4}"/>
+                                        </div>
+                                    </td> 
+                                    <td data-label="E5AT">
+                                        <div class="slds-truncate" title="E5AT">
+                                            <ui:outputText aura:id="E5AT" value="{!v.SintesiAT[0].E5 == undefined? 0 : v.SintesiAT[0].E5}"/>
+                                        </div>
+                                    </td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <br/>
+                        <p>
+                            Inoltre, si riporta di seguito:
+                            <br/>
+                            <br/>
+                            - il numero totale di buchi di tensione più severi rispetto alla soglia di immunità classe 3 di origine AT, è pari a {!v.SintesiSommaAT}
+                        </p>
+                    </lightning:tab>  
+                    <!-- FINE Sintesi AT -->
+                </lightning:tabset>
+                
+               </div>
+        </aura:if>
+         <ui:button class="slds-button slds-button--neutral slds-float_right slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.goBack}" />
+            
+    </div>
+    
+</aura:component>

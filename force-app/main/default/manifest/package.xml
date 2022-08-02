@@ -1,38 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-    <members>PED_CheckBlacklistedEmail_Test</members>
-    <members>PED_CheckBlacklistedEmail</members>
-    <members>PED_RecuperaDati_Controller</members>
-    <members>PED_RecuperaDati_Controller_Test</members>
-    <members>PED_CambiaEmailController</members>
-    <members>PED_CambiaEmailControllerTest</members>
-    <members>PED_RegistrationCompController</members>  
-	<members>PED_RegistrationCompControllerTest</members>
-	<members>PED_LoginController</members>
-	<members>PED_LoginControllerTest</members>
+    <members>PED_ProxyWSAsyncServiziTecnici</members>
+    <members>PED_ProxyWSAsyncServiziTecniciTest</members>
+    <members>AsyncPED_ServiziTecnici_BuchiTensione_WS</members>
+    <members>PED_ServiziTecnici_BuchiTensione_WS</members>
+    <members>PED_ServiziTecnici_Controller</members>
+    <members>PED_ServiziTecnici_Controller_TEST</members>
+    <members>PED_ServiziTecnici_BuchiTensione</members>
         <name>ApexClass</name>
     </types>
      <types>
-        <members>PED_CambiaEmail</members>
-        <members>PED_RecuperaDati</members>
-        <members>PED_RegistrazionePortaleTrader</members>
-        <members>PED_RegistrationComponent</members>
+         <members>PED_Buchi_Tensione</members>
         <name>AuraDefinitionBundle</name>
     </types>
- <types>
-		<members>PED_Blacklist_Domini_Email__c</members>
-		<members>PED_Blacklisted_Email__c</members>
-		<name>CustomObject</name>
-	</types>
-	<types>
-		<members>PED_Blacklist_Domini_Email__c-Blacklist Domini Email Layout</members>
-		<members>PED_Blacklisted_Email__c-PED_Blacklisted_Email Layout</members>
-		<name>Layout</name>
-	</types>
-    <types>
-		<members>Blacklist_Domini_Email</members>
-		<name>PermissionSet</name>
-	</types>
     <version>52.0</version>
 </Package>

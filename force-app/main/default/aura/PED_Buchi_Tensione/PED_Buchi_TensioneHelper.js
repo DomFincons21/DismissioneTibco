@@ -16,10 +16,13 @@
             var startDateSplit = startDateValue.split('-');
             var selectedEndDate = new Date(endDateSplit[0],endDateSplit[1]-1,endDateSplit[2]);
             var selectedStartDate = new Date(startDateSplit[0],startDateSplit[1]-1,startDateSplit[2]);
+            // ! TODO BUCHI DI TENSIONE CONTINUATION
             var action = component.get("c.buchiTensione");
             
             var startdate = selectedStartDate.getDate()+'-'+(selectedStartDate.getMonth()+1)+'-'+selectedStartDate.getFullYear();
             var enddate = selectedEndDate.getDate()+'-'+(selectedEndDate.getMonth()+1)+'-'+selectedEndDate.getFullYear();
+
+            
             var methodName = 'buchiTensione';
             var pod = component.get('v.selectedPod');
             var methodParams = [pod,startdate,enddate];

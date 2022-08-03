@@ -321,7 +321,7 @@
         var spinner = component.find("mySpinner");
         $A.util.toggleClass(spinner, "slds-hide");
         var lista= component.get("v.ActualSemibarreList");
-        
+        // ! ASK TO-DO CHANGE IN ENGLISH
         var header = ['Semibarra','N.Evento','RS','ST','TR','Istante [DD/MM/YYYY HH:MM:SS.CC]','Durata [HH:MM:SS.CC]','Tensione Residua [%]','Origine'];
         var keyArray=['semisbarra','evento','rs','st','tr','istante','durata','tensioneResidua','origine'];
         var csv =helper.convertArrayOfObjectsToCSV(component,lista,header,keyArray);

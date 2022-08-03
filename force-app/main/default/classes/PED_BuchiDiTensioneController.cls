@@ -16,4 +16,9 @@ public with sharing class PED_BuchiDiTensioneController {
     public static PED_PODInfoWrapper.Response PODDetailsDelegato(){
         return PED_PODInfoUtils.recuperaPodInCacheDelegato();
     }
+
+    @AuraEnabled
+    public static PED_ServiziTecnici_TaratureData.cl getCliente(String pod){
+       return PED_ServiziTecnici_Controller.getCliente(pod);
+    }
 }

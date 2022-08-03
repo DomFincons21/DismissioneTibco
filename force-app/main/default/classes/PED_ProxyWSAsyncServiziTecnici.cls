@@ -89,8 +89,8 @@ public class PED_ProxyWSAsyncServiziTecnici {
     public PED_ProxyWSAsyncServiziTecnici(){     
         String lcBaseURL = Label.PED_OrgHost; 
         Map<string,string> headers = Apexpages.currentPage().getHeaders();	
-        headers.put('X-Frame-Options', 'ALLOW-FROM ' + lcBaseURL);
-        headers.put('Content-Security-Policy', 'frame-ancestors ' + lcBaseURL);   
+        //headers.put('X-Frame-Options', 'ALLOW-FROM ' + lcBaseURL);
+        //headers.put('Content-Security-Policy', 'frame-ancestors ' + lcBaseURL);   
     } 
     
     @AuraEnabled 
@@ -103,7 +103,8 @@ public class PED_ProxyWSAsyncServiziTecnici {
         methodName = apexpages.currentpage().getParameters().get('methodN');
         params = apexpages.currentpage().getParameters().get('params') + ' ';        
         Continuation cont = new Continuation(70);
-        if(methodName=='buchiTensione'){            
+        if(methodName=='buchiTensione'){        
+     
             string pod = params.split(',')[0];
             string dataInizio = params.split(',')[1];
             string DataFine = params.split(',')[2];

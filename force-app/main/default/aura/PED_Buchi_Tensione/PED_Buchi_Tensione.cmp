@@ -1,5 +1,6 @@
 <aura:component controller='PED_ServiziTecnici_Controller' implements="forceCommunity:availableForAllPageTypes" access="global" >
-    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+   <!-- ? TO CHANGE CONTROLLER ? -->
+<ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
     <ltng:require scripts='/resource/JQuery, /resource/jspdf_deb' />
     <!--aura:attribute name="selectedPod" type="PED_PODInfoWrapper.Response" /-->  <!-- DF -->
     <aura:attribute name="selectedPod"  type="String"/>
@@ -12,7 +13,7 @@
     <aura:attribute name="SintesiSomma2" type='string' /> 
     <aura:attribute name="SintesiSommaAT" type='string' />    
     <aura:attribute name="ActualSemisbarra" type='string' />
-    <!--  Handler event to DISMISS -->
+    <!--  TO DISMISS -->
     <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
     <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
 

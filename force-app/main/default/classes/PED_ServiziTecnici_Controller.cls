@@ -77,7 +77,7 @@ public class PED_ServiziTecnici_Controller {
     }
     
     @AuraEnabled
-    public static buchiSemisbarra buchiTensione(String pod, String dataInizio, String DataFine){
+    public static buchiSemisbarra buchiTension(String pod, String dataInizio, String DataFine){
         PED_ServiziTecnici_Controller.buchiSemisbarra bss = new PED_ServiziTecnici_Controller.buchiSemisbarra();
         PED_ServiziTecnici_BuchiTensione.BuchiTensioneWsTibcoSOAP btws = new PED_ServiziTecnici_BuchiTensione.BuchiTensioneWsTibcoSOAP();
         PED_ServiziTecnici_BuchiTensioneDT.BuchiTensioneMtRequestType request = new PED_ServiziTecnici_BuchiTensioneDT.BuchiTensioneMtRequestType();

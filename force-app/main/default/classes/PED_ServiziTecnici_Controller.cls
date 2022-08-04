@@ -76,7 +76,7 @@ public class PED_ServiziTecnici_Controller {
         public string indirizzo{get;set;}
     }
     
-    @AuraEnabled
+  /*   @AuraEnabled
     public static buchiSemisbarra buchiTension(String pod, String dataInizio, String DataFine){
         PED_ServiziTecnici_Controller.buchiSemisbarra bss = new PED_ServiziTecnici_Controller.buchiSemisbarra();
         PED_ServiziTecnici_BuchiTensione.BuchiTensioneWsTibcoSOAP btws = new PED_ServiziTecnici_BuchiTensione.BuchiTensioneWsTibcoSOAP();
@@ -126,7 +126,7 @@ public class PED_ServiziTecnici_Controller {
         }
         insert PED_ServiziTecnici_Controller.createLog('buchiTensione', result, error, JSON.serialize(res), JSON.serialize(request));
         return bss;
-    }
+    } */
     
     @AuraEnabled
     public static PED_ServiziTecnici_TaratureData.fornIntD333 qualitaServizio(String pod){

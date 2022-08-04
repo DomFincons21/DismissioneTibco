@@ -8,6 +8,8 @@
     <members>PED_ServiziTecnici_Controller</members>
     <members>PED_ServiziTecnici_Controller_TEST</members>
     <members>PED_ServiziTecnici_BuchiTensione</members>
+    <members>PED_BuchiDiTensioneController</members>
+    <members>PED_BuchiDiTensioneWrapper</members>
         <name>ApexClass</name>
     </types>
      <types>

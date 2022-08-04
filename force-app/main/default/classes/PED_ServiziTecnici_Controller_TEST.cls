@@ -27,13 +27,13 @@ public class PED_ServiziTecnici_Controller_TEST {
     	test.stopTest();
     }
     
-    @isTest static void testBuchiTensione(){
+/*     @isTest static void testBuchiTensione(){
     	test.startTest();
     	Test.setMock(WebServiceMock.class, new PED_ServiziTecnici_WS_Mock());
-    	PED_ServiziTecnici_Controller.buchiTensione('testPOD','testDataInzio','testDataFine');
+    	PED_ServiziTecnici_Controller.buchiTension('testPOD','testDataInzio','testDataFine');
     	test.stopTest();
     }
-    
+     */
     @isTest static void testQualitaServizio(){
     	test.startTest();
     	Test.setMock(WebServiceMock.class, new PED_ServiziTecnici_WS_Mock());

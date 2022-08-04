@@ -192,8 +192,14 @@
     },
     
     doInit : function(component, event, helper) {
-        //DF INIZIO
-        var action = component.get("c.PODDetails"); 
+        
+      
+        action = component.get("c.getDetails"); 
+
+        action.setParams(
+            { "url": window.location.href }
+        );
+
         action.setCallback(this, function(response) {
             var state = response.getState();
             console.log('state ==> '+state);
@@ -201,7 +207,7 @@
                 var returnedValue = response.getReturnValue();
                 console.log('DF returnedValue ==> '+returnedValue.data[0].pods.IdPod);
                 component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
-                //DF FINE
+                
             }  
         });
         $A.enqueueAction(action);

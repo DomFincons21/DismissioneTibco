@@ -23,15 +23,14 @@ public with sharing class PED_BuchiDiTensioneController {
     
         Continuation cont = new Continuation(TIMEOUTASYNC);
         cont.continuationMethod='processBuchiDiTensione';
+        // todo ped_ecrryptç_settings
+        PED_ServiceSettings__c endpoint = [select id, Name, PED_Endpoint__c from PED_ServiceSettings__c where Name = 'ServizioBuchiDiTensione' limit 1];
+        endpoint.PED_Endpoint__c += '/' + pod + '/' + 'voltage-dips?' + 'start_date=' + dataInizio + '&end_Date='+dataFine;
 
-        PED_Environment__c endpoint = [select id, Name, Value__c  from PED_Environment__c where Name = 'ServizioBuchiDiTensione' limit 1];
-        endpoint.Value__c += '/' + pod + '/' + 'voltage-dips?' + 'start_date=' + dataInizio + '&end_Date='+dataFine;
-
-        HttpRequest request = buildRequest(endpoint.Value__c, input);
+        HttpRequest request = buildRequest(endpoint.PED_Endpoint__c, input);
         // If request = null -> throw exception
         if(request == null) throw new AuraHandledException('errore token');
           
-
          // Store the reference to the HttRequest and make it accessible for a test-context
          continuationLabel = cont.addHttpRequest(request);
          cont.state = continuationLabel;

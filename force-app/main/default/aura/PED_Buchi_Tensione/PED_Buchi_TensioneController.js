@@ -202,12 +202,9 @@
 
         action.setCallback(this, function(response) {
             var state = response.getState();
-            console.log('state ==> '+state);
             if (state === "SUCCESS") {
                 var returnedValue = response.getReturnValue();
-                console.log('DF returnedValue ==> '+returnedValue.data[0].pods.IdPod);
                 component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
-                
             }  
         });
         $A.enqueueAction(action);
@@ -235,13 +232,8 @@
         
         component.set('v.startDate', (myDate1.getFullYear())+ "-" +( myDate1.getMonth() + 1)  + "-" + myDate1.getDate() );
         component.set('v.endDate', (dayOfMonth.getFullYear())+ "-" + (dayOfMonth.getMonth() + 1) + "-" + dayOfMonth.getDate()  );
-        //component.set('v.startDate',in30Days); 
-        setTimeout(function(){
-            
-            var theSpinner = component.find("spinnerId"); 
-            $A.util.removeClass(theSpinner, 'slds-hide');                    
-            helper.doinit(component); 
-        },1000);     
+        helper.showSpinner(component,event,helper);
+        helper.doInit(component, event, helper);
     }, 
     
     ValidateSdate : function(component, event, helper) {

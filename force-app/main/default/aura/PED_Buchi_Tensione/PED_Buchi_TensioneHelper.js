@@ -5,7 +5,7 @@
             return v.toString(16);
         });
     },
-    doinit : function(component){
+    doinit : function(component, event, helper){
         component.set('v.listaVuota',false);
         var startDateField = component.find("startdateField");
         var startDateValue = startDateField.get("v.value");
@@ -17,30 +17,35 @@
             var selectedEndDate = new Date(endDateSplit[0],endDateSplit[1]-1,endDateSplit[2]);
             var selectedStartDate = new Date(startDateSplit[0],startDateSplit[1]-1,startDateSplit[2]);
             // ! TODO BUCHI DI TENSIONE CONTINUATION
-            var action = component.get("c.buchiTensione");
+            var action = component.get("c.buchiDiTensioneAsContinuation");
             
             var startdate = selectedStartDate.getDate()+'-'+(selectedStartDate.getMonth()+1)+'-'+selectedStartDate.getFullYear();
             var enddate = selectedEndDate.getDate()+'-'+(selectedEndDate.getMonth()+1)+'-'+selectedEndDate.getFullYear();
+            var pod = component.get('v.selectedPod');
 
             
-            var methodName = 'buchiTensione';
-            var pod = component.get('v.selectedPod');
-            var methodParams = [pod,startdate,enddate];
-            var callEvent = $A.get("e.c:PED_CallWSAsyncEvent");
-            callEvent.setParams({
-                "methodName" : methodName,
-                "methodParams" :methodParams ,
-                "UniqueId" :component.get('v.UniqueID') });
-            callEvent.fire();
-            setTimeout(function(){
-                var callEvent2 = $A.get("e.c:PED_RemoveSpinnerAsync");
-                callEvent2.fire(); 
-            },30000);
-          
-        }else{
-            
+            action.setParams(
+                { "pod": pod,
+                 "startdate": startdate,
+                 "enddate": enddate 
+            }
+            );
+
+            action.setCallback(this, function(response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var returnedValue = response.getReturnValue();
+                    //todo
+                    
+                    helper.hideSpinner(component, event, helper);
+                 
+                }  
+            });
+            $A.enqueueAction(action);
+
         }
     },
+
     downloadFile : function(component, blob, filename, extension,event){
         var source = event.getSource().getLocalId();
         if(source!=undefined && source=='email'){

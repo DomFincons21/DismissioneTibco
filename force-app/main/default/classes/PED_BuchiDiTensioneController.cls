@@ -88,11 +88,8 @@ public with sharing class PED_BuchiDiTensioneController {
         System.debug('PED_BuchiDiTensioneWrapper.processBuchiDiTensione -- START>' + labels[0]);
         response = Continuation.getResponse(labels[0]);
 
-        //Fill sintesi e SintesiAT
-         resp.data.sintesi = new Map<String,Integer>();
-         resp.data.sintesiAT = new Map<String,Integer>();
+         // CREAZIONE DEL PED_Log__c
          PED_DebugLogger logger = PED_DebugLoggerFactory.getDefaultImpl();
-         
         
         System.debug(response.toString());
         System.debug(response.getStatusCode());
@@ -108,22 +105,47 @@ public with sharing class PED_BuchiDiTensioneController {
     
                 String body = response.getBody();
                 resp = (PED_BuchiDiTensioneWrapper.Response) JSON.deserialize(response.getBody(), PED_BuchiDiTensioneWrapper.Response.class);
-    
+                
+                System.debug(resp);
+
+                //Fill sintesi e SintesiAT
+                resp.data.sintesi = new Map<String,Integer>();
+                resp.data.sintesiAT = new Map<String,Integer>();
+                
                 if(resp.data.voltageDips != null){
-               /*      for(PED_BuchiDiTensioneWrapper.Response.Data.VoltageDips bs : resp.data.voltageDips){
-                        // Quando itera aggiunge +1 a la category
-                        if(resp.data.sintesi.containsKey(bs.voltageDips.category)){
+                    for(PED_BuchiDiTensioneWrapper.ResponseBuchiSemisbarra bs : resp.data.voltageDips){
+                       
+                    // # SINTESI 
+                         // Quando itera aggiunge +1 a la category
+                         if(resp.data.sintesi.containsKey(bs.category)){
 
                             Integer i = resp.data.sintesi.get(bs.category);
-                            resp.data.sintesi.put(bs.voltageDips.category,i+1);
-
+                            resp.data.sintesi.put(bs.category,++i);
+                            System.debug('Aggiungiendo in categoria '+ bs.category + ' Nº: '+ i);
                             
                         }else{
                              // 1º Giro crea la prima category
                              resp.data.sintesi.put(bs.category,1);
-
+                            System.debug('Prima category'+ bs.category);
                         }
-                    } */
+
+                    // # SINTESI AT
+                        if(bs.origin == 'AT'){
+
+                            // Quando itera aggiunge +1 a la category
+                            if(resp.data.sintesiAT.containsKey(bs.category)){
+
+                                Integer i = resp.data.sintesiAT.get(bs.category);
+                                resp.data.sintesiAT.put(bs.category,++i);
+                                System.debug('Aggiungiendo in categoria '+ bs.category + ' Nº: '+ i);
+                                
+                            }else{
+                                 // 1º Giro crea la prima category
+                                 resp.data.sintesiAT.put(bs.category,1);
+                                System.debug('Prima category'+ bs.category);
+                            }
+                        }
+                    } 
 
                 }
                 

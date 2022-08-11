@@ -81,31 +81,185 @@
         component.set("v.SintesiSomma1",0);
         component.set("v.listaNonVuota",false);  
 
-         var buchiList = result.voltageDips;
+         var buchiList = result.data.voltageDips;
+
+         // # Fucntions that fill page Sintesi & SintesiAT
+         this.fillSintesi(component, result);
+         this.fillSintesiAT(component, result);
+
+         // # Se buchiDiTensione ritorna una risposta vuota
         if(buchiList == undefined || buchiList == null){
             buchiList = [];
         }else{
             var i = buchiList.length - 1;                        
             for(; i >= 0; i--) {
-                if((buchiList[i].categoria==undefined?true:buchiList[i].categoria.trim()==='') && 
-                   (buchiList[i].durata==undefined?true:buchiList[i].durata.trim()==='') &&
-                   (buchiList[i].evento==undefined?true:buchiList[i].evento.trim()==='') &&
-                   (buchiList[i].istante==undefined?true:buchiList[i].istante.trim()==='') &&
-                   (buchiList[i].origine==undefined?true:buchiList[i].origine.trim()==='') &&
-                   (buchiList[i].rs==undefined?true:buchiList[i].rs.trim()==='') &&
-                   (buchiList[i].semisbarra==undefined?true:buchiList[i].semisbarra.trim()==='') &&
-                   (buchiList[i].tensioneResidua==undefined?true:buchiList[i].tensioneResidua==='0') &&
-                   (buchiList[i].st==undefined?true:buchiList[i].st.trim()==='') &&
-                   (buchiList[i].tr==undefined?true:buchiList[i].tr.trim()==='')) 
+                if((buchiList[i].category==undefined?true:buchiList[i].category.trim()==='') && 
+                   (buchiList[i].duration==undefined?true:buchiList[i].duration.trim()==='') &&
+                   (buchiList[i].event==undefined?true:buchiList[i].event.trim()==='') &&
+                   (buchiList[i].instant==undefined?true:buchiList[i].instant.trim()==='') &&
+                   (buchiList[i].origin==undefined?true:buchiList[i].origin.trim()==='') &&
+                   (buchiList[i].RSCode==undefined?true:buchiList[i].RSCode.trim()==='') &&
+                   (buchiList[i].halfBarId==undefined?true:buchiList[i].halfBarId.trim()==='') &&
+                   (buchiList[i].residualVoltage==undefined?true:buchiList[i].residualVoltage==='0') &&
+                   (buchiList[i].STCode==undefined?true:buchiList[i].STCode.trim()==='') &&
+                   (buchiList[i].TRCode==undefined?true:buchiList[i].TRCode.trim()==='')) 
                    {
                     buchiList.splice(i, 1);
                 }
             }
+
+            // ?
+
+            let listaSemibarre = new Array();
+            var objectData = {};
+            let dataListSemisbarre = new Array();
+
+            for(var i = 0 ; i < buchiList.length ;i++){
+                console.log(i);
+                // Se non c'è ne la lista di Semibarre ritorna -1
+                if(listaSemibarre.indexOf(buchiList[i].halfBarId) == -1){
+                    // Allora si aggiunge a la lista
+                    listaSemibarre.push(buchiList[i].halfBarId);
+                    
+                    // Inizialization of auxObject
+                    var objectData = {};
+
+                    objectData.semisbarra = buchiList[i].halfBarId;
+                    objectData.durata = buchiList[i].duration;
+                    objectData.categoria = buchiList[i].category;
+                    objectData.evento = buchiList[i].event;
+                    objectData.origine = buchiList[i].origin;
+                    objectData.rs = buchiList[i].RSCode;
+                    objectData.st = buchiList[i].STCode;
+                    objectData.tr = buchiList[i].TRCode;
+                    objectData.tensioneResidua = buchiList[i].residualVoltage;
+                    buchiList[i].instant = buchiList[i].instant.replace(',','.');
+                    objectData.istante = buchiList[i].instant;
+                    if (buchiList[i].istante != undefined && buchiList[i].instant.trim() != ""){
+                        buchiList[i].dataSort = helper.stringToDate(buchiList[i].instant);
+                        objData.dataSort = buchiList[i].dataSort;   
+                    }
+                    // Reorganize the objet
+                    var listaAux = new Array();
+                    var objFirstLayer = {};
+
+                    listaAux.push(objectData);
+                    objFirstLayer.semibarraitem = buchiList[i].halfBarId;
+                    objFirstLayer.listItem = listaAux;
+
+                    dataListSemisbarre.push(objFirstLayer);
+                    console.log(dataListSemisbarre);
+                }else{
+                    // Se si trova nella lista allora prendiamo l'oggeto 'data' e lo sistemiamo per l'interface
+
+                    var j = 0;
+                    var bandera = true;
+                    while(j < dataListSemisbarre.length && bandera){
+
+                        if(dataListSemisbarre[j].semibarraitem === buchiList[i].halfBarId){
+
+                            objectData.semisbarra = buchiList[j].halfBarId;
+                            objectData.durata = buchiList[j].duration;
+                            objectData.categoria = buchiList[j].category;
+                            objectData.evento = buchiList[j].event;
+                            objectData.origine = buchiList[j].origin;
+                            objectData.rs = buchiList[j].RSCode;
+                            objectData.st = buchiList[j].STCode;
+                            objectData.tr = buchiList[j].TRCode;
+                            objectData.tensioneResidua = buchiList[j].residualVoltage;
+                            buchiList[j].instant = buchiList[j].instant.replace(',','.');
+                            objectData.istante = buchiList[j].instant;
+                            if (buchiList[j].istante != undefined && buchiList[j].instant.trim() != ""){
+                                buchiList[j].dataSort = helper.stringToDate(buchiList[j].instant);
+                                objData.dataSort = buchiList[j].dataSort;   
+                            }
+                            
+                            dataListSemisbarre[j].listItem.push(objectData);
+                            bandera = false;
+                        }
+
+                        j++;
+                    }
+
+                }
+
+            }
+            console.log(objectData);
+            console.log(listaSemibarre);
+            console.log(buchiList);
+            
+            component.set('v.listaNonVuota',true);
+            component.set('v.listaVuota',false);
+            component.set('v.ObjSemibarreList',objectData);                           
+            component.set('v.semibarreList' , listaSemibarre);
+            component.set('v.allSemibarraList' , buchiList);
+            
+            if(listaSemibarre.length==1){
+                component.set('v.ActualSemisbarra',listaSemibarre[0]);
+                component.set('v.listaNonVuota',true);                                        
+            }else{
+                component.set('v.ActualSemibarreList',component.get('v.allSemibarraList'));     
+            }
+
+            if(listaSemibarre.length == 0){
+                component.set('v.listaVuota',false);
+                component.set('v.listaNonVuota',false);      
+            }
+            // Inizialization of interface
+            this.initializePagination(component,null,buchiList);
         } 
         
 
         
        
+    },
+
+    fillSintesi: function(component, result){
+        if(result.data.sintesi != null && result.data.sintesi != undefined){
+            component.set('v.Sintesi',result.data.sintesi);
+            var somma2 = (result.data.sintesi.D1 == undefined?0:result.data.sintesi.D1)+
+            (result.data.sintesi.C2== undefined?0:result.data.sintesi.C2)+
+            (result.data.sintesi.D2== undefined?0:result.data.sintesi.D2)+
+            (result.data.sintesi.B3== undefined?0:result.data.sintesi.B3)+
+            (result.data.sintesi.C3== undefined?0:result.data.sintesi.C3)+
+            (result.data.sintesi.D3== undefined?0:result.data.sintesi.D3)+
+            (result.data.sintesi.B4== undefined?0:result.data.sintesi.B4)+
+            (result.data.sintesi.C4== undefined?0:result.data.sintesi.C4)+
+            (result.data.sintesi.D4== undefined?0:result.data.sintesi.D4)+
+            (result.data.sintesi.A5== undefined?0:result.data.sintesi.A5)+
+            (result.data.sintesi.B5== undefined?0:result.data.sintesi.B5)+
+            (result.data.sintesi.C5== undefined?0:result.data.sintesi.C5)+
+            (result.data.sintesi.D5== undefined?0:result.data.sintesi.D5);
+        component.set('v.SintesiSomma2',somma2);
+        var somma1 = somma2 + 
+            (result.data.sintesi.C1 == undefined?0:result.data.sintesi.C1)+
+            (result.data.sintesi.A3 == undefined?0:result.data.sintesi.A3)+
+            (result.data.sintesi.A4 == undefined?0:result.data.sintesi.A4);
+        component.set('v.SintesiSomma1',somma1);
+        }
+
+    },
+    fillSintesiAT: function(component, result){
+
+        if(result.data.sintesiAT !=null && result.data.sintesiAT != undefined){
+            component.set('v.SintesiAT',result.data.sintesiAT);
+
+            var sommaAT = (result.data.sintesiAT.D1 == undefined?0:result.data.sintesiAT.D1)+
+            (result.data.sintesiAT.C2== undefined?0:result.data.sintesiAT.C2)+
+            (result.data.sintesiAT.D2== undefined?0:result.data.sintesiAT.D2)+
+            (result.data.sintesiAT.B3== undefined?0:result.data.sintesiAT.B3)+
+            (result.data.sintesiAT.C3== undefined?0:result.data.sintesiAT.C3)+
+            (result.data.sintesiAT.D3== undefined?0:result.data.sintesiAT.D3)+
+            (result.data.sintesiAT.B4== undefined?0:result.data.sintesiAT.B4)+
+            (result.data.sintesiAT.C4== undefined?0:result.data.sintesiAT.C4)+
+            (result.data.sintesiAT.D4== undefined?0:result.data.sintesiAT.D4)+
+            (result.data.sintesiAT.A5== undefined?0:result.data.sintesiAT.A5)+
+            (result.data.sintesiAT.B5== undefined?0:result.data.sintesiAT.B5)+
+            (result.data.sintesiAT.C5== undefined?0:result.data.sintesiAT.C5)+
+            (result.data.sintesiAT.D5== undefined?0:result.data.sintesiAT.D5);
+
+             component.set('v.SintesiSommaAT',sommaAT);
+        }
     },
 
     callback : function(component,event,helper){

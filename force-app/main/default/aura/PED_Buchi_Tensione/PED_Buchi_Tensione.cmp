@@ -329,47 +329,47 @@
                                     <tr>
                                         <td data-label="Semibarra">
                                             <div class="slds-truncate" title="Semibarra">
-                                                <ui:outputText aura:id="resultSearchPod" value="{!item.semisbarra}"/>
+                                                <ui:outputText aura:id="resultSearchPod" value="{!item.halfBarId}"/>
                                             </div>
                                         </td>
                                         <td data-label="N. EVENTO">
                                             <div class="slds-truncate" title="N. EVENTO">
-                                                <ui:outputText value="{!item.evento}"/>                                                
+                                                <ui:outputText value="{!item.event}"/>                                                
                                             </div>
                                         </td>
                                         <td data-label="RS">
                                             <div class="slds-truncate" title="RS">
-                                                <ui:outputDate value="{!item.rs}"/>
+                                                <ui:outputDate value="{!item.RSCode}"/>
                                             </div>
                                         </td>
                                         <td data-label="ST">
                                             <div class="slds-truncate" title="ST">
-                                                <ui:outputText value="{!item.st}"/>
+                                                <ui:outputText value="{!item.STCode}"/>
                                             </div>
                                         </td>
                                         <td data-label="TR">
                                             <div class="slds-truncate" title="TR">
-                                                <ui:outputText value="{!item.tr}"/>
+                                                <ui:outputText value="{!item.TRCode}"/>
                                             </div>
                                         </td>
                                         <td data-label="ISTANTE [DD/MM/YYYY HH:MM:SS:CC">
                                             <div class="slds-truncate" title="ISTANTE [DD/MM/YYYY HH:MM:SS:CC]">
-                                                <ui:outputText value="{!item.istante}"/>
+                                                <ui:outputText value="{!item.instant}"/>
                                             </div>
                                         </td>
                                         <td data-label="DURATA [HH:MM:SS:CC]">
                                             <div class="slds-truncate" title="DURATA [HH:MM:SS:CC]">
-                                                <ui:outputText value="{!item.durata}"/>
+                                                <ui:outputText value="{!item.duration}"/>
                                             </div>
                                         </td>
                                         <td data-label="TENSIONE RESIDUA [%]">
                                             <div class="slds-truncate" title="TENSIONE RESIDUA [%]">
-                                                <ui:outputText value="{!item.tensioneResidua}"/>
+                                                <ui:outputText value="{!item.residualVoltage}"/>
                                             </div>
                                         </td>
                                         <td data-label="ORIGINE">
                                             <div class="slds-truncate" title="ORIGINE">
-                                                <ui:outputText value="{!item.origine}"/>
+                                                <ui:outputText value="{!item.origin}"/>
                                             </div>
                                         </td>
                                     </tr>

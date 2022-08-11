@@ -1,4 +1,4 @@
-<aura:component controller='PED_ServiziTecnici_Controller' implements="forceCommunity:availableForAllPageTypes" access="global" >
+<aura:component controller='PED_BuchiDiTensioneController' implements="forceCommunity:availableForAllPageTypes" access="global" >
    <!-- ? TO CHANGE CONTROLLER ? -->
 <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
     <ltng:require scripts='/resource/JQuery, /resource/jspdf_deb' />
@@ -14,13 +14,11 @@
     <aura:attribute name="SintesiSommaAT" type='string' />    
     <aura:attribute name="ActualSemisbarra" type='string' />
     <!--  TO DISMISS -->
-    <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
-    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
+    <!--  <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
+    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> -->  
 
     <aura:attribute name="UniqueID" type="string"/>
-    <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
-    <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>
-    
+    <aura:attribute name="spinner" type="Boolean" default="true"/>
     <aura:attribute name="accName" type="String"/><!--SS-->
     <aura:attribute name="accId" type="String"/><!--SS-->
     
@@ -122,7 +120,11 @@
                 <span class="slds-float_right"><lightning:button label="Filtra" class="slds-button slds-button_brand button-blue"   onclick="{!c.FilterButtonClick}" /></span>
             </div>            
         </div>
-        <lightning:spinner aura:id="mySpinner" variant="brand"  style='position: fixed;'/>
+        <!-- INIT SPINNER -->
+        <aura:if isTrue="{! v.spinner }">
+            <lightning:spinner aura:id="mySpinner" variant="brand" style='position: fixed;' />
+        </aura:if> 
+        <!-- END SPINNER -->
         <aura:if isTrue="{!v.listaVuota}">
             <p style='text-align:center;color:#0441bd;font-size:25px;margin: 50px;'>Non ci sono buchi di tensione per questo determinato periodo</p>
         </aura:if>

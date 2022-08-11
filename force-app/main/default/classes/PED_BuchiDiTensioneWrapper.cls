@@ -46,7 +46,12 @@ public with sharing class PED_BuchiDiTensioneWrapper {
 
         @AuraEnabled
         public List<ResponseBuchiSemisbarra> voltageDips;
-        
+
+        @AuraEnabled
+        public Map<String,Integer> sintesi;
+
+        @AuraEnabled
+        public Map<String,Integer> sintesiAT;
     }
 
     public class ResponseBuchiSemisbarra{

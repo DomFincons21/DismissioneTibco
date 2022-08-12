@@ -20,7 +20,6 @@
                     component.set('v.ActualSemibarreList',obj[i].listItem); 
                     component.set('v.ActualSemisbarra',obj[i].semibarraitem);
                     helper.initializePagination(component,null,obj[i].listItem);
-                    component.set('v.listaNonVuota',true); 
                     break;
                 }
             }
@@ -33,13 +32,33 @@
     
     doInit : function(component, event, helper) {
         
-      debugger;
         console.log('En el doInit');
         let action = component.get("c.getDetails"); 
         action.setParams(
             { "url": window.location.href }
         );
           
+        // Inizializa la data DAL to AL
+        var today = new Date();
+        var mm=1;
+        var dd=1;
+        var yy = today.getFullYear();
+        
+        if(today.getMonth()+1<5){            
+            yy=yy-2;
+        }else{
+            yy=yy-1;
+        }
+        var mmfinal=12;
+        var ddfinal=31;
+        var mydateinitial = mm+'/'+dd+'/'+yy;
+        var mydatefinal = mmfinal+'/'+ddfinal+'/'+yy;
+        var myDate1 = new Date(mydateinitial);  
+        var dayOfMonth = new Date(mydatefinal);  
+        
+        component.set('v.startDate', (myDate1.getFullYear())+ "-" +( myDate1.getMonth() + 1)  + "-" + myDate1.getDate() );
+        component.set('v.endDate', (dayOfMonth.getFullYear())+ "-" + (dayOfMonth.getMonth() + 1) + "-" + dayOfMonth.getDate()  );
+
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
@@ -78,10 +97,11 @@
         
         if(component.get('v.sDateErrorNotExist')==true && component.get('v.eDateErrorNotExist')==true){ 
             
-            //var theSpinner = component.find("spinnerId"); 
-            //$A.util.removeClass(theSpinner, 'slds-hide');
+            
             window.scroll(0, 0);
-            helper.doinit(component);    
+            component.set("v.spinner", true);
+            helper.callBuchiDiTensione(component, event, helper);
+
         }else{
             window.scroll(0, 0);
         }
@@ -138,7 +158,7 @@
         var lista= component.get("v.ActualSemibarreList");
         // ! ASK TO-DO CHANGE IN ENGLISH
         var header = ['Semibarra','N.Evento','RS','ST','TR','Istante [DD/MM/YYYY HH:MM:SS.CC]','Durata [HH:MM:SS.CC]','Tensione Residua [%]','Origine'];
-        var keyArray=['semisbarra','evento','rs','st','tr','istante','durata','tensioneResidua','origine'];
+        var keyArray=['semisbarra','event','RSCode','STCode','TRCode','instant','duration','residualVoltage','origin'];
         var csv =helper.convertArrayOfObjectsToCSV(component,lista,header,keyArray);
         
         var endDateField = component.find("enddateField");

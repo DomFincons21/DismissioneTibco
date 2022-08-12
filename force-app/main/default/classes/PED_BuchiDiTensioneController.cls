@@ -25,7 +25,7 @@ public with sharing class PED_BuchiDiTensioneController {
         System.debug(dataFine);
 
         // TODO REMOVE DATA INIZIO MOCK DATA -  FINE MOCK
-        dataInizio = '1-1-2020';
+       // dataInizio = '1-1-2020';
 
         PED_ServiceSettings__c endpoint = [select id, Name, PED_Endpoint__c from PED_ServiceSettings__c where Name = 'ServizioBuchiDiTensione' limit 1];
         endpoint.PED_Endpoint__c += '/' + pod + '/' + 'voltage-dips?' + 'start_date=' + dataInizio + '&end_date='+dataFine;

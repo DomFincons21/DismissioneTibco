@@ -8,31 +8,17 @@
 
     callBuchiDiTensione : function(component, event, helper){
         
-      
-        var today = new Date();
-        var mm=1;
-        var dd=1;
-        var yy = today.getFullYear();
-        
-        if(today.getMonth()+1<5){            
-            yy=yy-2;
-        }else{
-            yy=yy-1;
-        }
-        var mmfinal=12;
-        var ddfinal=31;
-        var mydateinitial = mm+'/'+dd+'/'+yy;
-        var mydatefinal = mmfinal+'/'+ddfinal+'/'+yy;
-        var myDate1 = new Date(mydateinitial);  
-        var dayOfMonth = new Date(mydatefinal);  
-        
-        component.set('v.startDate', (myDate1.getFullYear())+ "-" +( myDate1.getMonth() + 1)  + "-" + myDate1.getDate() );
-        component.set('v.endDate', (dayOfMonth.getFullYear())+ "-" + (dayOfMonth.getMonth() + 1) + "-" + dayOfMonth.getDate()  );
+        // # Remove the empty data from the component (Method filter)
+        component.set('v.listaVuota',false);
 
+        // # Take the filte data init and data end
         var startDateField = component.find("startdateField");
         var startDateValue = startDateField.get("v.value");
         var endDateField = component.find("enddateField");
         var endDateValue = endDateField.get("v.value"); 
+        console.log(startDateValue);
+        console.log(endDateValue);
+
 
         if((startDateField.get('v.errors')===null || startDateField.get('v.errors').length<1) && (endDateField.get('v.errors')===null || endDateField.get('v.errors').length<1)){
             var endDateSplit = endDateValue.split('-');
@@ -60,8 +46,12 @@
                 if (state === "SUCCESS") {
                     let returnedValue = response.getReturnValue();
                     console.log(returnedValue); 
-                    this.responseBuchiDiTensione(component, returnedValue);
-                    component.set("v.spinner", false);
+                    if(returnedValue.data.voltageDips == null || returnedValue.data.voltageDips.length == 0){
+                        component.set('v.listaVuota',true);
+                    }else{
+                        this.responseBuchiDiTensione(component, returnedValue);
+                    }
+                  
                 }
                 component.set("v.spinner", false);
 
@@ -73,13 +63,12 @@
 
     responseBuchiDiTensione : function(component, result) {
 
-        component.set("v.listaVuota",true);
+       
         component.set("v.Sintesi",{});
         component.set("v.SintesiAT",{});
         component.set("v.SintesiSommaAT",0);
         component.set("v.SintesiSomma2",0);
         component.set("v.SintesiSomma1",0);
-        component.set("v.listaNonVuota",false);  
 
          var buchiList = result.data.voltageDips;
 
@@ -90,6 +79,7 @@
          // # Se buchiDiTensione ritorna una risposta vuota
         if(buchiList == undefined || buchiList == null){
             buchiList = [];
+            component.set('v.listaVuota',true);
         }else{
             var i = buchiList.length - 1;                        
             for(; i >= 0; i--) {
@@ -188,22 +178,20 @@
             console.log(listaSemibarre);
             console.log(buchiList);
             
-            component.set('v.listaNonVuota',true);
             component.set('v.listaVuota',false);
             component.set('v.ObjSemibarreList',objectData);                           
             component.set('v.semibarreList' , listaSemibarre);
             component.set('v.allSemibarraList' , buchiList);
-            
+            component.set('v.ActualSemibarreList',component.get('v.allSemibarraList'));  
+
             if(listaSemibarre.length==1){
                 component.set('v.ActualSemisbarra',listaSemibarre[0]);
-                component.set('v.listaNonVuota',true);                                        
-            }else{
-                component.set('v.ActualSemibarreList',component.get('v.allSemibarraList'));     
+                                                     
             }
 
             if(listaSemibarre.length == 0){
                 component.set('v.listaVuota',false);
-                component.set('v.listaNonVuota',false);      
+                 
             }
             // Inizialization of interface
             this.initializePagination(component,null,buchiList);
@@ -391,19 +379,18 @@
                         }
                     }
                 }   
-                component.set('v.listaNonVuota',true);
                 component.set('v.ObjSemibarreList',obj);                           
                 component.set('v.semibarreList' , listSemibarre);
                 component.set('v.allSemibarraList' , buchiList);
                 component.set('v.ActualSemibarreList',component.get('v.allSemibarraList'));
                 if(listSemibarre.length==1){
                     component.set('v.ActualSemisbarra',listSemibarre[0]);
-                    component.set('v.listaNonVuota',true);                                        
+                                                        
                     
                 }
                 if(listSemibarre.length==0){
                     component.set('v.listaVuota',false);
-                    component.set('v.listaNonVuota',false);      
+                 
                 }
                 
                 
@@ -411,7 +398,6 @@
             }else{
                 
                 component.set('v.listaVuota',true);
-                component.set('v.listaNonVuota',false);
                 
             }      
         }

@@ -14,6 +14,8 @@
     </types>
      <types>
          <members>PED_Buchi_Tensione</members>
+         <members>PED_ServiziTecniciDelegato</members>
+         <members>PED_Buchi_Tensione_Delegato</members>
          <members>PED_CallWsAsync_ServiziTecnici</members>
         <name>AuraDefinitionBundle</name>
     </types>

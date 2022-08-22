@@ -1,0 +1,51 @@
+<aura:component implements="forceCommunity:profileMenuInterface,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" controller='PED_ServiziTecnici_Controller' access="global" >
+    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!--DF aura:attribute name="listOfPods"  type="PED_PODWrapper.ResponsePod[]"/-->    
+    <!--DF aura:attribute name="selectedPod"  type="String"/-->
+    <!--DF aura:attribute name='showInfo' type='Boolean' /-->
+    <aura:attribute name='showFlag' type='Boolean' default='false'/> 
+    <!--DF aura:handler name="change" value="{!v.changePOD}" action="{!c.itemsChange}"/-->
+    <!--DF aura:attribute name='changePOD' type='Boolean'  default='true'/-->
+    <!--DF aura:attribute name='isATRedirect' type='Boolean' default='false'/-->
+    <!--DF aura:attribute name="accId" type="String"/--><!--SS-->
+    <!--DF aura:attribute name="accntName" type="String"/--><!--SS-->
+      <!--DF aura:attribute name='isMT' type='Boolean' default='false'/-->
+    <aura:attribute name='isAT' type='Boolean'/><!--LDRAGO id66-->
+     <!--DF aura:attribute name="firstTime" type="boolean" default='true'  /-->
+    <!--DFaura:attribute name='isMedio' type='Boolean' default="false"/>
+    <aura:attribute name='isGrande' type='Boolean' default="false"/>
+    <aura:attribute name="pods"  type="PED_PODInfoWrapper.Response"/--> 
+                    <!--DF default="{'PED_POD__c':'1111111', 'PED_Tensione__c':'',
+                                                            'Indirizzo_di_fornitura__c':'','PED_Potenza__c':'',
+                                                            'PED_Matricola_Misuratore__c':''}"-->
+        <!--DF div>
+            <c:PED_infoData pods="{!v.pods}" isMedioCust='{!v.isMedio}' changePOD='{!v.changePOD}' showFlag='{!v.showFlag}' firstTime='{!v.firstTime}' PodId='{!v.selectedPod}' isGrandeCust='{!v.isGrande}'></c:PED_infoData><SS added parameter pods>
+        </div-->
+    &nbsp;
+    <aura:if isTrue="{!v.showFlag==true}">
+        <div>
+            <div class="slds-grid slds-wrap">
+                <aura:if isTrue="{!v.isAT==false}">
+                <div class="slds-col slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-3">
+                    <!--PG-->
+                    <c:PED_ServiceBox_Buchi_Tensione_Delegato/><!--[SS][added accId,accntName params]--><!--DF selectedPod='{!v.selectedPod}' accId="{!v.accId}" accName="{!v.accntName}"-->
+                </div> 
+                <div class="slds-col slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-3">
+                    <c:PED_ServiceBox_AdeguatezzaImpianti_Delegato/><!--[SS][added accId,accntName params]--><!--DF selectedPod='{!v.selectedPod}' accId="{!v.accId}" accName="{!v.accntName}"-->
+                </div>   
+                <div class="slds-col slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-3">
+                    <c:PED_ServiceBox_Taratura_Impianti_Delegato/><!--[SS][added accId,accntName params]--><!--DF selectedPod='{!v.selectedPod}' accId="{!v.accId}" accName="{!v.accntName}"-->
+                </div>
+                </aura:if>
+                <div class="slds-col slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-3">
+                    <c:PED_ServiceBox_ArchivioComunicazione_Delegato/><!--[SS][added accId,accntName params]--><!--DF selectedPod='{!v.selectedPod}' accId="{!v.accId}" accName="{!v.accntName}"-->
+                </div>             
+                <div class="slds-col slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-3">
+                    <c:PED_ServiceBox_Qualita_Servizio_Delegato/><!--[SS][added accId,accntName params]--><!--DF selectedPod='{!v.selectedPod}' accId="{!v.accId}" accName="{!v.accntName}"-->
+                </div>
+            </div>
+            <ui:button class="slds-button slds-button--neutral slds-float_right slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.goBack}" />
+        </div>
+    </aura:if> 
+</aura:component>

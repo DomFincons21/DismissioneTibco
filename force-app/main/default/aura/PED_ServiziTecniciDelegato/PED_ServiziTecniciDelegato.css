@@ -1,0 +1,13 @@
+/*.THIS #mybody{
+    margin-bottom:60px;
+}*/
+.THIS .blue {
+    color: #0441bd;
+}
+.THIS .box  { 
+    border-top: 3px solid #0441bd;
+    width: 100%;
+    padding-left: .75rem;
+    padding-right:  .75rem;
+    padding-top: .75rem;
+}

@@ -37,7 +37,7 @@
                  "pod": pod,
                  "dataInizio": startdate,
                  "dataFine": enddate,
-                 "fromDelegate": false
+                 "fromDelegate": component.get('v.fromDelegate')
                  }
             );
 

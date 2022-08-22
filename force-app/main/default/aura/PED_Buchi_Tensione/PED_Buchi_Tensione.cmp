@@ -55,6 +55,8 @@
     <aura:attribute name="eDateErrorNotExist" type="Boolean" default="true"/>
     
     <aura:attribute name="PODList" type="PED_A486DettaglioSostituzionePOD__c[]" />
+
+    <aura:attribute name="fromDelegate" type="Boolean" default="false" /> 
     
     <!--Sending mail through Button Click-->
     <aura:attribute name="mailId" type="String"/>

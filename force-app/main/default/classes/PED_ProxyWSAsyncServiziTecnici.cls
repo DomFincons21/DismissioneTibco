@@ -89,7 +89,7 @@ public class PED_ProxyWSAsyncServiziTecnici {
     public PED_ProxyWSAsyncServiziTecnici(){     
         String lcBaseURL = Label.PED_OrgHost; 
         Map<string,string> headers = Apexpages.currentPage().getHeaders();	
-        //headers.put('X-Frame-Options', 'ALLOW-FROM ' + lcBaseURL);
+        //headers.put('X-Frame-Options', 'ALLOW-FROM ' + lcBaseURL); CB Commentato per doppio Dominio
         //headers.put('Content-Security-Policy', 'frame-ancestors ' + lcBaseURL);   
     } 
     
@@ -103,8 +103,7 @@ public class PED_ProxyWSAsyncServiziTecnici {
         methodName = apexpages.currentpage().getParameters().get('methodN');
         params = apexpages.currentpage().getParameters().get('params') + ' ';        
         Continuation cont = new Continuation(70);
-        if(methodName=='buchiTensione'){        
-     
+        if(methodName=='buchiTensione'){            
             string pod = params.split(',')[0];
             string dataInizio = params.split(',')[1];
             string DataFine = params.split(',')[2];
@@ -117,7 +116,7 @@ public class PED_ProxyWSAsyncServiziTecnici {
             String error='';
             try{
                 btws.endpoint_x = 'https://4ele-wssf.enel.it/buchiTensioneWsTibco/';
-                resp = btws.beginBuchiTensioneMt(cont,request);                
+                resp = btws.beginBuchiTensioneMt(cont,request);     
                 return cont;
             }  
             catch(exception e){

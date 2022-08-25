@@ -1,0 +1,121 @@
+<aura:component controller="PED_ServiziTecnici_Controller" implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <!-- Import per generazione pdf -->
+    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+    <ltng:require scripts='/resource/JQuery, /resource/jsPDF_zip/jspdf.debug.js, /resource/jspdf_autotable' />
+    <!-- POD -->
+    <!--aura:attribute name="selectedPod" type="PED_PODInfoWrapper.Response" /-->  <!-- DF -->
+    <aura:attribute name="selectedPod" type="String" /> 
+    <aura:attribute name="DatiUtente" type="Object"/>    
+    <aura:attribute name="NomeUtente" type="string"/>
+    <aura:attribute name="adeguatezzaImpianti" type="sObject"/>
+    <!--Fornitura-->
+    <aura:attribute name="indirizzo" type="string"/>
+    <aura:attribute name="accId" type="String"/><!--SS-->
+    <aura:attribute name="accName" type="String"/><!--SS-->
+    
+    <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
+    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
+    <aura:attribute name="UniqueID" type="string"/>
+    <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
+    <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>
+        
+    <aura:attribute name='isSucc' type='boolean'/>
+    <aura:attribute name='messageToShow' type='string'/>
+    <c:PED_ModalEsito isSucc='{!v.isSucc}' messageToShow='{!v.messageToShow}'></c:PED_ModalEsito>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <div>Questo servizio, dedicato a chi è intestatario di una fornitura di Media Tensione,
+        fornisce indicazioni sulla dichiarazione di adeguatezza degli impianti,
+        permettendo di visualizzare gli eventuali indennizzi automatici delle forniture a cui si ha diritto se in regola.<br/><br/></div>
+    <div class="slds-p-horizontal_small">
+       	<lightning:spinner aura:id="mySpinner" variant="brand" style='position: fixed;'/>       
+        <b>
+            <p>
+                Fornitura Corrente : 
+            </p>
+        </b>
+        <br/>
+        <p>
+            {!v.indirizzo}
+        </p>
+        <br/>
+        <div class="slds-grid slds-wrap slds-grid_align-end">
+            <div class="slds-col">
+                <span>                    
+                    <ui:button class="slds-button slds-button_brand button-blue whitetext" label="Esporta PDF" buttonType="Submit" press="{!c.downloadPDF}" />
+                </span>
+            </div>            
+            <div class="slds-col">
+                <span>                    
+                    <ui:button class="slds-button slds-button_brand button-blue whitetext" label="Invia email" buttonType="Submit" press="{!c.sendEmail}"/>
+                </span>
+            </div>                
+        </div>
+        <br/>
+        <div class="slds-grid slds-wrap slds-scrollable_x">
+            <div class="slds-size_1-of-1">
+                <p id="headerMsg">
+                    La delibera dell'Autorità di regolazione per energia, reti e ambiente n° 198/11 del 29 Dicembre 2011 prevede indennizzi automatici in caso di superamento di standard specifici sia del numero di interruzioni senza preavviso lunghe e brevi sia per la durata delle interruzioni prolungate o estese, calcolati con i criteri nella medesima delibera.
+                    <br/>
+                    <br/>
+					Per poter accedere a tali indennizzi è necessario che il cliente dimostri di aver adeguato
+                    i propri impianti ai requisiti tecnici, previsti all'art. 39 della Del. 198/11, inviando 
+                    ad e-distribuzione la relativa Dichiarazione di Adeguatezza, come previsto all'art. 40. 
+                    <br/>
+                    <br/>
+                    In caso contrario, il Cliente dovrà versare al Distributore un Corrispettivo Tariffario Specifico (CTS) conforme a quanto indicato all'art. 41.2 della citata delibera.
+                    Esempi di calcolo del CTS sono presenti nel sito:<br/>
+                    <a href="http://www.autorita.energia.it/it/impiantimt.htm" target="_blank">http://www.autorita.energia.it/it/impiantimt.htm</a>
+                </p>
+                <br/>
+                <p id="staticMsg">
+                	Nel <b>{!v.adeguatezzaImpianti.anno}</b>, stante il livello di qualità del servizio della sua fornitura, il valore degli indennizzi corrisponderebbe a:
+                    <br/>articolo 34 Titolo 5 regolazione individuale clienti MT di euro: <b>{!v.adeguatezzaImpianti.testoArt34}</b>
+                    <br/>articolo 45 Titolo 7 regolazione delle interruzioni prolungate o estese di euro: <b>{!v.adeguatezzaImpianti.testoArt45}</b>
+                </p>
+                <p id="dichiarazioneAdeguatezza">
+                    <br/>
+                    	{!v.adeguatezzaImpianti.dichiarazioneAdeguatezza}
+                    <br/>
+                    <br/>
+                </p>
+                <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '1'}">
+                    <p id="msg1">
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTS}</b>.<br/>
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>.<br/>
+                    </p>
+                </aura:if>
+                <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '2'}">
+                    <p id="msg2">
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTS}</b>.<br/>
+                        Dal prossimo anno sarà tenuto a pagare il  CTSm per un importo  annuo (imponibile) calcolato a euro <b>{!v.adeguatezzaImpianti.CTSM}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
+                        CTSM  = CTS(1+n) <br/>
+                        dove n è il numero intero di anni contati a partire dall’anno successivo a quello di decorrenza dell’obbligo di adeguamento non adempiuto, con un valore massimo pari a 3. <br/>
+                        Il pagamento del CTSM è sostitutivo del corrispettivo CTS ed avviene con le stesse modalità previste per il corrispettivo CTS.
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>
+                    </p>
+                </aura:if>
+                <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '3'}">
+                    <p id="msg3">
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTSM}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli  Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
+                        CTSM  = CTS(1+n) <br/>
+                        dove n è il numero intero di anni contati a partire dall’anno successivo a quello di decorrenza dell’obbligo di adeguamento adempiuto, con un valore massimo pari a 3.<br/>
+                        Per l’anno in corso Il suo valore n è <b>{!v.adeguatezzaImpianti.n}</b>.<br/>
+                        Il pagamento del CTSM è sostitutivo del corrispettivo CTS ed avviene con le stesse modalità previste per il corrispettivo CTS. <br/>
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro: <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>
+                    </p>
+                </aura:if>
+                
+                <hr/>
+                <p>
+                    Si precisa che le informazioni visualizzate possono non essere tempestivamente aggiornate in seguito a recenti comunicazioni intercorse. 
+                    <br/><b>Per ogni chiarimento potete utilizzare la Casella Postale 5555 - 85100 Potenza</b>
+                </p>
+            </div>
+        </div>
+        <ui:button class="slds-button slds-button--neutral slds-float_right slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.goBack}" />
+        
+    </div>
+</aura:component>

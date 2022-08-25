@@ -3,20 +3,16 @@
     <types>
     <members>PED_ProxyWSAsyncServiziTecnici</members>
     <members>PED_ProxyWSAsyncServiziTecniciTest</members>
-    <members>AsyncPED_ServiziTecnici_BuchiTensione_WS</members>
-    <members>PED_ServiziTecnici_BuchiTensione_WS</members>
     <members>PED_ServiziTecnici_Controller</members>
     <members>PED_ServiziTecnici_Controller_TEST</members>
     <members>PED_ServiziTecnici_BuchiTensione</members>
-    <members>PED_BuchiDiTensioneController</members>
-    <members>PED_BuchiDiTensioneWrapper</members>
         <name>ApexClass</name>
     </types>
      <types>
-         <members>PED_Buchi_Tensione</members>
          <members>PED_ServiziTecniciDelegato</members>
-         <members>PED_Buchi_Tensione_Delegato</members>
          <members>PED_CallWsAsync_ServiziTecnici</members>
+         <members>PED_Adeguatezza_Impianti</members>
+         <members>PED_AdeguatezzaImpiantiDelegato</members>
         <name>AuraDefinitionBundle</name>
     </types>
     <version>52.0</version>

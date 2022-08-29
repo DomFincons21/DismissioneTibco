@@ -13,21 +13,24 @@
     <aura:attribute name="accId" type="String"/><!--SS-->
     <aura:attribute name="accName" type="String"/><!--SS-->
     
-    <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
-    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
     <aura:attribute name="UniqueID" type="string"/>
-    <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
-    <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>
-        
+    <aura:attribute name="spinner" type="Boolean" default="true"/>
+
     <aura:attribute name='isSucc' type='boolean'/>
     <aura:attribute name='messageToShow' type='string'/>
+
+      <!-- INIT SPINNER -->
+      <aura:if isTrue="{! v.spinner }">
+        <lightning:spinner aura:id="mySpinner" variant="brand" style='position: fixed;' />
+    </aura:if> 
+    <!-- END SPINNER -->
+
     <c:PED_ModalEsito isSucc='{!v.isSucc}' messageToShow='{!v.messageToShow}'></c:PED_ModalEsito>
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
     <div>Questo servizio, dedicato a chi è intestatario di una fornitura di Media Tensione,
         fornisce indicazioni sulla dichiarazione di adeguatezza degli impianti,
         permettendo di visualizzare gli eventuali indennizzi automatici delle forniture a cui si ha diritto se in regola.<br/><br/></div>
     <div class="slds-p-horizontal_small">
-       	<lightning:spinner aura:id="mySpinner" variant="brand" style='position: fixed;'/>       
         <b>
             <p>
                 Fornitura Corrente : 

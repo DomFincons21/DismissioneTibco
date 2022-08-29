@@ -6,6 +6,8 @@
     <members>PED_ServiziTecnici_Controller</members>
     <members>PED_ServiziTecnici_Controller_TEST</members>
     <members>PED_ServiziTecnici_BuchiTensione</members>
+    <members>PED_Adeguatezza_ImpiantiWrapper</members>
+    <members>PED_Adeguatezza_ImpiantiController</members>
         <name>ApexClass</name>
     </types>
      <types>

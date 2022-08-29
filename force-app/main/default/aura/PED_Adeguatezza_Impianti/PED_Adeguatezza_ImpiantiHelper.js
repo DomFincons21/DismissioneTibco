@@ -39,20 +39,23 @@
                         component.set('v.isSucc' , true);
                         console.log(result.getError()[0].message);
                     }
-                    var spinner = component.find("mySpinner");
-                    $A.util.toggleClass(spinner, "slds-hide");
+                    component.set("v.spinner", false);
+
                 });
                 $A.enqueueAction(action1);
                 
             }else{ 
-                var spinner = component.find("mySpinner");
-                $A.util.toggleClass(spinner, "slds-hide");
+                component.set("v.spinner", false);
                 console.log(result.getError()[0].message);
             }
         } );
         $A.enqueueAction(action);
     },
     getData : function(component,event) {
+
+        // TODO : AdeguatezzaImpianti
+
+        /*
         var methodName = 'AdeguatezzaImpianti';
         var pod = component.get('v.selectedPod');
         var methodParams = [pod];
@@ -63,11 +66,8 @@
             "methodParams" :methodParams ,
             "UniqueId" :component.get('v.UniqueID') });
         callEvent.fire();
-        setTimeout(function(){
-            var callEvent2 = $A.get("e.c:PED_RemoveSpinnerAsync");
-            callEvent2.fire();
-        },30000);
-        /*
+        component.set("v.spinner", false);
+
         var action = component.get("c.getAdeguatezzaImpianti");  
         action.setParams({"pod": component.get('v.selectedPod')});
         action.setCallback(this, function(response) {
@@ -451,8 +451,8 @@
     },
     setFornitura : function(component,event){
         try{
-            var spinner = component.find("mySpinner");
-            $A.util.toggleClass(spinner, "slds-hide");
+            component.set("v.spinner", false);
+
             var action = component.get("c.getCliente");
             action.setParams(
                 {
@@ -469,13 +469,12 @@
                         }
                     }
                 }
-                var spinner = component.find("mySpinner");
-                $A.util.toggleClass(spinner, "slds-hide");
+                component.set("v.spinner", false);
+
             });
             $A.enqueueAction(action);
         }catch(e){
-            var spinner = component.find("mySpinner");
-            $A.util.toggleClass(spinner, "slds-hide");
+            component.set("v.spinner", false);
         }
     }, goBack : function(component, event){
         //[start][SS]

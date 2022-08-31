@@ -1,0 +1,1521 @@
+<aura:component controller='PED_TaratureImpianti_Controller' implements="forceCommunity:availableForAllPageTypes" access="global" >
+    <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
+    <ltng:require scripts='/resource/JQuery, /resource/jsPDF_zip/jspdf.debug.js, /resource/jspdf_autotable' />
+    <!--aura:attribute name="selectedPod" type="PED_PODInfoWrapper.Response" /-->  <!-- DF -->
+    <aura:attribute name="selectedPod"  type="String"/> 
+    <aura:attribute name="err" type='string' />
+    <aura:attribute name="errorsRadio" type='string' />
+    <aura:attribute name="showTabella2" type="boolean" default='true'/> 
+    <aura:attribute name="showTabella1" type="boolean" default='true'/>
+    <aura:attribute name="showTabella3" type="boolean" default='true'/> 
+    <aura:attribute name="falgSectionI" type="Boolean" default='false'/>      
+    <aura:attribute name="falgSectionII" type="Boolean" default='false'/>      
+    <aura:attribute name="falgSectionIII" type="Boolean" default='false'/>        
+    <aura:attribute name="firstTimeTab" type="Boolean" default='true'/>             
+    <aura:attribute name="firstTimeTabTarature" type="Boolean" default='true'/> 
+    <aura:attribute name="datiGriglia" type='object[]' />
+    <aura:attribute name="datiImpianto" type='object' />
+    <aura:attribute name="datiFornitura" type='object' />
+    <aura:attribute name="valueRadio2" type='string' />
+    <aura:attribute name="valueRadio1" type='string' />    
+    <aura:attribute name="valueRadio3" type='string' />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="valueRadio4" type='string' />
+    <aura:attribute name="errorValidPOD" type='string' />    
+    <aura:attribute name="validPOD" type="Boolean" default='false'/>    
+    <aura:attribute name="DatiUtente" type="Object"/>    
+    <aura:attribute name="NomeUtente" type="string"/>
+    <aura:attribute name="callPDF" type="string"/>
+    <aura:attribute name="firstTimeCall" type="Boolean" default='true'/>  
+    
+    <aura:attribute name="LunghCavo" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.LunCavoColl):v.datiImpianto.LunCavoColl}"/>
+    <aura:attribute name="PotTrasfEnerg" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.PotTrasfEnerg):v.datiImpianto.PotTrasfEnerg}"/>    
+    <aura:attribute name="PotTrasfParall" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.PotTrasfParall):v.datiImpianto.PotTrasfParall}"/>    
+    <aura:attribute name="SezCavoColl" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.SezCavoColl):v.datiImpianto.SezCavoColl}"/>       
+    <aura:attribute name="SvilReteAerea" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.SvilReteAerea):v.datiImpianto.SvilReteAerea}"/>
+    <aura:attribute name="SvilReteCavo" type='string' default="{!v.valueRadio1=='section1Radio1Option3'?(v.valueRadio2=='section1Radio2Option3'?'':v.datiImpianto.SvilReteAerea):v.datiImpianto.SvilReteCavo}"/>
+    
+    <aura:attribute name="sectionIValue1" type="List" default="[{'label': 'a) Interruttore + sezionatore', 'value': 'section1Radio1Option1'},
+                                                               {'label': 'b) Interruttore estraibile', 'value': 'section1Radio1Option2'},
+                                                               {'label': 'c) Nessun Valore', 'value': 'section1Radio1Option3'}
+                                                               ]"/>
+    <aura:attribute name="sectionIValue2" type="List" default="[{'label': 'a) Protezione con 67N.SX', 'value': 'section1Radio2Option1'},
+                                                               {'label': 'b) Protezione senza 67N.SX', 'value': 'section1Radio2Option2'},
+                                                               {'label': 'c) Nessun Valore', 'value': 'section1Radio2Option3'}
+                                                               ]"/>
+    <aura:attribute name="sectionIIIValue" type="List" default="[{'label': 'a) apparato di protezione esterno', 'value': 'section3Radio1Option1'},
+                                                                {'label': 'b) Incluso nell\'inverter', 'value': 'section3Radio1Option2'}
+                                                                ]"/>
+    <aura:attribute name="sectionIIIValue2" type="List" default="[{'label': 'a) apparato di protezione esterno', 'value': 'section3Radio2Option1'},
+                                                                 {'label': 'b) Incluso nell\'inverter', 'value': 'section3Radio2Option2'}
+                                                                 ]"/>
+    
+    <!--SS_Pagination-->
+    <!-- ATTRIBUTI RELATIVI ALLA LISTA DI OGGETTI TROVATI DALLA RICERCA E I DATI VISUALIZZATI-->
+    <aura:attribute name="objectList" type="sObject[]" /> <!--TUTTE le pratiche trovate-->
+    <aura:attribute name="paginationList" type="sObject[]"/> <!--pratiche della pagina CORRENTE-->
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="start" type="Integer" default="0" />
+    <aura:attribute name="end" type="Integer" default="0"/>
+    
+    <!-- ATTRIBUTI RELATIVI ALLA PAGINAZIONE -->    
+    <aura:attribute name="totalPage" type="Integer" default="1"/><!--pagine totali-->
+    <aura:attribute name="currentPage" type="Integer" default="1"/><!--pagina coorente-->
+    <aura:attribute name="totalRecord" type="integer" default="0"/>
+    <aura:attribute name="pages" type="integer[]"/> <!-- vettore con le pagine serve per la picklist di selezione delle pagine -->
+    <!--SS_Pagination-->
+    
+    <aura:attribute name="accId" type="String"/><!--SS-->
+    <aura:attribute name="accName" type="String"/><!--SS-->
+    
+    <aura:attribute name="arrowDirection" type="string" default="arrowup" description="Use for change arrow sign direction on header based on click"/>
+    <aura:attribute name="isAsc" type="boolean" default="true" description="boolean flag for pass sorting condition to apex class"/>
+    <!--DF aura:attribute name="selectedTabsoft" type="string" default="PED_POD__c" description="Use for show/hide arraow sign on header based on conditions"/--> <!-- DF CAPIRE -->
+    <aura:attribute name="sortField" type="String"/>
+    <aura:attribute name="sortAsc" type="Boolean"/>
+    
+    <aura:attribute name="startDate" type="Date" />
+    <aura:attribute name="endDate" type="Date" />
+    <aura:attribute name="compareDate" type="Date" />
+    <aura:attribute name="mySearch" type="string" default=""/>
+    
+    <aura:attribute name="sDateErrorNotExist" type="Boolean" default="true"/>
+    <aura:attribute name="eDateErrorNotExist" type="Boolean" default="true"/>
+    
+    <aura:attribute name="PODList" type="PED_A486DettaglioSostituzionePOD__c[]" />    
+    
+    <aura:registerEvent name="PED_CallWSAsyncEvent" type="c:PED_CallWSAsyncEvent"/>
+    <aura:handler event="c:PED_CallbackWSAsyncEvent" action="{!c.callback}"/> 
+    <aura:attribute name="UniqueID" type="string"/>
+    <aura:registerEvent name="PED_RemoveSpinnerAsync" type="c:PED_RemoveSpinnerAsync"/>    
+    <aura:handler event="c:PED_RemoveSpinnerAsync" action="{!c.removeSpinner}"/>
+    
+    <aura:handler name="change1" value="{!v.pageNumber}" action="{!c.renderPage}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="spinner" type="Boolean" default="true"/>
+    <aura:if isTrue="{! v.spinner }">
+        <lightning:spinner aura:id="mySpinner" variant="brand" style='position: fixed;' />
+    </aura:if>
+        
+    <aura:attribute name='isSucc' type='boolean'/>
+    <aura:attribute name='messageToShow' type='string'/>
+    <c:PED_ModalEsito isSucc='{!v.isSucc}' messageToShow='{!v.messageToShow}'></c:PED_ModalEsito>
+    <div>         
+    
+    <div>Questo servizio, dedicato a chi è intestatario di forniture di Media Tensione, 
+        fornisce indicazioni sulle tarature da applicare ai dispositivi di protezione degli impianti.
+        Il servizio consente di visualizzare la lista delle forniture di propria pertinenza e da queste
+        di ottenere le relative informazioni sulle tarature dei dispositivi di protezione. <br/><br/></div>
+        <div class="slds-p-horizontal_small" >
+            <aura:if isTrue='{!v.validPOD}'>
+                <p style='text-align:center;color:#0441bd;font-size:25px;margin: 50px;'>{!v.errorValidPOD}</p>
+                <aura:set attribute="else">
+                    <lightning:tabset >
+                        <!-- TARATURE -->
+                        <lightning:tab onactive='{!c.onActiveTarature}' >
+                            <aura:set attribute="label">
+                                Tarature <!--<lightning:buttonicon iconName="utility:info" variant="bare" size="normal" alternativeText="Indicates approval" onclick="{!c.click}"/>-->
+                            </aura:set>
+                            <p>
+                                <span style='font-weight:bold'>Rete Alimentazione : <br/><br/></span>
+                                Cabina e-distribuzione {!v.DatiUtente.fornitura[0].CdNodo} sita in {!v.DatiUtente.fornitura[0].IndNodo}<br/>
+                                Ambito di concentrazione secondo ARERA : Media <br/>
+                            </p>
+                            <br/>
+                            <br/> 
+                            <div class="slds-grid slds-wrap slds-grid_align-end">
+                                <!--SS_Pagination-->
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:button class="slds-button slds-button_brand button-blue" label="Esporta PDF" buttonType="Submit" press="{!c.DownloadPDF3}"/>
+                                    </span>
+                                </div>
+                                <div class="slds-col">
+                                    <span>
+                                        <ui:button class="slds-button slds-button_brand button-blue" label="Invia email" buttonType="Submit" press="{!c.sendEmail}"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-wrap slds-scrollable_x">
+                                <div class="slds-size_1-of-1">
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">  
+                                        <tbody>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione1" value="Tensione nominale Vn"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!'[kV]:' + v.datiFornitura.nominalVoltage}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value="±10%"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione2" value="Frequenza nominale"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="[Hz]:50"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value="±1% (95% dell'anno)"/><br/>
+                                                        <ui:outputDate value="+4% - 6% (100% dell'anno)"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione3" value="Esercizio del neutro"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.neutralExercise=='C'?'a terra tramite impedenza':v.datiFornitura.neutralExercise=='R'?'a terra tramite impedenza':v.datiFornitura.neutralExercise=='I'?'Isolato':''}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value=""/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione4" value="Corrente di guasto monofase a terra(1)"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.faultCurrentMFT + ' A'}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value=""/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione5" value="Tempo di eliminazione del guasto a terra"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.faultEliminationTime+' s'}" />                                              
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value=""/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione6" value="Icc-3-max-ese"/>
+                                                        <br/>
+                                                        <ui:outputText value="Corrente di corto circuito trifase massima di "/>
+                                                        <br/>
+                                                        <ui:outputText value="esercizio [kA]"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.maxShortPhaseCurrent}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value=""/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione7" value="Icc-3-min-ese"/>
+                                                        <br/>
+                                                        <ui:outputText value="Corrente di corto circuito trifase minima di "/>
+                                                        <br/>
+                                                        <ui:outputText value="esercizio [kA]"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.minShortCircuitCurrent}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value="La potenza di corto circuito trifase minima di esercizio [kVA] si ricava nel modo seguente(1) :"/>
+                                                        <br/><ui:outputDate value="1.73 * Vn * Icc-3-min-ese"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Indice">
+                                                    <div class="slds-truncate" title="Indice">
+                                                        <ui:outputText aura:id="ReteAlimentazione8" value="Icc-3-min-conv"/>
+                                                        <br/>
+                                                        <ui:outputText value="Corrente di corto circuito trifase minima "/>
+                                                        <br/>
+                                                        <ui:outputText value="convenzionale [kA]"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Valore">
+                                                    <div class="slds-truncate" title="Valore">
+                                                        <ui:outputText value="{!v.datiFornitura.convShorttCircuitCurrent}"/>                                                
+                                                    </div>
+                                                </td>
+                                                <td data-label="Note">
+                                                    <div class="slds-truncate" title="Note">
+                                                        <ui:outputDate value="La potenza di corto circuito trifase minima convenzionale [kVA] si ricava nel modo seguente(2) :"/>
+                                                        <br/><ui:outputDate value="1.73 * 0.9 * Vn * Icc-3-min-conv"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <br/>
+                            <p style='line-height: 50px;background-color: gainsboro;text-align: center;'>
+                                La corrente di doppio guasto massimo monofase a terra è di 10,8 kA ed il relativo tempo di eliminazione<br/>guasto è di 340ms (vedi norma CEI 0-16 par. 5.2.1.8).
+                            </p>
+                            <br/>
+                            <p>
+                                (1) La potenza di corto circuito, in generale, si ricava con la formula: Pcc = &#8730;3 * Vn * Icc<br/>
+                                (2) La potenza trifase minima convenzionale è ricavata tenendo conto di un assetto di contro alimentazione della rete elettrica passiva (in assetto n-1; art. 96.5 ARG/elt 198/11)
+                                
+                            </p>
+                            <br/><br/><br/><br/>  
+                            <aura:if isTrue='{!!v.falgSectionII}'>
+                                <p>
+                                    <span style='font-weight:bold;'>Specifiche di taratura della Protezione Generale </span>                
+                                </p>
+                                <aura:if isTrue='{!v.showTabella1==undefined?true:v.showTabella1}'>
+                                    <p>
+                                        In ottemperanza a quanto stabilito nelle delibere ARERA vigenti, nella norma CEI 0-16 e quanto previsto nei criteri
+                                        di allacciamento e-distribuzione (disponibili sul sito <a style='font-weight: bold;' href='https://www.e-distribuzione.it'>www.e-distribuzione.it</a>), i valori di
+                                        taratura della Protezione Generale che devono essere impostati sono quelli indicati nella tabella 1 sotto riportata
+                                        <br/><br/>
+                                        <span style='font-weight:bold;'>Tabella 1: TARATURA PROTEZIONE GENERALE</span>  
+                                    </p>
+                                    <br/>
+                                    <div class="slds-grid slds-wrap slds-scrollable_x">
+                                        <div class="slds-size_1-of-1">
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked" id='table-DescProt'>
+                                                <thead>
+                                                    <tr class="slds-text-title_caps">
+                                                        <th scope="col">
+                                                            <div onclick="{!c.sortDescProte}" class="slds-truncate" title="DescProte">
+                                                                DESCRIZIONE<br/>PROTEZIONI (1) 
+                                                                <aura:if isTrue="{!v.sortField=='sortDescProte'}">
+                                                                    <span>
+                                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                                            &#9650; 
+                                                                            <aura:set attribute="else">
+                                                                                &#9660; 
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </span>
+                                                                </aura:if>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col"  style='text-align:center;'>
+                                                            <div class="slds-truncate" title="Intervento">
+                                                                <div onclick="{!c.sortbyIntervento}" class="slds-truncate" title="Intervento">
+                                                                    SOGLIE DI INTERVENTO
+                                                                    <aura:if isTrue="{!v.sortField=='Intervento'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <div onclick="{!c.sortbyTempoEliminazione}" class="slds-truncate" title="TempoEliminazione">
+                                                                    TEMPO DI ELIMINAZIONE<br/>GUASTO (2)
+                                                                    <aura:if isTrue="{!v.sortField=='TempoEliminazione'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div  title="Note">
+                                                                <div onclick="{!c.sortbyNote}"  title="Note">
+                                                                    NOTE
+                                                                    <aura:if isTrue="{!v.sortField=='Note'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 alfa (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[0] + ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr> 
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 beta (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[1]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 K (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[2]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 I> (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[3]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S2s (I>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[4] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[5]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S2p (I>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[6]+ ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[7]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="50.S3 (I>>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[8] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[9]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51N.S1 (I0>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[10] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[11]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51N.S2 (I0>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[12] + ' (4)(5)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[13]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <br/>                  
+                                    <p>
+                                        La protezione di massima corrente omopolare (51N) a due soglie va attivata con una sola soglia (51N.S1) per gli impianti collegati a reti MT
+                                        esercite a neutro isolato (o resistore) e con entrambe le soglie (51N.S1 - 51N.S2) per gli impianti collegati a reti MT esercite con neutro a
+                                        terra tramite impedenza.<br/>
+                                        In alternativa alle regolazioni sopra esposte, per gli utenti di reti a neutro compensato che non necessitano della protezione 67N.S1 e
+                                        67N.S2, può essere impiegata la sola soglia I0>, con le seguenti regolazioni: valore 2A; tempo di estinzione del guasto: 170ms;<br/>
+                                        Qualora il cliente non possa impostare la prima soglia (I>) a tempo normalmente inverso (NIT) così come indicato nella tabella(1), dovrà
+                                        impostare la soglia 51.S2 (A) (I>>) al valore 97,5 A anzichè 250A<br/>
+                                        (1) La simbologia adottata è quella riportata nella norma CEI 0-16<br/>
+                                        (2) Comprendente il tempo di ritardo intenzionale ed il tempo di apertura dell'interruttore<br/>
+                                        (3) Nel caso in cui i campi della soglia I> siano vuoti non è necessario impostare tale soglia<br/>
+                                        (4) Corrente al primario misurata tramite TA, TA omopolare o equivalente (somma vettoriale delle 3 correnti di fase)<br/>
+                                        (5) Il valore di riferimento è il 140% della corrente di guasto monofase a terra comunicata e riferita all'esercizio del neutro della rete   <br/>                  
+                                    </p>
+                                </aura:if>
+                                <br/><br/><br/>
+                                <aura:if isTrue='{!v.showTabella2==undefined?true:v.showTabella2}'>
+                                    <p>
+                                        Qualora il contributo alla corrente capacitiva di guasto monofase a terra della rete MT interna
+                                        all'impianto di utenza, calcolato con la formula di cui al punto 5.2.1.7 della norma CEI 0-16, sia
+                                        superiore all'80% della soglia d'intervento 51N.S1 della tabella 1 (ad esempio in caso di linee
+                                        interamente in cavo di estensione superiore a 400 m a 20 kV o 530 m a 15 kV), il Sistema di
+                                        Protezione Generale deve comprendere una protezione direzionale di terra (67N) e devono
+                                        essere impostate ai valori di taratura riportati nella seguente tabella 2<br/><br/>
+                                        <span style='font-weight:bold;'>Tabella 2: TARATURA PROTEZIONE GENERALE dotata di protezione direzionale di terra</span>
+                                    </p>
+                                    <br/><br/>
+                                    <div class="slds-grid slds-wrap slds-scrollable_x">
+                                        <div class="slds-size_1-of-1">
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">
+                                                <thead>
+                                                    <tr class="slds-text-title_caps">
+                                                        <th scope="col">
+                                                            <div onclick="{!c.sortDescProte2}" class="slds-truncate" title="DescProte2">
+                                                                DESCRIZIONE<br/>PROTEZIONI (1) 
+                                                                <aura:if isTrue="{!v.sortField=='sortDescProte2'}">
+                                                                    <span>
+                                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                                            &#9650; 
+                                                                            <aura:set attribute="else">
+                                                                                &#9660; 
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </span>
+                                                                </aura:if>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="Intervento2">
+                                                                <div onclick="{!c.sortbyIntervento2}" class="slds-truncate" title="Intervento2">
+                                                                    SOGLIE DI INTERVENTO
+                                                                    <aura:if isTrue="{!v.sortField=='Intervento2'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="TempoEliminazione2">
+                                                                <div onclick="{!c.sortbyTempoEliminazione2}" class="slds-truncate" title="TempoEliminazione2">
+                                                                    TEMPO DI ELIMINAZIONE<br/>GUASTO (2)
+                                                                    <aura:if isTrue="{!v.sortField=='TempoEliminazione2'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="Note2">
+                                                                <div onclick="{!c.sortbyNote2}" class="slds-truncate" title="Note2">
+                                                                    NOTE
+                                                                    <aura:if isTrue="{!v.sortField=='Note2'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 alfa (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[0] + ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr> 
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 beta (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[1]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 K (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[2]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S1 I> (I>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[3]+ ' (3)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S2s (I>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[4] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[5]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51.S2p (I>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[6] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[7]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="50.S3 (I>>>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[8] + ' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[9]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>                                    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="51N.S2 (I0>)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento" >
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[12] + ' (4)(5)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione"  >
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[13]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" style='font-weight: bold;' title="Desc">
+                                                                <ui:outputText  value="67N – NI(8)"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" style='font-weight: bold;' title="SoglieIntervento">
+                                                                <ui:outputText value="{!'V0 (6) ='+v.datiGriglia[14]}"/><br/>
+                                                                <ui:outputText value="{!'I0 (4) ='+v.datiGriglia[15]}"/><br/>
+                                                                <ui:outputText value="{!'&phi; (7) =( '+v.datiGriglia[16]+' )°'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoEliminazione">
+                                                            <div class="slds-truncate" title="TempoEliminazione">
+                                                                <ui:outputText value="{!v.datiGriglia[17]}"/><br/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="richiuse escluse"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>  <tr>
+                                                    <td data-label="Desc">
+                                                        <div class="slds-truncate" style='font-weight: bold;' title="Desc">
+                                                            <ui:outputText value="67N – NC(8)"/>
+                                                        </div>
+                                                    </td>   
+                                                    <td data-label="SoglieIntervento">
+                                                        <div class="slds-truncate"  style='font-weight: bold;' title="SoglieIntervento">
+                                                            <ui:outputText value="{!'V0 (6) ='+v.datiGriglia[18]}"/><br/>
+                                                            <ui:outputText value="{!'I0 (4) ='+v.datiGriglia[19]}"/><br/>
+                                                            <ui:outputText value="{!'&phi; (7) =( '+v.datiGriglia[20]+' )°'}"/>
+                                                        </div>
+                                                    </td> 
+                                                    <td data-label="TempoEliminazione">
+                                                        <div class="slds-truncate" title="TempoEliminazione">
+                                                            <ui:outputText value="{!v.datiGriglia[21]}"/>
+                                                        </div>
+                                                    </td> 
+                                                    <td data-label="Note" >
+                                                        <div class="slds-truncate" title="Note">
+                                                            <ui:outputText value="richiuse escluse"/>
+                                                        </div>
+                                                    </td>                                 
+                                                    </tr>  
+                                                    
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <br/> 
+                                    <p>
+                                        E' richiesta l'attivazione della protezione direzionale di terra con entrambe le soglie (67N - NI / 67N - NC) per tutti gli impianti
+                                        collegati a reti MT esercite con neutro a terra tramite: impedenza, resistore o in regime isolato.
+                                        Qualora il cliente non possa impostare la prima soglia (I>) a tempo inverso (NIT), secondo i valori suggeriti in tabella (2), oppure la
+                                        curva d'intervento della stessa (I>) non assicuri l'assorbimento della potenza contrattuale concordata con il distributore, si dovrà
+                                        impostare la soglia 51.S2 (A) (I>>) al valore 97,5A anziché 250A
+                                        (1) La simbologia adottata è quella riportata nella norma CEI 0-16<br/>
+                                        (2) Comprendente il tempo di ritardo intenzionale ed il tempo di apertura dell'interruttore<br/>
+                                        (3) Nel caso in cui i campi della soglia I> siano vuoti non è necessario impostare tale soglia<br/>
+                                        (4) Corrente al primario misurata tramite TA, TA omopolare o equivalente (somma vettoriale delle 3 correnti di fase)<br/>
+                                        (5) Il valore di riferimento è il 140% della corrente di guasto monofase a terra comunicata, riferita all'esercizio del neutro della rete.<br/>
+                                        (6) Tensione al secondario ottenuta tramite 3 TV di fase con collegamento a triangolo aperto e rapporto di trasformazione complessivo tale che, in caso di guasto monofase franco a terra, siano
+                                        presenti 100 V all'ingresso della protezione. Nel caso di TV con rapporto diverso i valori da impostare sulla protezione devono essere opportunamente ricalcolati (rispettivamente 2% e 5%
+                                        della tensione fornita alla protezione in presenza di un guasto monofase franco a terra)<br/>
+                                        (7) L'angolo è positivo se la I0 è in ritardo (in senso orario) sulla V0<br/>
+                                        (8) La soglia NI è corrispondente alla soglia "S1" per gli impianti connessi alla rete in data antecedente al 01/01/2013, mentre corrisponde alla soglia "S2" per gli impianti connessi alla rete a
+                                        partire dal 01/01/2013 (CEI 0-16 ed.3). Altresì la soglia NC è corrispondente alla soglia "S2" per gli impianti connessi alla rete in data antecedente al 01/01/2013, mentre corrisponde alla
+                                        soglia "S1" per gli impianti connessi alla rete a partire dal 01/01/2013 (CEI 0-16 ed.3). <br/>                    
+                                    </p>
+                                </aura:if>
+                                
+                                <br/><br/><br/><br/>
+                                <aura:if isTrue='{!v.showTabella3==undefined?true:v.showTabella3}'>
+                                    <p>
+                                        <span style='font-weight:bold;'>Specifiche di taratura della Protezione di Interfaccia:</span>
+                                    </p>
+                                    <br/><br/>
+                                    <p>
+                                        I Clienti produttori devono, in aggiunta, impostare sulla Protezione di Interfaccia, le tarature
+                                        riportate nella tabella 3. In ogni caso fa fede quanto indicato nel Regolamento di Esercizio.<br/> <br/> 
+                                        <span style='font-weight:bold;'>Tabella 3: TARATURA DELLA PROTEZIONE DI INTERFACCIA</span>
+                                    </p>
+                                    <br/><br/>
+                                    <div class="slds-grid slds-wrap slds-scrollable_x">
+                                        <div class="slds-size_1-of-1">
+                                            <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">
+                                                <thead>
+                                                    <tr class="slds-text-title_caps">
+                                                        <th scope="col" >
+                                                            <div onclick="{!c.sortDescProte3}" class="slds-truncate" title="DescProte3">
+                                                                DESCRIZIONE<br/>PROTEZIONI (1) 
+                                                                <aura:if isTrue="{!v.sortField=='sortDescProte3'}">
+                                                                    <span>
+                                                                        <aura:if isTrue="{!v.sortAsc}">
+                                                                            &#9650; 
+                                                                            <aura:set attribute="else">
+                                                                                &#9660; 
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                    </span>
+                                                                </aura:if>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="Intervento2">
+                                                                <div onclick="{!c.sortbyIntervento3}" class="slds-truncate" title="Intervento3">
+                                                                    SOGLIE DI INTERVENTO
+                                                                    <aura:if isTrue="{!v.sortField=='Intervento3'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="TempoRitardo3">
+                                                                <div onclick="{!c.TempoRitardo3}" class="slds-truncate" title="TempoRitardo3">
+                                                                    TEMPO DI<br/>RITARDO (2)
+                                                                    <aura:if isTrue="{!v.sortField=='TempoRitardo3'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        <th scope="col" style='text-align:center;'>
+                                                            <div class="slds-truncate" title="Note3">
+                                                                <div onclick="{!c.sortbyNote3}" class="slds-truncate" title="Note3">
+                                                                    NOTE
+                                                                    <aura:if isTrue="{!v.sortField=='Note3'}">
+                                                                        <span>
+                                                                            <aura:if isTrue="{!v.sortAsc}">
+                                                                                &#9650; 
+                                                                                <aura:set attribute="else">
+                                                                                    &#9660;   
+                                                                                </aura:set>
+                                                                            </aura:if>
+                                                                        </span>
+                                                                    </aura:if>
+                                                                </div>
+                                                            </div>
+                                                        </th>
+                                                        
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="59.S1 Massima Tensione"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[22]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[23]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="59.S2(3) Massima Tensione"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[24]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[25]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="27.S1 Minima Tensione"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[26]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[27]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="27.S2(3) Minima Tensione"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[28]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[29]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="81 &gt; Massima Frequenza"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[30]+' Unipolare'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[31]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="soglia permissiva"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="81 &lt; Minima Frequenza"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[32]+' Unipolare'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[33]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="soglia permissiva"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="81 &gt; Massima Frequenza"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[34]+' Unipolare'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[35]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="soglia restrittiva (7)"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="81 &lt; Massima Frequenza"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[36] +' Unipolare'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!'&le;'+v.datiGriglia[37]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value="soglia restrittiva (7)"/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr> 
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="59Vi Massima tensione inversa Vi lato MT"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[38]+' (4)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="27 Vd Minima tensione diretta Vd lato MT"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[39] +' (5)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>    
+                                                    <tr>
+                                                        <td data-label="Desc">
+                                                            <div class="slds-truncate" title="Desc">
+                                                                <ui:outputText value="Massima Tensione omopolare V0"/>
+                                                            </div>
+                                                        </td>   
+                                                        <td data-label="SoglieIntervento">
+                                                            <div class="slds-truncate" title="SoglieIntervento">
+                                                                <ui:outputText value="{!v.datiGriglia[40]+' (6)'}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="TempoRitardo">
+                                                            <div class="slds-truncate" title="TempoRitardo">
+                                                                <ui:outputText value="{!v.datiGriglia[41]}"/>
+                                                            </div>
+                                                        </td> 
+                                                        <td data-label="Note" >
+                                                            <div class="slds-truncate" title="Note">
+                                                                <ui:outputText value=""/>
+                                                            </div>
+                                                        </td>                                 
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <br/> 
+                                    <p>
+                                        (1) La simbologia adottata è quella riportata nella Norma CEI 0-16 e nell'Allegato A70<br/> 
+                                        (2) Il tempo indicato non è comprensivo del tempo di apertura interruttore (DDI - BT o MT).<br/> 
+                                        (3) L'attivazione delle soglie 59.S2 e 27.S2 non è necessaria se l'impianto è entrato in esercizio in data anteriore al 01/07/2012<br/> 
+                                        (4) Rappresenta il 15% (o il 20 % per tutti gli impianti di produzione le cui domande di connessione sono state inviate entro il 1 aprile 2013) del valore nominale della tensione di fase o
+                                        concatenata. (0,15/&#8730;3) Vn o En<br/> 
+                                        (5) Rappresenta il 70% del valore nominale della tensione di fase o concatenata. (0,7/&#8730;3) Vn o En<br/> 
+                                        (6) Rappresenta il 5% del valore di tensione residua Vrn (3En=&#8730;3Vn) riportata al secondario dei 3 TV di fase con collegamento a triangolo aperto, aventi un rapporto di trasformazione tale
+                                        che, in caso di guasto monofase a terra franco, siano presenti 100 V all'ingresso della protezione. Nel caso di TV o trasduttori di tensione con rapporto diverso i valori da impostare sulla
+                                        protezione devono essere opportunamente ricalcolati (5% della tensione fornita alla protezione in presenza di un guasto monofase franco a terra)<br/> 
+                                        (7) L'attivazione delle soglie restrittive di frequenza, come previsto dall'allegato A70 del CdR, è subordinata:<br/> 
+                                        1. ad informazioni locali in grado di discriminare eventi di sistema ed eventi localizzati sulla rete di distribuzione, assenza di segnali di commutazione da remoto<br/> 
+                                        2. alla disponibilità di segnali di abilitazione trasmessi attraverso la rete di distribuzione.<br/> 
+                                        Infine, in presenza di un tele segnale di distacco (TELESCATTO), impartito dal distributore, è possibile attuare la disconnessione diretta dell'impianto, senza la necessità di far intervenire il
+                                        SPI mediante l'attivazione delle soglie restrittive di frequenza        <br/> <br/>             
+                                    </p>
+                                </aura:if>
+                                <br/>
+                                <p>
+                                    Sul nostro sito <a style='font-weight: bold;' href='http://www.e-distribuzione.it'>www.e-distribuzione.it</a> si possono trovare ulteriori informazioni e documentazione
+                                    relativamente a:<br/> 
+                                    a) Criteri di taratura degli impianti di distribuzione MT ed esempi tipici di coordinamento delle protezioni
+                                    di rete e di Utenza.<br/> 
+                                    b) Modello della dichiarazione di adeguatezza per la SPG ai sensi della Delibera ALT/elt 33/08 e 198/11.<br/> 
+                                    Per informazioni relative alla tarature è possibile scrivere alla mail: <a href="{!'mailto:'+v.datiFornitura.mail}">{!v.datiFornitura.mail}</a>
+                                </p>
+                                <br/><br/>
+                                 <br/><br/>
+                            </aura:if>
+                            <ui:button class="slds-button slds-button--neutral slds-float_right slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.goBack}" />
+                                
+                        </lightning:tab>   
+                        <!-- FINE TARATURE -->
+                        <!-- CARATTERISTICHE DELL'IMPIANTO -->
+                        <lightning:tab onactive='{!c.onActiveCaratteristiche}'>
+                            <aura:set attribute="label">
+                                Caratteristiche dell'impianto di utenza MT <!--<lightning:buttonicon iconName="utility:info" variant="bare" size="normal" alternativeText="Indicates approval" onclick="{!c.click}"/>-->
+                            </aura:set> 
+                            <div class="slds-col">
+                                <span>
+                                    <ui:button class="slds-button slds-button_brand button-blue float-right" label="Invia email" buttonType="Submit" press="{!c.sendEmail2}"/>
+                                </span>
+                                <span>
+                                    <ui:button class="slds-button slds-button_brand button-blue float-right" label="Esporta PDF" buttonType="Submit" press="{!c.DownloadPDFCaratteristiche}"/>
+                                </span>
+                            </div>
+                            <div id='Sections' style='margin-left:30px;margin-top:40px;'>
+                                <ui:inputCheckbox aura:id="checkSectionI" value='{!v.falgSectionI}' class='myCheckbox' change="{!c.onCheck}"/><span class='myCheckbox'>&nbsp;&nbsp;Sezione I</span><br/>
+                                <div id='SectionI'  style='margin-left:30px'>
+                                    <br/>
+                                    <p>Impianto rispondente ai requisiti tecnici riportati nell'art. 39.1 della Delibera ARG/elt 198/11</p>
+                                    <br/>
+                                    <aura:if isTrue='{!v.falgSectionI}'>
+                                        <lightning:radioGroup aura:id="SectionIGroup1"
+                                                              name="radioButton1SectionI"
+                                                              label="Dispositivo Generale (DG)"
+                                                              options="{! v.sectionIValue1 }"
+                                                              value='{!v.valueRadio1}'
+                                                              onchange="{! c.changeRadio }"                            
+                                                              /><br/>
+                                        <lightning:radioGroup aura:id="SectionIGroup2"
+                                                              name="radioButton2SectionI"
+                                                              label="Protezione Generale (PG)" 
+                                                              options="{! v.sectionIValue2 }"
+                                                              value='{!v.valueRadio2}'
+                                                              onchange="{! c.changeRadio }"
+                                                              />
+                                        
+                                        <br/>
+                                        <p style='color:red'>{!v.errorsRadio}</p>
+                                        <br/>
+                                        
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-max-medium-table_stacked">                           
+                                            
+                                            <tr>
+                                                <td>
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;' >
+                                                        <ui:outputText value="Sviluppo Rete Aerea Interna (m)"/>
+                                                    </div>
+                                                </td >
+                                                <td >
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}"  id='SvilReteAerea'  value="{!v.SvilReteAerea}" />                                               
+                                                    </div>
+                                                </td>                                
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;'>
+                                                        <ui:outputText value="Sviluppo Rete in Cavo Interna (m)"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}" id='SvilReteCavo' value="{!v.SvilReteCavo}" />                                                
+                                                    </div>
+                                                </td>
+                                            </tr>                                    
+                                            <tr>
+                                                <td >
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;'>
+                                                        <ui:outputText value="Lunghezza cavo di collegamento (m)"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}" id='LunghCavoColl' value="{!v.LunghCavo}" />                                                </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;'>
+                                                        <ui:outputText value="Sezione Cavo di collegamento (mmq)"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}" id='SezCavoColl' value="{!v.SezCavoColl}" />                                                </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;'>
+                                                        <ui:outputText value="Potenza complessiva dei trasformatori contemporaneamente energizzati (kVA)"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}"  id='PotComplTrasf'  value="{!v.PotTrasfEnerg}" />                                                </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >
+                                                    <div class="slds-truncate " style='text-align:left;font-weight: bold;'>
+                                                        <ui:outputText value="Potenza complessiva dei trasformatori in parallelo (kVA)"/>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style='min-width: 100px;' class="uiInput uiInputTextuiInput--default uiInput--input">
+                                                        <input type='text' id='PotComplParall' class='input' onchange='{!c.changeText}' disabled="{!(v.valueRadio1=='section1Radio1Option3' &amp;&amp; v.valueRadio2=='section1Radio2Option3')}"  value="{!v.PotTrasfParall}" />                                                </div>
+                                                </td>
+                                            </tr>  
+                                        </table>
+                                        
+                                    </aura:if>
+                                </div>
+                                
+                                <br/>
+                                
+                                <ui:inputCheckbox aura:id="checkSectionII" value='{!v.falgSectionII}' class='myCheckbox' change="{!c.onCheck}"/><span class='myCheckbox'>&nbsp;&nbsp;Sezione II</span><br/>
+                                
+                                <div id='SectionII'  style='margin-left:30px'>
+                                    <br/>
+                                    <p>Impianto MT con dispositivo generale (DG) e protezione generale (PG) di cui all'art 39.2 della Del ARG/elt 198/11 (IMS e fusibili / IVOR e disp contro il cto-cto / IMS-FGT-R e fusibili) </p>
+                                    <br/>
+                                </div><br/>
+                                <ui:inputCheckbox aura:id="checkSectionIII" value='{!v.falgSectionIII}' class='myCheckbox' change="{!c.onCheck}"/><span class='myCheckbox'>&nbsp;&nbsp;Sezione III</span><br/>
+                                <div id='SectionIII'  style='margin-left:30px'>
+                                    <p>Impianto MT con dispositivo generale (DG) e protezione generale (PG) per Produttori - Autoproduttori </p>
+                                    <aura:if isTrue='{!v.falgSectionIII}'>
+                                        
+                                        <br/>
+                                        <lightning:radioGroup aura:id="SectionIIIGroup1"
+                                                              name="radioButton1SectionIII"
+                                                              label="Protezione di Interfaccia (PI)"
+                                                              options="{! v.sectionIIIValue }" 
+                                                              value='{!v.valueRadio3}'
+                                                              onchange="{! c.changeRadio }"                            
+                                                              />     
+                                        <br/>
+                                        <lightning:radioGroup aura:id="SectionIIIGroup2"
+                                                              name="radioButton2SectionIII"           
+                                                              label="Dispositivo di Interfaccia (DDI)"
+                                                              options="{! v.sectionIIIValue2 }"  
+                                                              value='{!v.valueRadio4}'
+                                                              onchange="{! c.changeRadio }"                            
+                                                              />     
+                                    </aura:if><br/>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-wrap slds-grid_align-end">
+                                <!--SS_Pagination-->
+                                <!--<div class="slds-col">
+                        <span>                    
+                            <ui:button class="slds-button slds-button_neutral button-white" label="Invia file via Mail" buttonType="Submit" press="{!c.sendMail}"/>
+                        </span>
+                    </div>-->
+                                <div class="slds-col">
+                                    
+                                    
+                                    <!--START MODAL CONFIRM--> 
+                                    <div class="slds-m-around--xx-large">   
+                                        <aura:if isTrue="{!v.isOpen}">   
+                                            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                                                <div class="slds-modal__container">
+                                                    <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                                                    <div class="slds-modal__header">
+                                                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+                                                            X
+                                                            <span class="slds-assistive-text">Close</span>
+                                                        </button>
+                                                        <h2 id="header99" class="slds-text-heading--medium">Conferma Invio</h2>
+                                                    </div>
+                                                    <!--###### MODAL BOX BODY Part Start From Here ######-->
+                                                    <div class="slds-modal__content slds-p-around--medium">
+                                                        <p style='text-align:center;'>Sei sicuro di voler annullare la precedente caratteristica dell'impianto?</p>
+                                                    </div>
+                                                    <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                                                    <div class="slds-modal__footer">
+                                                        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Chiudi</button>
+                                                        <button class="slds-button slds-button_brand button-blue" onclick="{!c.sendData}">Invia Dati</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-backdrop slds-backdrop--open"></div>
+                                            <!--END MODAL CONFIRM--> 
+                                            
+                                        </aura:if>
+                                    </div>
+                                    <span>
+                                         <ui:button class="slds-button slds-button--neutral slds-button slds-button_neutral button-white" label="Indietro" buttonType="Submit" press="{!c.goBack}" />
+                                        <ui:button class="slds-button slds-button_brand button-blue" label="Invia Dati" buttonType="Submit" press="{!c.openModel}"/>
+                                    </span>
+                                </div>
+                            </div>                     
+                        </lightning:tab>  
+                        <!-- FINE CARATTERISTICHE DELL'IMPIANTO -->                
+                    </lightning:tabset>  
+                </aura:set>
+            </aura:if>
+            
+        </div>
+        
+            
+    </div>
+    
+</aura:component>

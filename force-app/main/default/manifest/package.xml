@@ -8,15 +8,18 @@
     <members>PED_ServiziTecnici_BuchiTensione</members>
     <members>PED_Adeguatezza_ImpiantiWrapper</members>
     <members>PED_Adeguatezza_ImpiantiController</members>
-    <members>PED_SearchCalibrationWS</members>
+    <members>PED_SearchCalibrationsWrapper</members>
+    <members>PED_SearchCalibrationsWS</members>
+    <members>PED_TaratureImpianti_Controller</members>
         <name>ApexClass</name>
     </types>
      <types>
-         <members>PED_ServiziTecniciDelegato</members>
-         <members>PED_CallWsAsync_ServiziTecnici</members>
-         <members>PED_Adeguatezza_Impianti</members>
-         <members>PED_AdeguatezzaImpiantiDelegato</members>
-        <name>AuraDefinitionBundle</name>
+        <members>PED_ServiziTecniciDelegato</members>
+        <members>PED_CallWsAsync_ServiziTecnici</members>
+        <members>PED_TaratureImpianti</members>
+        <members>PED_Adeguatezza_Impianti</members>
+        <members>PED_AdeguatezzaImpiantiDelegato</members>
+            <name>AuraDefinitionBundle</name>
     </types>
     <version>52.0</version>
 </Package>

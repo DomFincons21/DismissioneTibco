@@ -396,7 +396,7 @@
     setFornitura : function(component,event){
         try{
           
-
+            // getSupplyData
             var action = component.get("c.getCliente");
             action.setParams(
                 {

@@ -1,0 +1,54 @@
+.THIS td {
+    text-align:center;
+}
+.THIS .myCheckbox{
+  display: inline-block!important;
+    font-size:20px;
+}
+.THIS .button-blue{
+	background-color: #0441bd !important;
+    color: #ffffff !important;
+    margin:5px;  	
+}
+
+/*.THIS td [title='Note'] {
+    width: 160px;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+.THIS td{
+    width: 25%;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+*/
+.THIS .inputTextLightning{
+    line-height:20px;
+    border-radius: 20px 20px;
+}
+.THIS.boldtext {
+ font-weight: bold; 
+}
+.THIS legend.slds-form-element__legend.slds-form-element__label {
+    font-weight: bold;
+    font-size: 14px;
+}
+.THIS .float-right{
+    float:right;
+}
+.THIS .slds-form-element__control {
+    margin-left: 30px;
+}
+@media only screen and (max-width: 768px) {
+    .THIS table.slds-table.slds-table_bordered.slds-table_cell-buffer.slds-max-medium-table_stacked,
+    .THIS table.slds-table.slds-table_bordered.slds-table_cell-buffer.slds-max-medium-table_stacked tbody {
+        display: block;
+        width: 100%;
+    }
+}

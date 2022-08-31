@@ -1,4 +1,4 @@
-<aura:component controller="PED_ServiziTecnici_Controller" implements="forceCommunity:availableForAllPageTypes" access="global" >
+<aura:component controller="PED_Adeguatezza_ImpiantiController" implements="forceCommunity:availableForAllPageTypes" access="global" >
     <!-- Import per generazione pdf -->
     <ltng:require styles="{!$Resource.PED_LDS_CSS}"/>
     <ltng:require scripts='/resource/JQuery, /resource/jsPDF_zip/jspdf.debug.js, /resource/jspdf_autotable' />
@@ -18,6 +18,9 @@
 
     <aura:attribute name='isSucc' type='boolean'/>
     <aura:attribute name='messageToShow' type='string'/>
+
+    <aura:attribute name="fromDelegate" type="Boolean" default="false" /> 
+
 
       <!-- INIT SPINNER -->
       <aura:if isTrue="{! v.spinner }">

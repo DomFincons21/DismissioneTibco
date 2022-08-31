@@ -1,3 +1,9 @@
+/**
+ * @author Marco Speranza
+ * @see PED_ServiziTecnici
+ * Creation data 27-08-2022
+ */
+
 public with sharing class PED_Adeguatezza_ImpiantiWrapper {
     
     public class Input {
@@ -34,11 +40,12 @@ public with sharing class PED_Adeguatezza_ImpiantiWrapper {
        
         @AuraEnabled
         public String reqDatetime;
+
         @AuraEnabled
         public String respDatetime;
 
         @AuraEnabled
-        public  ResponseSupplyData supplyData;
+        public List<ResponseSupplyData> supplyData;
 
     }
 
@@ -85,7 +92,7 @@ public with sharing class PED_Adeguatezza_ImpiantiWrapper {
 
         @AuraEnabled
         public String podId;
-        
+
         @AuraEnabled
         public ResponseSupplyTechInfo supplyTechInfo;
     }

@@ -25,16 +25,26 @@
 
         }else{
 
-            // TODO sistemare if delegato
-            var action = component.get("c.PODDetails"); 
+            console.log('En el doInit');
+            let action = component.get("c.getDetails");
+            action.setParams(
+                { "url": window.location.href }
+            );
+
+            component.set('v.fromDelegate', window.location.href.includes("delegato"));
+
+           
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 console.log('state ==> '+state);
                 if (state === "SUCCESS") {
                     var returnedValue = response.getReturnValue();
-                    console.log('DF returnedValue ==> '+returnedValue.data[0].pods.IdPod);
+                    component.set("v.spinner", true);
+
+                    console.log('returnedValue ==> '+returnedValue.data[0].pods.IdPod);
                     component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
-                    //DF FINE
+                    // todo
+                    helper.getData(component,event);
                     
                 }  
             });
@@ -42,7 +52,7 @@
             
             var id = helper.getUniqueId();
             component.set('v.UniqueID' , id);
-            helper.getData(component,event);
+           
         }
     
         

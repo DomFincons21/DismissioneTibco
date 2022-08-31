@@ -652,4 +652,31 @@ public class PED_ServiziTecnici_Controller {
         User u = [select id, firstname, lastname, name from user where id=:userinfo.getUserId()];
         return u;
     }
+
+    @AuraEnabled(continuation=true)
+    public static Continuation searchCalibration(String customer_k, String customer_l, String customer_m, String processo) {     
+        PED_SearchCalibrationsWrapper.Input input = new PED_SearchCalibrationsWrapper.Input();
+        input.customer_k = customer_k;
+        input.customer_l = customer_l;
+        input.customer_m = customer_m;
+        return PED_SearchCalibrationsWS.callSearchCalibrations(input,processo);
+    }
+
+    @AuraEnabled 
+    public static PED_SearchCalibrationsWrapper.Response processSearchCalibrations(List<String> labels, Object state){
+        PED_SearchCalibrationsWrapper.Response response = PED_SearchCalibrationsWS.processSearchCalibrations(labels,state);
+        map<String,String> myState = (map<String,String>) state;
+        response.data.supplyTechInfo.griglieMap = new Map<String,List<String>>();
+        for(PED_SearchCalibrationsWrapper.Responsecalibrations calib : response.data.supplyTechInfo.calibrations){
+            if(!String.isBlank(calib.CalibrationCode)){
+                List<String> sList = new List<String>();
+                sList.add(calib.CalibrationCom);
+                sList.add(calib.CalibrationPlant);
+                sList.add(calib.CalibrationUm);
+                response.data.supplyTechInfo.griglieMap.put(calib.CalibrationCode,sList);
+            }
+        }
+        System.debug('response-->'+response);
+        return response;
+    }
 }

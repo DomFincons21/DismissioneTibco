@@ -12,7 +12,7 @@ public with sharing class PED_BuchiDiTensioneController {
     public static String continuationLabel;
 
     private static String wsName = 'buchiDiTensione';
-    private static String wsProcess = 'ServiziTecnici';
+    private static String wsProcess = 'ServiziTecnici-BuchiTensione';
     private final static Integer TIMEOUTASYNC = 60;
 
     @AuraEnabled (continuation=true)

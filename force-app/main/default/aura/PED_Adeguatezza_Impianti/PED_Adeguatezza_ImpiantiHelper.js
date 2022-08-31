@@ -55,89 +55,33 @@
 
         // TODO : AdeguatezzaImpianti
 
-        /*
-        var methodName = 'AdeguatezzaImpianti';
-        var pod = component.get('v.selectedPod');
-        var methodParams = [pod];
-        console.log("DF PARAMS " + pod);
-        var callEvent = $A.get("e.c:PED_CallWSAsyncEvent");
-        callEvent.setParams({
-            "methodName" : methodName,
-            "methodParams" :methodParams ,
-            "UniqueId" :component.get('v.UniqueID') });
-        callEvent.fire();
-        component.set("v.spinner", false);
+        let action = component.get("c.adeguatezzaImpiantiAsContinuation");
+        console.log(component.get('v.fromDelegate'));
+        action.setParams(
+            { 
+                "pod":  component.get('v.selectedPod'),
+                "fromDelegate":    component.get('v.fromDelegate')
+            }
+        );
 
-        var action = component.get("c.getAdeguatezzaImpianti");  
-        action.setParams({"pod": component.get('v.selectedPod')});
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
+                var returnedValue = response.getReturnValue();
+                console.log(returnedValue);
                 this.setFornitura(component, event);
-                var returnValues = response.getReturnValue();
-                if(returnValues != null && returnValues != undefined){
-                    component.set("v.adeguatezzaImpianti", returnValues);
+            
+                if(returnedValue != null && returnedValue != undefined){
+                    component.set("v.adeguatezzaImpianti", returnedValue);
                 }
+
             }
-            var spinner = component.find("mySpinner");
-            $A.util.toggleClass(spinner, "slds-hide");
+            component.set("v.spinner", false);
         });
+
         $A.enqueueAction(action);
-        */
+        
     },
-    
-   /*DF DISMISSIONE setPOD : function(component){
-        var sPageURL = decodeURIComponent(window.location.search.substring(1)); //You get the whole decoded URL of the page.
-        var sURLVariables = sPageURL.split('&'); //Split by & so that you get the key value pairs separately in a list
-        var sParameterName;
-        var i;
-        var sFlg = false; //[SS]
-        for (i = 0; i < sURLVariables.length; i++) {
-            sParameterName = sURLVariables[i].split('='); //to split the key from the value.
-            if (sParameterName[0] === 'POD') { //lets say you are looking for param name - firstName
-                //[Start][SS]
-                if(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null){
-                    sFlg = true;
-                }else{
-                    component.set("v.selectedPod",sParameterName[1]);
-                }//[End][SS]   DISMISSIONE*/
-                /*  [SS]
-              if(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null){ 
-                    var urlEvent = $A.get("e.force:navigateToURL");
-                    urlEvent.setParams({
-                        "url": "/le-mie-forniture"
-                    });
-                    urlEvent.fire(); 
-                }else{ 
-                    component.set("v.selectedPod",sParameterName[1]);
-                }
-            }else{
-                var urlEvent = $A.get("e.force:navigateToURL");
-                urlEvent.setParams({
-                    "url": "/le-mie-forniture"
-                });
-                urlEvent.fire();    
-            }*/ 
-         /*DF DISMISSIONE   }
-            if(sParameterName[0] === 'id'){
-                if(!(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null)){
-                    component.set("v.accId",sParameterName[1]);
-                }
-            }
-            if(sParameterName[0] === 'name'){
-                if(!(sParameterName[1] === undefined || sParameterName[1].trim()==='' || sParameterName[1]===null)){
-                    component.set("v.accName",sParameterName[1]);
-                }                
-            }//[SS]
-        }
-        if(sFlg == true){//[Start][SS]
-            var urlEvent = $A.get("e.force:navigateToURL");
-            urlEvent.setParams({
-                "url": "/le-mie-forniture"
-            });
-            urlEvent.fire(); 
-        }//[End][SS]
-    }, DISMISSIONE */
  
     exportPDF : function (component, event,isMail){
         //Creo il file
@@ -451,7 +395,7 @@
     },
     setFornitura : function(component,event){
         try{
-            component.set("v.spinner", false);
+          
 
             var action = component.get("c.getCliente");
             action.setParams(
@@ -477,16 +421,9 @@
             component.set("v.spinner", false);
         }
     }, goBack : function(component, event){
-        //[start][SS]
-        /*DF  var accId = component.get("v.accId");
-        var accName = component.get("v.accName");
-       var pod = component.get("v.selectedPod");
-        if(!$A.util.isEmpty(accId)){
-            this.gotoURL(component, event, '/ServiziTecnici?POD='+pod+'&id='+accId+'&name='+accName);
-        }else{//[End][SS]
-            this.gotoURL(component, event, '/ServiziTecnici?POD='+component.get('v.selectedPod')); */
+       
         this.gotoURL(component, event, '/ServiziTecnici');
-        //  }//[SS]
+   
     },
     gotoURL : function(component, event, address){
         var urlEvent = $A.get("e.force:navigateToURL");

@@ -77,6 +77,9 @@
             });
             $A.enqueueAction(action);
         }
+
+        var id = helper.getUniqueId();
+        component.set('v.UniqueID' , id);
     },
 
     ValidateSdate: function (component, event, helper) {

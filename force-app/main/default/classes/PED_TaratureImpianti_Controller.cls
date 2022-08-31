@@ -36,4 +36,25 @@ public class PED_TaratureImpianti_Controller {
         System.debug('response-->'+response);
         return response;
     }
+
+    /*@AuraEnabled(continuation=true)
+    public static Continuation getSupplyData(String url) {  
+        PED_PODInfoWrapper.Response pod;
+        if(!url.containsIgnoreCase('delegato')){
+            pod =  PED_PODInfoUtils.recuperaPodInCache();
+        } else {
+            pod =  PED_PODInfoUtils.recuperaPodInCacheDelegato();
+        }
+
+        if (pod == null) throw new AuraHandledException('Nessun Pod in cache');
+        return PED_ServiziTecnici_Controller.searchCalibration(customer_k, customer_l, customer_m, 'Tarature');
+    }
+
+    @AuraEnabled 
+    public static PED_SearchCalibrationsWrapper.Response processSupplyData(List<String> labels, Object state){
+        PED_SearchCalibrationsWrapper.Response response = PED_ServiziTecnici_Controller.processSearchCalibrations(labels,state);
+
+        System.debug('response-->'+response);
+        return response;
+    }*/
 }

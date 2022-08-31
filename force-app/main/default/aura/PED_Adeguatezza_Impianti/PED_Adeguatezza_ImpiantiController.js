@@ -26,25 +26,28 @@
         }else{
 
             console.log('En el doInit');
-            let action = component.get("c.getDetails");
+            let action = component.get("c.getSupplyData");
             action.setParams(
                 { "url": window.location.href }
             );
-
-            component.set('v.fromDelegate', window.location.href.includes("delegato"));
 
            
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 console.log('state ==> '+state);
                 if (state === "SUCCESS") {
-                    var returnedValue = response.getReturnValue();
-                    component.set("v.spinner", true);
-
-                    console.log('returnedValue ==> '+returnedValue.data[0].pods.IdPod);
-                    component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
+                    if(returnedValue != null && returnedValue != undefined){
+                        var returnedValue = response.getReturnValue();
+                        console.log(returnedValue);
+                        component.set("v.spinner", false);
+                        //helper.setFornitura(component, event);
+                        // component.set("v.adeguatezzaImpianti", returnedValue);
+                    //console.log('returnedValue ==> '+returnedValue.data[0].pods.IdPod);
+                    //component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
                     // todo
-                    helper.getData(component,event);
+                  
+                    }
+                    
                     
                 }  
             });

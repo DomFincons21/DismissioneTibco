@@ -11,6 +11,9 @@
     <members>PED_SearchCalibrationsWrapper</members>
     <members>PED_SearchCalibrationsWS</members>
     <members>PED_TaratureImpianti_Controller</members>
+    <members>PED_PODInfoWrapper</members>
+    <members>PED_PODInfoUtils</members>
+    <members>PED_PODWrapper</members>
         <name>ApexClass</name>
     </types>
      <types>

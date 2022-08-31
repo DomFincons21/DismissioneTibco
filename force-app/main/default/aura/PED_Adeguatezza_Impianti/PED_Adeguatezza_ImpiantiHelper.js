@@ -51,37 +51,6 @@
         } );
         $A.enqueueAction(action);
     },
-    getData : function(component,event) {
-
-        // TODO : AdeguatezzaImpianti
-
-        let action = component.get("c.adeguatezzaImpiantiAsContinuation");
-        console.log(component.get('v.fromDelegate'));
-        action.setParams(
-            { 
-                "pod":  component.get('v.selectedPod'),
-                "fromDelegate":    component.get('v.fromDelegate')
-            }
-        );
-
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var returnedValue = response.getReturnValue();
-                console.log(returnedValue);
-                this.setFornitura(component, event);
-            
-                if(returnedValue != null && returnedValue != undefined){
-                    component.set("v.adeguatezzaImpianti", returnedValue);
-                }
-
-            }
-            component.set("v.spinner", false);
-        });
-
-        $A.enqueueAction(action);
-        
-    },
  
     exportPDF : function (component, event,isMail){
         //Creo il file

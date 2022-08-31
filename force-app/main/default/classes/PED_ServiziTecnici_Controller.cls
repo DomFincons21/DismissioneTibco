@@ -653,6 +653,25 @@ public class PED_ServiziTecnici_Controller {
         return u;
     }
 
+    @AuraEnabled (continuation=true)
+    public static Continuation getSupplyData(Boolean fromDelegate, String processo){
+        // ! 2º
+        System.debug('response-st-1->'+response);
+
+        return PED_SupplyDataWS.callGetSupplyData(fromDelegate, processo);
+    }
+
+    public static PED_SupplyDataWrapper.Response processGetSupplyData(List<String> labels, Object state){
+          // ! 3º
+        PED_SupplyDataWrapper.Response response = PED_SupplyDataWS.processGetSupplyData(labels, state);
+        System.debug('response-st-2->'+response);
+
+        return response;
+    }
+
+
+
+
     @AuraEnabled(continuation=true)
     public static Continuation searchCalibration(String customer_k, String customer_l, String customer_m, String processo) {     
         PED_SearchCalibrationsWrapper.Input input = new PED_SearchCalibrationsWrapper.Input();

@@ -7,12 +7,12 @@ public without sharing class PED_SearchCalibrationsWS {
     private static String wsName    = 'searchCalibrations';
     private static String wsProcessTarature = 'ServiziTecnici-TaratureImpianti';
     private static String wsProcessAdeguatezza = 'ServiziTecnici-AdeguatezzaImpianti';
-    
+    private static Set<String> processiAbilitati = new Set<String>{'Tarature','Adeguatezza'};
     
     @AuraEnabled(continuation=true)
     public static Continuation callSearchCalibrations(PED_SearchCalibrationsWrapper.Input input, String processo){
-        if(processo!='Tarature' && processo != 'Adeguatezza') throw new AuraHandledException('processo non configurato');
-        PED_ServiceSettings__c serSet = PED_ServiceSettings__c.getValues('TaratureImpinanti-SearchCalibrations'); 
+        if(!processiAbilitati.contains(processo)) throw new AuraHandledException('processo non configurato');
+        PED_ServiceSettings__c serSet = PED_ServiceSettings__c.getValues('ServiziTecnici-SearchCalibrations'); 
 
         Map<String,String> wsInformation = new Map<String,String>();
         wsInformation.put('processo', processo);

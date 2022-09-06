@@ -1,24 +1,6 @@
 ({
-    
-   /*  callback : function( component,event, helper){
-         var theSpinner = component.find("mySpinner"); 
-        $A.util.addClass(theSpinner, 'slds-hide');
-        var UniqueId = event.getParam("UniqueId");   
-        if(UniqueId===component.get('v.UniqueID')){
-            debugger;
-            helper.setFornitura(component, event);
-             var theSpinner = component.find("mySpinner"); 
-        $A.util.addClass(theSpinner, 'slds-hide');
-            var returnValues = event.getParam("result");
-            if(returnValues != null && returnValues != undefined){
-                component.set("v.adeguatezzaImpianti", returnValues);
-            }
-        }
-    }, */
     doInit : function(component, event, helper) {
         debugger;
-        //DF INIZIO
-
         
         if (((window.location.href.split("/s/")[0]).includes("livepreview"))) {
             component.set("v.spinner", false);
@@ -36,20 +18,25 @@
                 var state = response.getState();
                 console.log('state ==> '+state);
                 if (state === "SUCCESS") {
+                    var returnedValue = response.getReturnValue();
                     if(returnedValue != null && returnedValue != undefined){
-                        var returnedValue = response.getReturnValue();
+                       
                         console.log(returnedValue);
-                        component.set("v.spinner", false);
-                        //helper.setFornitura(component, event);
-                        // component.set("v.adeguatezzaImpianti", returnedValue);
-                    //console.log('returnedValue ==> '+returnedValue.data[0].pods.IdPod);
-                    //component.set('v.selectedPod',returnedValue.data[0].pods.IdPod);
-                    // todo
-                  
+
+                        component.set('v.DatiUtente', returnedValue.supplyData[0]);
+
+                        component.set('v.cliente_k', returnedValue.data.supplyData[0].customerK);          
+                        component.set('v.cliente_m', returnedValue.data.supplyData[0].customerM);          
+                        component.set('v.cliente_l', returnedValue.data.supplyData[0].customerL);     
+                        
+                        component.set('v.year', returnedValue.data.supplyData[0].year);
+                        component.set('v.indirizzo', returnedValue.data.supplyData[0].supplyAddress);
+                    
+                        helper.setFornitura(component, event);
                     }
                     
-                    
                 }  
+
             });
             $A.enqueueAction(action);
             
@@ -63,7 +50,7 @@
     downloadPDF : function(component, event, helper){
 
         component.set("v.spinner", true);
-        helper.getDatiUtenteCaratteristiche(component, event);
+        helper.getDatiUtenteCaratteristiche(component, event, false);
         component.set("v.spinner", false);
 
 

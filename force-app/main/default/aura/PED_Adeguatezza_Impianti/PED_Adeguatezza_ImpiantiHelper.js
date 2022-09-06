@@ -5,29 +5,21 @@
             return v.toString(16);
         });
     },
-    getDatiUtenteCaratteristiche : function(component,event,isMail){
-        var action = component.get("c.getCliente");
-        action.setParams(
-            {
-                "pod": component.get('v.selectedPod')                    
-            }
-        );
-        action.setCallback(this, function(result) {
-            console.log("DF SEL POD ",component.get('v.selectedPod'));
-            if(result.getState()==='SUCCESS'){
+    getDatiUtenteCaratteristiche : function(component,event, isMail){
+      
                 var blob = new Blob();
-                var result = result.getReturnValue();
-                component.set('v.DatiUtente',result);
                 var action1 = component.get("c.getUser");
                 action1.setCallback(this, function(result) {
+
                     if(result.getState()==='SUCCESS'){
                         var result = result.getReturnValue();
                         component.set('v.NomeUtente',result.Name);
+
                         try{
                             blob = this.exportPDF(component,event,isMail);
-                            if(isMail != undefined && isMail){
+                            if(isMail != undefined && isMail)
                                 this.sendMail(component,blob, "DichiarazioneAdeguatezza", "pdf", "Adeguatezza Impianti" );
-                            }
+                            
                         }catch(e){   
                             var msg =  "Ops! Si è verificato un problema, ti preghiamo di riprovare più tardi."
                             component.set('v.messageToShow',msg);
@@ -44,12 +36,7 @@
                 });
                 $A.enqueueAction(action1);
                 
-            }else{ 
-                component.set("v.spinner", false);
-                console.log(result.getError()[0].message);
-            }
-        } );
-        $A.enqueueAction(action);
+            
     },
  
     exportPDF : function (component, event,isMail){
@@ -217,9 +204,9 @@
         var textFooterGrassetto = "Per ogni chiarimento potete utilizzare la Casella Postale 5555 - 85100 Potenza";
         var splittedTextFooterGrassetto = doc.splitTextToSize(textFooterGrassetto, doc.internal.pageSize.width - 35, {});
         doc.text(splittedTextFooterGrassetto, 30, doc.autoTable.previous.finalY + 55);
-        doc.text(component.get('v.adeguatezzaImpianti.anno')!=null?component.get('v.adeguatezzaImpianti.anno'):'', 65, 452);
-        doc.text(component.get('v.adeguatezzaImpianti.testoArt34')!=null?component.get('v.adeguatezzaImpianti.testoArt34'):'', 343, 476.5);
-        doc.text(component.get('v.adeguatezzaImpianti.testoArt45')!=null?component.get('v.adeguatezzaImpianti.testoArt45'):'', 420, 490);
+        doc.text(component.get('v.year')!=null?component.get('v.year'):'', 65, 452);
+        doc.text(component.get('v.adeguatezzaImpianti.descriptionArt34')!=null?component.get('v.adeguatezzaImpianti.descriptionArt34'):'', 343, 476.5);
+        doc.text(component.get('v.adeguatezzaImpianti.supplyTechInfo.extInterruptionsReg')!=null?component.get('v.adeguatezzaImpianti.supplyTechInfo.extInterruptionsReg'):'', 420, 490);
         doc.setFontType('normal');
         doc.setTextColor(4,65,189);
         doc.text('http://www.autorita.energia.it/it/impiantimt.htm', 45, 426);
@@ -266,14 +253,14 @@
         }
         //Verifico Quale tipologia di messaggio viene passata e la aggiungo al pdf
         if ( component.get('v.adeguatezzaImpianti.tipoMessaggio') == "1" ){
-            var indirizzo = component.get('v.adeguatezzaImpianti.indirizzo');
+            var indirizzo = component.get('v.adeguatezzaImpianti.supplyTechInfo.address');
             if(indirizzo==null || indirizzo==undefined){
                 indirizzo ='';
             }
             var rest = indirizzo.substring(0, indirizzo.lastIndexOf("-") + 1);
             var last = indirizzo.substring(indirizzo.lastIndexOf("-") + 2 , indirizzo.length);
             
-            textHeader += "Il CTS ammontare annuo (imponibile) è pari a euro "+component.get('v.adeguatezzaImpianti.CTS')+"."+
+            textHeader += "Il CTS ammontare annuo (imponibile) è pari a euro "+component.get('v.adeguatezzaImpianti.supplyTechInfo.CTS')+"."+
                 "\nIl CTS, come valore cumulato pagato in bolletta dal 2010 e \nper i successivi anni di applicazione, è pari a euro "+component.get('v.adeguatezzaImpianti.CTStotale')+"."+
                 "\nL'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è:"+
                 "\n"+rest+"\n"+last+".\n";
@@ -302,14 +289,14 @@
                 "\n"+rest+"\n"+last+".\n";
             
         }else if ( component.get('v.adeguatezzaImpianti.tipoMessaggio') == "3" ){
-            var indirizzo = component.get('v.adeguatezzaImpianti.indirizzo');
+            var indirizzo = component.get('v.adeguatezzaImpianti.supplyTechInfo.address');
             if(indirizzo==null || indirizzo==undefined){
                 indirizzo ='';
             }
             var rest = indirizzo.substring(0, indirizzo.lastIndexOf("-") + 1);
             var last = indirizzo.substring(indirizzo.lastIndexOf("-") + 2 , indirizzo.length);
             
-            textHeader += "Il CTS ammontare annuo (imponibile) è pari a euro "+component.get('v.adeguatezzaImpianti.CTSM')+","+
+            textHeader += "Il CTS ammontare annuo (imponibile) è pari a euro "+component.get('v.adeguatezzaImpianti.ctsm')+","+
                 "\ncome previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri"+
                 "\nnelle fattispecie previste agli  Articolo 9 e Articolo 10,"+
                 "\nper quanto inerente l’invio della dichiarazione di adeguatezza,"+
@@ -364,25 +351,30 @@
     },
     setFornitura : function(component,event){
         try{
+
+            component.set('v.cliente_k', '147372');          
+            component.set('v.cliente_l', '0');          
+            component.set('v.cliente_m', '1000');
           
-            // getSupplyData
-            var action = component.get("c.getCliente");
+            var action = component.get("c.searchCalibration");
             action.setParams(
                 {
-                    "pod": component.get('v.selectedPod')                    
+                    "customer_k": component.get('v.cliente_k'),            
+                    "customer_l": component.get('v.cliente_l'),            
+                    "customer_m": component.get('v.cliente_m')          
                 }
             );
             action.setCallback(this, function(result) {
                 if(result.getState()==='SUCCESS'){
-                    console.log("DF SEL POD1 ",component.get('v.selectedPod'));
-                    var returnValues = result.getReturnValue();
-                    if(returnValues != null && returnValues != undefined){
-                        if (returnValues.fornitura != null && returnValues.fornitura != undefined && returnValues.fornitura.length > 0 && returnValues.fornitura[0].dsForn != null && returnValues.fornitura[0].dsForn != undefined){
-                            component.set('v.indirizzo', returnValues.fornitura[0].dsForn);
-                        }
+                  
+                    var returnedValue = result.getReturnValue();
+                    console.log(returnedValue);
+                    if(returnedValue != null && returnedValue != undefined){
+
+                         component.set("v.adeguatezzaImpianti", returnedValue.data);
+                         component.set("v.spinner", false);
                     }
                 }
-                component.set("v.spinner", false);
 
             });
             $A.enqueueAction(action);

@@ -407,17 +407,7 @@
         component.set("v.sDateErrorNotExist",eDateErrorNotExist);
     },
     getDatiUtenteCaratteristiche : function(component,event,isMail){
-        var action = component.get("c.getCliente");
-        action.setParams(
-            {
-                "pod": component.get('v.selectedPod')                    
-            }
-        );
-        action.setCallback(this, function(result) {
-            if(result.getState()==='SUCCESS'){
-                var blob = new Blob();
-                var result = result.getReturnValue();
-                component.set('v.DatiUtente',result);
+  
                 var action1 = component.get("c.getUser");
                 action1.setCallback(this, function(result) {
                     if(result.getState()==='SUCCESS'){
@@ -478,13 +468,8 @@
                 });
                 $A.enqueueAction(action1);
                 
-            }else{ 
-                var spinner = component.find("mySpinner");
-                $A.util.toggleClass(spinner, "slds-hide");
-                console.log(result.getError()[0].message);
-            }
-        } );
-        $A.enqueueAction(action);
+            
+     
     },
     exportPDFAT : function (component, event,isMail){
         function downloadFilePDF(component, blob, filename, extension){

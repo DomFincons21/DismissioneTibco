@@ -28,8 +28,25 @@ public with sharing class PED_SearchCalibrationsWrapper {
     public class ResponseData { 
         public String reqDatetime; 
         public String respDatetime; 
+
         @AuraEnabled
         public ResponseSupplyTechInfo supplyTechInfo; 
+
+        //Extended variables
+
+        @AuraEnabled
+        public String descriptionArt45; 
+
+        @AuraEnabled
+        public String descriptionArt34;
+
+        @AuraEnabled
+        public String dichiarazioneAdeguatezza; 
+
+        @AuraEnabled
+        public String tipoMessaggio; 
+
+      
         
     }
 
@@ -79,6 +96,8 @@ public with sharing class PED_SearchCalibrationsWrapper {
         public String email;
         @AuraEnabled
         public List<Responsecalibrations> calibrations;     
+
+       
     }
 
     public class Responsecalibrations{ 

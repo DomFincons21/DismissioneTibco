@@ -605,17 +605,8 @@
         component.set("v.sDateErrorNotExist",eDateErrorNotExist);
     },
     getDatiUtenteCaratteristiche : function(component,event,isMail){
-        var action = component.get("c.getCliente");
-        action.setParams(
-            {
-                "pod": component.get('v.selectedPod')                    
-            }
-        );
-        action.setCallback(this, function(result) {
-            if(result.getState()==='SUCCESS'){
-                var blob = new Blob();
-                var result = result.getReturnValue();
-                component.set('v.DatiUtente',result);
+
+                let blob;
                 var action1 = component.get("c.getUser");
                 action1.setCallback(this, function(result) {
                     if(result.getState()==='SUCCESS'){
@@ -655,12 +646,9 @@
                                 
                             }
                             
-                            if(isMail != undefined && isMail){
+                            if(isMail != undefined && isMail)
                                 this.sendMail(component,blob, name, "pdf", "Buchi Di Tensione" ); 
-                            }else{
-                                /*var spinner = component.find("mySpinner");
-                        		$A.util.toggleClass(spinner, "slds-hide");*/
-                            }
+                            
                         }catch(e){                             
                             component.set('v.messageToShow','Ops! Si è verificato un problema, ti preghiamo di riprovare più tardi.');
                             component.set('v.isSucc' , true);
@@ -675,13 +663,6 @@
                 });
                 $A.enqueueAction(action1);
                 
-            }else{ 
-               // var spinner = component.find("mySpinner");
-               // $A.util.toggleClass(spinner, "slds-hide");
-                console.log(result.getError()[0].message);
-            }
-        } );
-        $A.enqueueAction(action);
     },
     exportPDFAT : function (component, event,isMail){
         function downloadFilePDF(component, blob, filename, extension){
@@ -1204,6 +1185,7 @@
             doc.cell(485, marginTop+200, 80, 20, ''+(Sintesi[0].E5 == undefined? 0 : Sintesi[0].E5),undefined,'center');
         }
         
+        debugger;
         var doc = new jsPDF('p', 'pt', 'a4');
         //Dimension of A4 in pts: 595 × 842
         var pageWidth = 595;

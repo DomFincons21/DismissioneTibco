@@ -22,7 +22,8 @@
     <aura:attribute name="SintesiAT" type='Object[]' />       
     <aura:attribute name="allSemibarraList" type='Object[]' />
     <aura:attribute name="callPDF" type="string"/>
-    <aura:attribute name="DatiUtente" type="Object"/>    
+    <!-- TO-DISMISS getdetails -->
+   <!--  <aura:attribute name="DatiUtente" type="Object"/>     -->
     <aura:attribute name="NomeUtente" type="string"/>
     
     <!--SS_Pagination-->

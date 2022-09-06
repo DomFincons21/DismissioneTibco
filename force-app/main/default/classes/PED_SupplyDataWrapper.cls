@@ -88,6 +88,11 @@ public with sharing class PED_SupplyDataWrapper {
 
         @AuraEnabled
         public ResponseSupplyTechInfo supplyTechInfo;
+
+        @AuraEnabled
+        public String year;
+
+
     }
 
     public class ResponseCustomerData{

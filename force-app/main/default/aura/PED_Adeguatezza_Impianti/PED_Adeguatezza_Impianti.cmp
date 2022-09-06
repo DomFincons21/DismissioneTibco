@@ -19,7 +19,14 @@
     <aura:attribute name='isSucc' type='boolean'/>
     <aura:attribute name='messageToShow' type='string'/>
 
+    <aura:attribute name='year' type='string'/>
+
     <aura:attribute name="fromDelegate" type="Boolean" default="false" /> 
+
+    <aura:attribute name='cliente_k' type='string'/>
+    <aura:attribute name='cliente_m' type='string'/>
+    <aura:attribute name='cliente_l' type='string'/>
+
 
 
       <!-- INIT SPINNER -->
@@ -74,9 +81,9 @@
                 </p>
                 <br/>
                 <p id="staticMsg">
-                	Nel <b>{!v.adeguatezzaImpianti.anno}</b>, stante il livello di qualità del servizio della sua fornitura, il valore degli indennizzi corrisponderebbe a:
-                    <br/>articolo 34 Titolo 5 regolazione individuale clienti MT di euro: <b>{!v.adeguatezzaImpianti.testoArt34}</b>
-                    <br/>articolo 45 Titolo 7 regolazione delle interruzioni prolungate o estese di euro: <b>{!v.adeguatezzaImpianti.testoArt45}</b>
+                	Nel <b>{!v.year}</b>, stante il livello di qualità del servizio della sua fornitura, il valore degli indennizzi corrisponderebbe a:
+                    <br/>articolo 34 Titolo 5 regolazione individuale clienti MT di euro: <b>{!v.adeguatezzaImpianti.descriptionArt34}</b>
+                    <br/>articolo 45 Titolo 7 regolazione delle interruzioni prolungate o estese di euro: <b>{!v.adeguatezzaImpianti.descriptionArt45}</b>
                 </p>
                 <p id="dichiarazioneAdeguatezza">
                     <br/>
@@ -86,31 +93,32 @@
                 </p>
                 <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '1'}">
                     <p id="msg1">
-                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTS}</b>.<br/>
-                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
-                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>.<br/>
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.CTS}</b>.<br/>
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.totalCTS}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.supplyTechInfo.address}</b>.<br/>
                     </p>
                 </aura:if>
                 <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '2'}">
                     <p id="msg2">
-                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTS}</b>.<br/>
-                        Dal prossimo anno sarà tenuto a pagare il  CTSm per un importo  annuo (imponibile) calcolato a euro <b>{!v.adeguatezzaImpianti.CTSM}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.CTS}</b>.<br/>
+                        Dal prossimo anno sarà tenuto a pagare il  CTSm per un importo  annuo (imponibile) calcolato a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.CTSm}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
                         CTSM  = CTS(1+n) <br/>
                         dove n è il numero intero di anni contati a partire dall’anno successivo a quello di decorrenza dell’obbligo di adeguamento non adempiuto, con un valore massimo pari a 3. <br/>
                         Il pagamento del CTSM è sostitutivo del corrispettivo CTS ed avviene con le stesse modalità previste per il corrispettivo CTS.
-                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
-                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.totalCTS}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.supplyTechInfo.address}</b>
                     </p>
                 </aura:if>
+                <!-- {!v.adeguatezzaImpianti.n} TO-DO KNOW WHAT IS N ? -->
                 <aura:if isTrue="{!v.adeguatezzaImpianti.tipoMessaggio == '3'}">
                     <p id="msg3">
-                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.CTSM}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli  Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
+                        Il CTS ammontare annuo (imponibile) è pari a euro <b>{!v.adeguatezzaImpianti.supplyTechInfo.CTSm}</b>, come previsto dall’Articolo 15 della delibera 33/08 All.B, qualora l’utente rientri nelle fattispecie previste agli  Articolo 9 e Articolo 10, per quanto inerente l’invio della dichiarazione di adeguatezza, il CTS viene maggiorato come indicato nella seguente formula: <br/>
                         CTSM  = CTS(1+n) <br/>
                         dove n è il numero intero di anni contati a partire dall’anno successivo a quello di decorrenza dell’obbligo di adeguamento adempiuto, con un valore massimo pari a 3.<br/>
                         Per l’anno in corso Il suo valore n è <b>{!v.adeguatezzaImpianti.n}</b>.<br/>
                         Il pagamento del CTSM è sostitutivo del corrispettivo CTS ed avviene con le stesse modalità previste per il corrispettivo CTS. <br/>
-                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro: <b>{!v.adeguatezzaImpianti.CTStotale}</b>.<br/>
-                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.indirizzo}</b>
+                        Il CTS, come valore cumulato pagato in bolletta dal 2010 e  per i successivi anni di applicazione, è pari a euro: <b>{!v.adeguatezzaImpianti.supplyTechInfo.totalCTS}</b>.<br/>
+                        L'indirizzo postale cui inviare la Dichiarazione di Adeguatezza è: <b>{!v.adeguatezzaImpianti.supplyTechInfo.address}</b>
                     </p>
                 </aura:if>
                 

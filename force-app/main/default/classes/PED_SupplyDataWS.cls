@@ -114,6 +114,8 @@ public with sharing class PED_SupplyDataWS {
 
                 resp = (PED_SupplyDataWrapper.Response) JSON.deserialize(response.getBody(),  PED_SupplyDataWrapper.Response.class);
 
+                //Extended wrapper
+                resp.data.supplyData[0].year = System.now().AddYears(-1).format('YYYY');
 
                 Map<String,Object> logWrapper= new Map<String,Object>{
                     'input'=> myState.get('request'),

@@ -189,15 +189,13 @@
 
     },
     sendMailsintesiAt: function (component, event, helper) {
-        //var spinner = component.find("mySpinner");
-        //$A.util.toggleClass(spinner, "slds-hide");
+
         component.set('v.callPDF', 'sintesiAT');
         helper.getDatiUtenteCaratteristiche(component, event, true);
 
     },
     sendMailSintesi: function (component, event, helper) {
-        //var spinner = component.find("mySpinner");
-        // $A.util.toggleClass(spinner, "slds-hide");
+        
         component.set('v.callPDF', 'sintesi');
         helper.getDatiUtenteCaratteristiche(component, event, true);
 

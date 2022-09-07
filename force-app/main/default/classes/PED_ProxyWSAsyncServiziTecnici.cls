@@ -621,7 +621,7 @@ public class PED_ProxyWSAsyncServiziTecnici {
             response = JSON.serialize(ai);
         }catch(Exception e){
             response = JSON.serialize(null);             
-            insert PED_Serviziecnici_Controller.createLog('getAdeguatezzaImpianti', 'KO', e.getStackTraceString(), null, JSON.serialize(fornAdeguatezza));
+            insert PED_ServiziTecnici_Controller.createLog('getAdeguatezzaImpianti', 'KO', e.getStackTraceString(), null, JSON.serialize(fornAdeguatezza));
         }
         isResponse = true;
         return null;       

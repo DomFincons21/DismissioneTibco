@@ -656,15 +656,12 @@ public class PED_ServiziTecnici_Controller {
     @AuraEnabled (continuation=true)
     public static Continuation getSupplyData(Boolean fromDelegate, String processo){
         // ! 2º
-        System.debug('response-st-1->'+response);
-
         return PED_SupplyDataWS.callGetSupplyData(fromDelegate, processo);
     }
 
     public static PED_SupplyDataWrapper.Response processGetSupplyData(List<String> labels, Object state){
-          // ! 3º
+          // ! 4º
         PED_SupplyDataWrapper.Response response = PED_SupplyDataWS.processGetSupplyData(labels, state);
-        System.debug('response-st-2->'+response);
 
         return response;
     }
@@ -685,16 +682,7 @@ public class PED_ServiziTecnici_Controller {
     public static PED_SearchCalibrationsWrapper.Response processSearchCalibrations(List<String> labels, Object state){
         PED_SearchCalibrationsWrapper.Response response = PED_SearchCalibrationsWS.processSearchCalibrations(labels,state);
         map<String,String> myState = (map<String,String>) state;
-        response.data.supplyTechInfo.griglieMap = new Map<String,List<String>>();
-        for(PED_SearchCalibrationsWrapper.Responsecalibrations calib : response.data.supplyTechInfo.calibrations){
-            if(!String.isBlank(calib.CalibrationCode)){
-                List<String> sList = new List<String>();
-                sList.add(calib.CalibrationCom);
-                sList.add(calib.CalibrationPlant);
-                sList.add(calib.CalibrationUm);
-                response.data.supplyTechInfo.griglieMap.put(calib.CalibrationCode,sList);
-            }
-        }
+       
         System.debug('response-->'+response);
         return response;
     }

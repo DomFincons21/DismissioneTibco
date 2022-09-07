@@ -75,7 +75,7 @@ public with sharing class PED_SearchCalibrationsWrapper {
         @AuraEnabled
         public String maxShortPhaseCurrent;
         @AuraEnabled
-        public String convShorttCircuitCurrent;
+        public String convShortCircuitCurrent;
         @AuraEnabled
         public String CTS;
         @AuraEnabled

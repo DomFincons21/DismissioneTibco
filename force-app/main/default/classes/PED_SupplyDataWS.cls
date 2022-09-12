@@ -28,7 +28,7 @@ public with sharing class PED_SupplyDataWS {
 
         if(pod == null) throw new AuraHandledException('Nessun pod in cache');
 
-        SupplyDataWrapper.Input input = new SupplyDataWrapper.Input(pod);
+        PED_SupplyDataWrapper.Input input = new PED_SupplyDataWrapper.Input(pod);
         PED_ServiceSettings__c endpoint = [select id, Name, PED_Endpoint__c from PED_ServiceSettings__c where Name = 'ServiziTecnici-getSupplyData' limit 1];
 
         System.debug(pod);
@@ -50,7 +50,7 @@ public with sharing class PED_SupplyDataWS {
         return cont;
     }
 
-    public static httpRequest buildRequest(PED_ServiceSettings__c serviceEndpoint, SupplyDataWrapper.Input input, Map<String,String> wsInformation){
+    public static httpRequest buildRequest(PED_ServiceSettings__c serviceEndpoint, PED_SupplyDataWrapper.Input input, Map<String,String> wsInformation){
         
 
         HttpRequest request = new HttpRequest();
@@ -90,7 +90,7 @@ public with sharing class PED_SupplyDataWS {
         map<String,String> myState = (map<String,String>) state;
         PED_SupplyDataWrapper.Response resp;
 
-        System.debug('SupplyDataWrapper.processGetSupplyData -- START>' + labels[0]);
+        System.debug('PED_SupplyDataWrapper.processGetSupplyData -- START>' + labels[0]);
         response = Continuation.getResponse(labels[0]);
 
           // CREAZIONE DEL PED_Log__c

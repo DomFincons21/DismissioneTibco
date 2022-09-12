@@ -1,12 +1,13 @@
 public with sharing class PED_SupplyDataWrapper {
+
     public class Input {
 
         @AuraEnabled
         public String podId;
 
-        public Input(String podId){
+        public Input(PED_PODInfoWrapper.Response podId){
 
-            this.podId = podId;
+            this.podId = podId.data[0].pods.IdPod;
         }
     }
 

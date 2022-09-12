@@ -23,7 +23,7 @@
                        
                         console.log(returnedValue);
 
-                        component.set('v.DatiUtente', returnedValue.supplyData[0]);
+                        component.set('v.DatiUtente', returnedValue.data.supplyData[0]);
 
                         component.set('v.cliente_k', returnedValue.data.supplyData[0].customerK);          
                         component.set('v.cliente_m', returnedValue.data.supplyData[0].customerM);          

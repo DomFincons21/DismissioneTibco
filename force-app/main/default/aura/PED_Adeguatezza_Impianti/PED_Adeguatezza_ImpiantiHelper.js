@@ -7,7 +7,7 @@
     },
     getDatiUtenteCaratteristiche : function(component,event, isMail){
       
-                var blob = new Blob();
+                let blob = new Blob();
                 var action1 = component.get("c.getUser");
                 action1.setCallback(this, function(result) {
 
@@ -61,13 +61,13 @@
             doc.setFillColor(255, 255, 255);                
             doc.cell(30, 145, 535, 25,' '); 
             doc.setFontSize(12);
-            var forn;
+            let forn;
             if(component.get('v.DatiUtente')!=null){
-                forn = component.get('v.DatiUtente')!=undefined?(component.get('v.DatiUtente').fornitura!=undefined?(component.get('v.DatiUtente').fornitura[0].dsForn!=undefined?component.get('v.DatiUtente').fornitura[0].dsForn:''):''):'';
+                forn = component.get('v.DatiUtente');
             }else{
                 forn ='';
             }
-            var stringatitle='FORNITURA : '+forn;
+            var stringatitle='FORNITURA : '+forn.supplyAddress;
             var widthtitle = (doc.getStringUnitWidth(stringatitle)*12)/2;            
             var xpositiontitle = (535/2) - widthtitle;
             doc.text(xpositiontitle,161,'FORNITURA : '); 
@@ -75,14 +75,14 @@
             widthtitle = (doc.getStringUnitWidth(stringatitle)*12); 
             var positionvar = xpositiontitle + widthtitle + 2;
             doc.setFontType("bold");   
-            var stringaDaInserire = forn;
+            var stringaDaInserire = forn.supplyAddress;
             doc.text(positionvar,161,stringaDaInserire); 
             doc.setFontType("normal");
             doc.cell(30, 170, 535, 55,' ');  
             doc.setFontSize(10);
             doc.text(40,185,'CLIENTE : '); 
             doc.setFontType("bold");   
-            var stringaDaInserire = component.get('v.DatiUtente')!=null?component.get('v.DatiUtente').ragSoc:'';
+            var stringaDaInserire = forn.customerData.businessName;
             var fontsize = 250/doc.getStringUnitWidth(stringaDaInserire);
             if(fontsize<8){
                 fontsize=8;
@@ -97,7 +97,7 @@
             doc.setFontType("bold");
             var comune;
             if(component.get('v.DatiUtente')!=null){
-                comune = component.get('v.DatiUtente')!=undefined?(component.get('v.DatiUtente').fornitura!=undefined?(component.get('v.DatiUtente').fornitura[0].comune!=undefined?component.get('v.DatiUtente').fornitura[0].comune:''):''):'';
+                comune = forn.supplyCity;
             }else{
                 comune='';
             }
@@ -116,7 +116,7 @@
             doc.setFontType("bold");  
             var IndNodo='';
             if(component.get('v.DatiUtente')!=null){
-                IndNodo = component.get('v.DatiUtente')!=undefined?(component.get('v.DatiUtente').fornitura!=undefined?(component.get('v.DatiUtente').fornitura[0].IndNodo!=undefined?component.get('v.DatiUtente').fornitura[0].IndNodo:''):''):'';
+                IndNodo = forn.nodeAddress;
             }else{
                 IndNodo='';
             }
@@ -133,7 +133,7 @@
             doc.setFontSize(10);
             doc.text(390,210,'POD : ');
             doc.setFontType("bold");                
-            doc.text(425,210,''+component.get('v.selectedPod')); 
+            doc.text(425,210,''+ forn.podId); 
             doc.setFontType("normal");
         }       
         //Setto header
@@ -206,7 +206,7 @@
         doc.text(splittedTextFooterGrassetto, 30, doc.autoTable.previous.finalY + 55);
         doc.text(component.get('v.year')!=null?component.get('v.year'):'', 65, 452);
         doc.text(component.get('v.adeguatezzaImpianti.descriptionArt34')!=null?component.get('v.adeguatezzaImpianti.descriptionArt34'):'', 343, 476.5);
-        doc.text(component.get('v.adeguatezzaImpianti.supplyTechInfo.extInterruptionsReg')!=null?component.get('v.adeguatezzaImpianti.supplyTechInfo.extInterruptionsReg'):'', 420, 490);
+        doc.text(component.get('v.adeguatezzaImpianti.descriptionArt45')!=null?component.get('v.adeguatezzaImpianti.descriptionArt45'):'', 420, 490);
         doc.setFontType('normal');
         doc.setTextColor(4,65,189);
         doc.text('http://www.autorita.energia.it/it/impiantimt.htm', 45, 426);

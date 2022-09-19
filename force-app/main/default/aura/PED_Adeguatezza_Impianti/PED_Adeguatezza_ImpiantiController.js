@@ -17,25 +17,40 @@
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 console.log('state ==> '+state);
-                if (state === "SUCCESS") {
-                    var returnedValue = response.getReturnValue();
-                    if(returnedValue != null && returnedValue != undefined){
-                       
-                        console.log(returnedValue);
 
-                        component.set('v.DatiUtente', returnedValue.data.supplyData[0]);
-
-                        component.set('v.cliente_k', returnedValue.data.supplyData[0].customerK);          
-                        component.set('v.cliente_m', returnedValue.data.supplyData[0].customerM);          
-                        component.set('v.cliente_l', returnedValue.data.supplyData[0].customerL);     
+                try {
+                    if (state === "SUCCESS") {
+                        var returnedValue = response.getReturnValue();
+                        if(returnedValue != null && returnedValue != undefined){
                         
-                        component.set('v.year', returnedValue.data.supplyData[0].year);
-                        component.set('v.indirizzo', returnedValue.data.supplyData[0].supplyAddress);
-                    
-                        helper.setFornitura(component, event);
+                            console.log(returnedValue);
+
+                            component.set('v.DatiUtente', returnedValue.data.supplyData[0]);
+
+                            component.set('v.cliente_k', returnedValue.data.supplyData[0].customerK);          
+                            component.set('v.cliente_m', returnedValue.data.supplyData[0].customerM);          
+                            component.set('v.cliente_l', returnedValue.data.supplyData[0].customerL);     
+                            
+                            component.set('v.year', returnedValue.data.supplyData[0].year);
+                            component.set('v.indirizzo', returnedValue.data.supplyData[0].supplyAddress);
+                        
+                            helper.setFornitura(component, event);
+                        }else{
+                            component.set('v.messageToShow','Ups, si è verificato un problema');
+                            component.set('v.isSucc',false);
+                            component.set("v.spinner", false);
+                            // todo sistemare errore
+                            this.goBack(component, event, helper);
+                        }
+                        
                     }
-                    
-                }  
+            } catch (error) {
+                    component.set('v.messageToShow','Ups, si è verificato un problema');
+                    component.set("v.spinner", false);
+                    component.set('v.isSucc',false);
+                    // todo sistemare errore
+                    this.goBack(component, event, helper);
+                }
 
             });
             $A.enqueueAction(action);
